@@ -12,5 +12,7 @@
 
         public int PetId { get; set; }
         public int VetId { get; set; }
+        public virtual ICollection<AppointmentProcedure> AppointmentProcedures { get; set; } = new List<AppointmentProcedure>();
     }
 }
+

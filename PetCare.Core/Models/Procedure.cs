@@ -8,6 +8,7 @@
         public decimal Price { get; set; }
 
         public int VetSpezializationId { get; set; }
-        public VetSpezialization VetSpezialization { get; set; } = null!;
+        public virtual VetSpezialization VetSpezialization { get; set; } = null!;
+        public virtual ICollection<AppointmentProcedure> AppointmentProcedures { get; set; } = new List<AppointmentProcedure>();
     }
 }
