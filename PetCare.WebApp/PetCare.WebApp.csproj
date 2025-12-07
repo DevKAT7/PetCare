@@ -15,4 +15,13 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.22" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Data\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\PetCare.Core\PetCare.Core.csproj" />
+    <ProjectReference Include="..\PetCare.Infrastructure\PetCare.Infrastructure.csproj" />
+  </ItemGroup>
+
 </Project>
