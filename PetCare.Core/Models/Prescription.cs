@@ -7,28 +7,19 @@ namespace PetCare.Core.Models
     {
         [Key]
         public int PrescriptionId { get; set; }
-        [Required]
         [MaxLength(100)]
         public string Dosage { get; set; } = null!;
-        [Required]
         [MaxLength(100)]
         public string Frequency { get; set; } = null!;
-        [Required]
         public DateOnly StartDate { get; set; }
-        [Required]
         public DateOnly EndDate { get; set; }
         [MaxLength(500)]
         public string Instructions { get; set; } = null!;
-        [Required]
-        public int AppointmentId { get; set; }
-        [ForeignKey(nameof(AppointmentId))]
-        public virtual Appointment Appointment { get; set; } = null!;
-        [Required]
-        public int MedicationId { get; set; }
-        [ForeignKey(nameof(MedicationId))]
-        public virtual Medication Medication { get; set; } = null!;
-        [Required]
         [Range(1, 20)]
         public int PacksToDispense { get; set; } = 1;
+        public int AppointmentId { get; set; }
+        public Appointment Appointment { get; set; } = null!;
+        public int MedicationId { get; set; }
+        public Medication Medication { get; set; } = null!;
     }
 }

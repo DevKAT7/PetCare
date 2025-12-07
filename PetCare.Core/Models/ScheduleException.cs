@@ -1,13 +1,17 @@
-﻿namespace PetCare.Core.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace PetCare.Core.Models
 {
-    public class ScheduleExceptions
+    public class ScheduleException
     {
-        public int ScheduleExceptionsId { get; set; }
+        [Key]
+        public int ScheduleExceptionId { get; set; }
         public DateOnly ExceptionDate { get; set; }
+        public bool IsFullDayAbsence { get; set; } = false;
         public TimeOnly? StartTime { get; set; }
         public TimeOnly? EndTime { get; set; }
+        [MaxLength(200)]
         public string? Reason { get; set; }
-
         public int VetId { get; set; }
         public Vet Vet { get; set; } = null!;
     }

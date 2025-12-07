@@ -9,11 +9,9 @@ namespace PetCare.Core.Models
         public int StockTransactionId { get; set; }
         public int QuantityChange { get; set; }
         public DateTime Timestamp { get; set; } = DateTime.UtcNow;
-        [Required, MaxLength(100)]
+        [MaxLength(100)]
         public string Reason { get; set; } = null!;
-        [Required]
         public int MedicationId { get; set; }
-        [ForeignKey(nameof(MedicationId))]
-        public virtual Medication Medication { get; set; } = null!;
+        public Medication Medication { get; set; } = null!;
     }
 }

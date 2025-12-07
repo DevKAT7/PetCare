@@ -6,9 +6,9 @@
         public string Name { get; set; } = null!;
         public string Description { get; set; } = null!;
         public decimal Price { get; set; }
-
+        public bool IsActive { get; set; } = true;
         public int VetSpezializationId { get; set; }
-        public virtual VetSpezialization VetSpezialization { get; set; } = null!;
-        public virtual ICollection<AppointmentProcedure> AppointmentProcedures { get; set; } = new List<AppointmentProcedure>();
+        public VetSpecialization VetSpezialization { get; set; } = null!;
+        public ICollection<AppointmentProcedure> AppointmentProcedures { get; set; } = new List<AppointmentProcedure>();
     }
 }
