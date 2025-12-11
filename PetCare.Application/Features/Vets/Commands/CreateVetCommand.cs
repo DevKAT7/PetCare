@@ -5,8 +5,20 @@ namespace PetCare.Application.Features.Vets.Commands
 {
     public class CreateVetCommand : IRequest<int>
     {
-        [Required(ErrorMessage = "Powiązanie z użytkownikiem systemu jest wymagane.")]
-        public string UserId { get; set; } = null!;
+        [Required(ErrorMessage = "Email jest wymagany.")]
+        [EmailAddress(ErrorMessage = "Niepoprawny format adresu email.")]
+        public string Email { get; set; } = null!;
+
+        // Hasło tymczasowe, które nada administrator
+        [Required(ErrorMessage = "Hasło jest wymagane.")]
+        [DataType(DataType.Password)]
+        [MinLength(8, ErrorMessage = "Hasło musi mieć co najmniej 8 znaków.")]
+        public string Password { get; set; } = null!;
+
+        [Required(ErrorMessage = "Numer telefonu jest wymagany.")]
+        [Phone(ErrorMessage = "Niepoprawny format numeru telefonu.")]
+        [MaxLength(20, ErrorMessage = "Numer telefonu nie może być dłuższy niż 20 znaków.")]
+        public string PhoneNumber { get; set; } = null!;
 
         [Required(ErrorMessage = "Imię jest wymagane.")]
         [MaxLength(100, ErrorMessage = "Imię nie może być dłuższe niż 100 znaków.")]
