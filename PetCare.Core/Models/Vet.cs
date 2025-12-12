@@ -26,7 +26,7 @@ namespace PetCare.Core.Models
         public bool IsActive { get; set; } = true;
         public string UserId { get; set; } = null!;
         public User User { get; set; } = null!;
-        public ICollection<VetSpecializationLink>? SpecializationLinks { get; set; } =
+        public ICollection<VetSpecializationLink> SpecializationLinks { get; set; } =
         new HashSet<VetSpecializationLink>();
         [NotMapped]
         public int YearsOfExperience

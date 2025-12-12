@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using PetCare.Core.Models;
+using PetCare.Application.Extensions;
 using PetCare.Infrastructure.Data;
+using PetCare.Infrastructure.Extensions;
 
 namespace PetCare.WebApp
 {
@@ -12,18 +12,38 @@ namespace PetCare.WebApp
             var builder = WebApplication.CreateBuilder(args);
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
-            builder.Services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(connectionString));
-
-            builder.Services.AddDefaultIdentity<User>(options => options.SignIn.RequireConfirmedAccount = false)
-                .AddRoles<IdentityRole>()
-                .AddEntityFrameworkStores<ApplicationDbContext>();
+            builder.Services.AddApplicationLayer();
+            builder.Services.AddInfrastructureLayer(builder.Configuration);
 
             builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
             builder.Services.AddRazorPages();
 
             var app = builder.Build();
+
+            using (var scope = app.Services.CreateScope())
+            {
+                var services = scope.ServiceProvider;
+                var logger = services.GetRequiredService<ILogger<Program>>();
+
+                try
+                {
+                    logger.LogInformation("Rozpoczynam inicjalizacj� bazy danych...");
+
+                    var context = services.GetRequiredService<ApplicationDbContext>();
+
+                    DomainSeed.SeedSpecializationsAsync(context).Wait();
+                    logger.LogInformation("Specjalizacje zosta�y zainicjalizowane.");
+
+                    var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+                    IdentitySeed.SeedRolesAsync(roleManager).Wait();
+                    logger.LogInformation("Role systemowe zosta�y zainicjalizowane.");
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex, "Wyst�pi� krytyczny b��d podczas inicjalizacji bazy danych.");
+                }
+            }
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
