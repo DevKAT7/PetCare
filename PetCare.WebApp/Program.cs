@@ -10,6 +10,7 @@ namespace PetCare.WebApp
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
             builder.Services.AddApplicationLayer();
             builder.Services.AddInfrastructureLayer(builder.Configuration);
@@ -27,20 +28,20 @@ namespace PetCare.WebApp
 
                 try
                 {
-                    logger.LogInformation("Rozpoczynam inicjalizacjê bazy danych...");
+                    logger.LogInformation("Rozpoczynam inicjalizacjï¿½ bazy danych...");
 
                     var context = services.GetRequiredService<ApplicationDbContext>();
 
                     DomainSeed.SeedSpecializationsAsync(context).Wait();
-                    logger.LogInformation("Specjalizacje zosta³y zainicjalizowane.");
+                    logger.LogInformation("Specjalizacje zostaï¿½y zainicjalizowane.");
 
                     var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
                     IdentitySeed.SeedRolesAsync(roleManager).Wait();
-                    logger.LogInformation("Role systemowe zosta³y zainicjalizowane.");
+                    logger.LogInformation("Role systemowe zostaï¿½y zainicjalizowane.");
                 }
                 catch (Exception ex)
                 {
-                    logger.LogError(ex, "Wyst¹pi³ krytyczny b³¹d podczas inicjalizacji bazy danych.");
+                    logger.LogError(ex, "Wystï¿½piï¿½ krytyczny bï¿½ï¿½d podczas inicjalizacji bazy danych.");
                 }
             }
 
