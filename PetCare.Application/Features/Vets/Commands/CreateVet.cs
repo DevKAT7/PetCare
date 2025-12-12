@@ -2,11 +2,17 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using PetCare.Application.Exceptions;
+using PetCare.Application.Features.Vets.Dto;
 using PetCare.Core.Models;
 using PetCare.Infrastructure.Data;
 
 namespace PetCare.Application.Features.Vets.Commands
 {
+    public class CreateVetCommand : IRequest<int>
+    {
+        public required VetCreateModel Vet { get; set; } = null!;
+    }
+
     public class CreateVetHandler : IRequestHandler<CreateVetCommand, int>
     {
         private readonly ApplicationDbContext _context;
@@ -18,8 +24,10 @@ namespace PetCare.Application.Features.Vets.Commands
             _userManager = userManager;
         }
 
-        public async Task<int> Handle(CreateVetCommand request, CancellationToken cancellationToken)
+        public async Task<int> Handle(CreateVetCommand command, CancellationToken cancellationToken)
         {
+            var request = command.Vet;
+
             var user = new User
             {
                 UserName = request.Email,

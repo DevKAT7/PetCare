@@ -1,9 +1,8 @@
-﻿using MediatR;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
-namespace PetCare.Application.Features.Vets.Commands
+namespace PetCare.Application.Features.Vets.Dto
 {
-    public class CreateVetCommand : IRequest<int>
+    public class VetCreateModel
     {
         [Required(ErrorMessage = "Email jest wymagany.")]
         [EmailAddress(ErrorMessage = "Niepoprawny format adresu email.")]

@@ -46,7 +46,10 @@ namespace PetCare.Api.Middleware
                     errorResponse.Errors = badRequestEx.ValidationErrors;
                     break;
 
-                // (np. NotFoundException -> 404)
+                case NotFoundException notFoundEx:
+                    response.StatusCode = (int)HttpStatusCode.NotFound;
+                    errorResponse.Message = notFoundEx.Message;
+                    break;
 
                 default:
                     _logger.LogError(exception, "Nieoczekiwany błąd serwera.");
