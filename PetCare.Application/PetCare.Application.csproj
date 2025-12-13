@@ -14,4 +14,10 @@
     <ProjectReference Include="..\PetCare.Infrastructure\PetCare.Infrastructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Features\PetOwners\Commands\" />
+    <Folder Include="Features\PetOwners\Dtos\" />
+    <Folder Include="Features\PetOwners\Queries\" />
+  </ItemGroup>
+
 </Project>
