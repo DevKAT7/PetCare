@@ -1,3 +1,4 @@
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.OpenApi;
 using PetCare.Api.Middleware;
@@ -18,9 +19,11 @@ namespace PetCare.Api
             builder.Services.AddInfrastructureLayer(builder.Configuration);
             builder.Services.AddControllers()
                 .AddJsonOptions(options => {
-                    //konwersja Enumów na stringi w JSON
+                    //konwersja Enumow na stringi w JSON
                     options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
                 });
+
+            builder.Services.AddFluentValidationAutoValidation();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(c =>
@@ -42,20 +45,20 @@ namespace PetCare.Api
 
                 try
                 {
-                    logger.LogInformation("Rozpoczynam inicjalizacjê bazy danych...");
+                    logger.LogInformation("Rozpoczynam inicjalizacjï¿½ bazy danych...");
 
                     var context = services.GetRequiredService<ApplicationDbContext>();
 
                     DomainSeed.SeedSpecializationsAsync(context).Wait();
-                    logger.LogInformation("Specjalizacje zosta³y zainicjalizowane.");
+                    logger.LogInformation("Specjalizacje zostaï¿½y zainicjalizowane.");
 
                     var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
                     IdentitySeed.SeedRolesAsync(roleManager).Wait();
-                    logger.LogInformation("Role systemowe zosta³y zainicjalizowane.");
+                    logger.LogInformation("Role systemowe zostaï¿½y zainicjalizowane.");
                 }
                 catch (Exception ex)
                 {
-                    logger.LogError(ex, "Wyst¹pi³ krytyczny b³¹d podczas inicjalizacji bazy danych.");
+                    logger.LogError(ex, "Wystï¿½piï¿½ krytyczny bï¿½ï¿½d podczas inicjalizacji bazy danych.");
                 }
             }
 
