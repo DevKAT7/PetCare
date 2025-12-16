@@ -7,10 +7,14 @@ namespace PetCare.Application.Features.Invoices.Validators
     {
         public InvoiceCreateModelValidator()
         {
-            RuleFor(x => x.InvoiceDate).NotEmpty().WithMessage("Data faktury jest wymagana.");
-            RuleFor(x => x.DueDate).NotEmpty().WithMessage("Termin płatności jest wymagany.");
-            RuleFor(x => x.PetOwnerId).GreaterThan(0).WithMessage("PetOwnerId jest wymagane.");
-            RuleFor(x => x.AppointmentId).GreaterThan(0).WithMessage("AppointmentId jest wymagane.");
+            RuleFor(x => x.InvoiceDate)
+                .NotEmpty().WithMessage("Data faktury jest wymagana.");
+            RuleFor(x => x.DueDate)
+                .NotEmpty().WithMessage("Termin płatności jest wymagany.");
+            RuleFor(x => x.PetOwnerId)
+                .GreaterThan(0).WithMessage("PetOwnerId jest wymagane.");
+            RuleFor(x => x.AppointmentId)
+                .GreaterThan(0).WithMessage("AppointmentId jest wymagane.");
 
             RuleFor(x => x.Items).NotNull().WithMessage("Items nie może być puste.");
             RuleForEach(x => x.Items).ChildRules(items =>

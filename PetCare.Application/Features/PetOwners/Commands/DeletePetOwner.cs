@@ -14,38 +14,38 @@ namespace PetCare.Application.Features.PetOwners.Commands
         {
             PetOwnerId = petOwnerId;
         }
+    }
 
-        public class DeletePetOwnerHandler : IRequestHandler<DeletePetOwnerCommand, int>
+    public class DeletePetOwnerHandler : IRequestHandler<DeletePetOwnerCommand, int>
+    {
+        private readonly ApplicationDbContext _context;
+        private readonly UserManager<User> _userManager;
+
+        public DeletePetOwnerHandler(ApplicationDbContext context, UserManager<User> userManager)
         {
-            private readonly ApplicationDbContext _context;
-            private readonly UserManager<User> _userManager;
+            _context = context;
+            _userManager = userManager;
+        }
 
-            public DeletePetOwnerHandler(ApplicationDbContext context, UserManager<User> userManager)
+        public async Task<int> Handle(DeletePetOwnerCommand command, CancellationToken cancellationToken)
+        {
+            var owner = await _context.PetOwners
+                .Include(o => o.User)
+                .FirstOrDefaultAsync(o => o.PetOwnerId == command.PetOwnerId, cancellationToken);
+
+            if (owner == null)
             {
-                _context = context;
-                _userManager = userManager;
+                throw new NotFoundException("PetOwner", command.PetOwnerId);
             }
 
-            public async Task<int> Handle(DeletePetOwnerCommand command, CancellationToken cancellationToken)
-            {
-                var owner = await _context.PetOwners
-                    .Include(o => o.User)
-                    .FirstOrDefaultAsync(o => o.PetOwnerId == command.PetOwnerId, cancellationToken);
+            owner.IsActive = false;
+            owner.User.IsActive = false;
 
-                if (owner == null)
-                {
-                    throw new NotFoundException("PetOwner", command.PetOwnerId);
-                }
+            await _userManager.UpdateAsync(owner.User);
 
-                owner.IsActive = false;
-                owner.User.IsActive = false;
+            await _context.SaveChangesAsync(cancellationToken);
 
-                await _userManager.UpdateAsync(owner.User);
-
-                await _context.SaveChangesAsync(cancellationToken);
-
-                return owner.PetOwnerId;
-            }
+            return owner.PetOwnerId;
         }
     }
 }

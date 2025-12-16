@@ -2,6 +2,7 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using PetCare.Application.Features.Appointments.Commands;
 using PetCare.Application.Features.Appointments.Dto;
+using PetCare.Application.Features.Appointments.Dtos;
 using PetCare.Application.Features.Appointments.Queries;
 
 namespace PetCare.Api.Controllers
@@ -49,6 +50,38 @@ namespace PetCare.Api.Controllers
             var command = new UpdateAppointmentCommand(id, request);
             var appointmentId = await _mediator.Send(command);
             return Ok(appointmentId);
+        }
+
+        [HttpGet("{id}/procedures")]
+        public async Task<IActionResult> GetProcedures(int id)
+        {
+            var query = new GetAppointmentProceduresQuery(id);
+            var result = await _mediator.Send(query);
+            return Ok(result);
+        }
+
+        [HttpPost("{id}/procedures")]
+        public async Task<IActionResult> AddProcedure(int id, [FromBody] AppointmentProcedureCreateModel model)
+        {
+            var command = new AddProcedureToAppointmentCommand { AppointmentId = id, Model = model };
+            var res = await _mediator.Send(command);
+            return Ok(res);
+        }
+
+        [HttpPut("{id}/procedures/{procedureId}")]
+        public async Task<IActionResult> UpdateProcedure(int id, int procedureId, [FromBody] AppointmentProcedureCreateModel model)
+        {
+            var command = new UpdateProcedureInAppointmentCommand { AppointmentId = id, ProcedureId = procedureId, Model = model };
+            var res = await _mediator.Send(command);
+            return Ok(res);
+        }
+
+        [HttpDelete("{id}/procedures/{procedureId}")]
+        public async Task<IActionResult> RemoveProcedure(int id, int procedureId)
+        {
+            var command = new RemoveProcedureFromAppointmentCommand { AppointmentId = id, ProcedureId = procedureId };
+            await _mediator.Send(command);
+            return NoContent();
         }
 
         [HttpDelete("{id}")]

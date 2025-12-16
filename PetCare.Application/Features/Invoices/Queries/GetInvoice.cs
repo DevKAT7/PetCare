@@ -28,7 +28,10 @@ namespace PetCare.Application.Features.Invoices.Queries
                 .Include(i => i.PetOwner)
                 .FirstOrDefaultAsync(i => i.InvoiceId == request.InvoiceId, cancellationToken);
 
-            if (inv == null) throw new NotFoundException("Invoice", request.InvoiceId);
+            if (inv == null)
+            {
+                throw new NotFoundException("Invoice", request.InvoiceId);
+            }
 
             return new InvoiceReadModel
             {

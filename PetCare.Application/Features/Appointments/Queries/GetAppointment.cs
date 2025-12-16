@@ -28,7 +28,10 @@ namespace PetCare.Application.Features.Appointments.Queries
                 .Include(a => a.Vet)
                 .FirstOrDefaultAsync(a => a.AppointmentId == request.AppointmentId, cancellationToken);
 
-            if (appointment == null) throw new NotFoundException("Appointment", request.AppointmentId);
+            if (appointment == null)
+            {
+                throw new NotFoundException("Appointment", request.AppointmentId);
+            }
 
             return new AppointmentReadModel
             {

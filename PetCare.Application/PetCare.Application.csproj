@@ -20,6 +20,8 @@
     <Folder Include="Features\PetOwners\Commands\" />
     <Folder Include="Features\PetOwners\Dtos\" />
     <Folder Include="Features\PetOwners\Queries\" />
+    <Folder Include="Features\Procedures\Validators\" />
+    <Folder Include="Features\VetSpecializations\Validators\" />
   </ItemGroup>
 
 </Project>

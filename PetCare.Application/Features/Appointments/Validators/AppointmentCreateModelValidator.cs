@@ -25,10 +25,12 @@ namespace PetCare.Application.Features.Appointments.Validators
                 .MaximumLength(2000).WithMessage("Notatki nie mogą przekraczać 2000 znaków.");
 
             RuleFor(x => x.PetId)
-                .GreaterThan(0).WithMessage("PetId jest wymagany.");
+                .NotEmpty().WithMessage("PetId jest wymagany.")
+                .GreaterThan(0).WithMessage("PetId musi być większe od 0.");
 
             RuleFor(x => x.VetId)
-                .GreaterThan(0).WithMessage("VetId jest wymagany.");
+                .NotEmpty().WithMessage("VetIt jest wymagany.")
+                .GreaterThan(0).WithMessage("VetId musi być większe od 0.");
         }
     }
 }

@@ -30,15 +30,27 @@ namespace PetCare.Application.Features.Appointments.Commands
         public async Task<int> Handle(UpdateAppointmentCommand request, CancellationToken cancellationToken)
         {
             var appointment = await _context.Appointments.FirstOrDefaultAsync(a => a.AppointmentId == request.AppointmentId, cancellationToken);
-            if (appointment == null) throw new NotFoundException("Appointment", request.AppointmentId);
 
-            // optional: validate pet and vet existence if changed
+            if (appointment == null)
+            {
+                throw new NotFoundException("Appointment", request.AppointmentId);
+            }
+
             var model = request.Appointment;
-            var pet = await _context.Pets.FindAsync(new object[] { model.PetId }, cancellationToken);
-            if (pet == null) throw new NotFoundException("Pet", model.PetId);
+            //TODO: zobacz pozniej czy bedziesz chciala umozliwiac zmiane zwierzaka i weterynarza w wizycie
+            var pet = await _context.Pets.FirstOrDefaultAsync(p => p.PetId == model.PetId);
 
-            var vet = await _context.Vets.FindAsync(new object[] { model.VetId }, cancellationToken);
-            if (vet == null) throw new NotFoundException("Vet", model.VetId);
+            if (pet == null)
+            {
+                throw new NotFoundException("Pet", model.PetId);
+            }
+
+            var vet = await _context.Vets.FirstOrDefaultAsync(v => v.VetId == model.VetId);
+
+            if (vet == null)
+            {
+                throw new NotFoundException("Vet", model.VetId);
+            }
 
             appointment.AppointmentDateTime = model.AppointmentDateTime;
             appointment.Description = model.Description;

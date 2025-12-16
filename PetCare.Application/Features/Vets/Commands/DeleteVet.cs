@@ -14,38 +14,38 @@ namespace PetCare.Application.Features.Vets.Commands
         {
             VetId = vetId;
         }
+    }
 
-        public class DeleteVetHandler : IRequestHandler<DeleteVetCommand, int>
+    public class DeleteVetHandler : IRequestHandler<DeleteVetCommand, int>
+    {
+        private readonly ApplicationDbContext _context;
+        private readonly UserManager<User> _userManager;
+
+        public DeleteVetHandler(ApplicationDbContext context, UserManager<User> userManager)
         {
-            private readonly ApplicationDbContext _context;
-            private readonly UserManager<User> _userManager;
+            _context = context;
+            _userManager = userManager;
+        }
 
-            public DeleteVetHandler(ApplicationDbContext context, UserManager<User> userManager)
+        public async Task<int> Handle(DeleteVetCommand command, CancellationToken cancellationToken)
+        {
+            var vet = await _context.Vets
+                .Include(v => v.User)
+                .FirstOrDefaultAsync(v => v.VetId == command.VetId, cancellationToken);
+
+            if (vet == null)
             {
-                _context = context;
-                _userManager = userManager;
+                throw new NotFoundException("Vet", command.VetId);
             }
 
-            public async Task<int> Handle(DeleteVetCommand command, CancellationToken cancellationToken)
-            {
-                var vet = await _context.Vets
-                    .Include(v => v.User)
-                    .FirstOrDefaultAsync(v => v.VetId == command.VetId, cancellationToken);
+            vet.IsActive = false;
+            vet.User.IsActive = false;
 
-                if (vet == null)
-                {
-                    throw new NotFoundException("Vet", command.VetId);
-                }
+            await _userManager.UpdateAsync(vet.User);
 
-                vet.IsActive = false;
-                vet.User.IsActive = false;
+            await _context.SaveChangesAsync(cancellationToken);
 
-                await _userManager.UpdateAsync(vet.User);
-
-                await _context.SaveChangesAsync(cancellationToken);
-
-                return vet.VetId;
-            }
+            return vet.VetId;
         }
     }
 }
