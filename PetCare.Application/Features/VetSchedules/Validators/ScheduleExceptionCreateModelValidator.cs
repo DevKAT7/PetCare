@@ -13,6 +13,9 @@ namespace PetCare.Application.Features.VetSchedules.Validators
             RuleFor(x => x.ExceptionDate)
                 .NotEmpty().WithMessage("Data wyjątku w grafiku jest wymagana.");
 
+            RuleFor(x => x.Reason)
+                .MaximumLength(200).WithMessage("Powód może mieć maksymalnie 200 znaków.");
+
             RuleFor(x => x).Custom((m, ctx) =>
             {
                 if (!m.IsFullDayAbsence)
