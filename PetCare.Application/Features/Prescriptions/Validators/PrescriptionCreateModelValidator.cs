@@ -32,7 +32,7 @@ namespace PetCare.Application.Features.Prescriptions.Validators
                 .GreaterThan(0).WithMessage("AppointmentId jest wymagane.");
 
             RuleFor(x => x.MedicationId)
-                .GreaterThan(0).WithMessage("MedicationId jest wymagane.");
+                .GreaterThan(0).WithMessage("Id jest wymagane.");
         }
     }
 }
