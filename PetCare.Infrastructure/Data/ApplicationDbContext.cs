@@ -22,6 +22,7 @@ namespace PetCare.Infrastructure.Data
         public DbSet<InvoiceItem> InvoiceItems { get; set; }
         public DbSet<Pet> Pets { get; set; }
         public DbSet<MedicalTest> MedicalTests { get; set; }
+        public DbSet<Vaccination> Vaccinations { get; set; }
         public DbSet<Appointment> Appointments { get; set; }
         public DbSet<AppointmentProcedure> AppointmentProcedures { get; set; }
         public DbSet<Procedure> Procedures { get; set; }
@@ -47,8 +48,8 @@ namespace PetCare.Infrastructure.Data
             builder.Entity<VetSpecialization>(e =>
             {
                 e.HasMany(vs => vs.Procedures)
-                    .WithOne(p => p.VetSpezialization)
-                    .HasForeignKey(p => p.VetSpezializationId)
+                    .WithOne(p => p.VetSpecialization)
+                    .HasForeignKey(p => p.VetSpecializationId)
                     .OnDelete(DeleteBehavior.Cascade);
             });
 

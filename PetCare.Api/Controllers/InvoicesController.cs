@@ -1,0 +1,51 @@
+using MediatR;
+using Microsoft.AspNetCore.Mvc;
+using PetCare.Application.Features.Invoices.Commands;
+using PetCare.Application.Features.Invoices.Dto;
+using PetCare.Application.Features.Invoices.Queries;
+
+namespace PetCare.Api.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class InvoicesController : ControllerBase
+    {
+        private readonly IMediator _mediator;
+
+        public InvoicesController(IMediator mediator)
+        {
+            _mediator = mediator;
+        }
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult<InvoiceReadModel>> Get(int id)
+        {
+            var query = new GetInvoiceQuery(id);
+            var result = await _mediator.Send(query);
+            return Ok(result);
+        }
+
+        [HttpGet("by-owner/{ownerId}")]
+        public async Task<IActionResult> GetByOwner(int ownerId)
+        {
+            var query = new GetInvoicesByOwnerQuery(ownerId);
+            var result = await _mediator.Send(query);
+            return Ok(result);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Create([FromBody] CreateInvoiceCommand command)
+        {
+            var id = await _mediator.Send(command);
+            return CreatedAtAction(nameof(Get), new { id }, id);
+        }
+
+        [HttpPost("{id}/pay")]
+        public async Task<IActionResult> MarkPaid(int id, [FromBody] DateTime paymentDate)
+        {
+            var command = new MarkInvoicePaidCommand(id, paymentDate);
+            var invoiceId = await _mediator.Send(command);
+            return Ok(invoiceId);
+        }
+    }
+}

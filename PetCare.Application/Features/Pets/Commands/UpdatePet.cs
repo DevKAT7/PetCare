@@ -1,0 +1,51 @@
+using MediatR;
+using Microsoft.EntityFrameworkCore;
+using PetCare.Application.Features.Pets.Dto;
+using PetCare.Application.Exceptions;
+using PetCare.Infrastructure.Data;
+
+namespace PetCare.Application.Features.Pets.Commands
+{
+    public class UpdatePetCommand : IRequest<int>
+    {
+        public int PetId { get; }
+        public PetUpdateModel Pet { get; }
+
+        public UpdatePetCommand(int petId, PetUpdateModel pet)
+        {
+            PetId = petId;
+            Pet = pet;
+        }
+    }
+
+    public class UpdatePetHandler : IRequestHandler<UpdatePetCommand, int>
+    {
+        private readonly ApplicationDbContext _context;
+
+        public UpdatePetHandler(ApplicationDbContext context)
+        {
+            _context = context;
+        }
+
+        public async Task<int> Handle(UpdatePetCommand request, CancellationToken cancellationToken)
+        {
+            var pet = await _context.Pets.FirstOrDefaultAsync(p => p.PetId == request.PetId, cancellationToken);
+
+            if (pet == null)
+            {
+                throw new NotFoundException("Pet", request.PetId);
+            }
+
+            pet.Name = request.Pet.Name;
+            pet.Species = request.Pet.Species;
+            pet.Breed = request.Pet.Breed;
+            pet.DateOfBirth = DateOnly.FromDateTime(request.Pet.DateOfBirth);
+            pet.IsMale = request.Pet.IsMale;
+            pet.ImageUrl = request.Pet.ImageUrl;
+
+            await _context.SaveChangesAsync(cancellationToken);
+
+            return pet.PetId;
+        }
+    }
+}

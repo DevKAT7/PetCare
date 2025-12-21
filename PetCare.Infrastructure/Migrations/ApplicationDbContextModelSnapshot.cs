@@ -102,12 +102,10 @@ namespace PetCare.Infrastructure.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
                     b.Property<string>("LoginProvider")
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("ProviderKey")
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("ProviderDisplayName")
                         .HasColumnType("nvarchar(max)");
@@ -144,12 +142,10 @@ namespace PetCare.Infrastructure.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("LoginProvider")
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Name")
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Value")
                         .HasColumnType("nvarchar(max)");
@@ -572,14 +568,15 @@ namespace PetCare.Infrastructure.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("Price")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int>("VetSpezializationId")
+                    b.Property<int>("VetSpecializationId")
                         .HasColumnType("int");
 
                     b.HasKey("ProcedureId");
 
-                    b.HasIndex("VetSpezializationId");
+                    b.HasIndex("VetSpecializationId");
 
                     b.ToTable("Procedures");
                 });
@@ -772,7 +769,7 @@ namespace PetCare.Infrastructure.Migrations
 
                     b.HasIndex("PetId");
 
-                    b.ToTable("Vaccination");
+                    b.ToTable("Vaccinations");
                 });
 
             modelBuilder.Entity("PetCare.Core.Models.Vet", b =>
@@ -1098,13 +1095,13 @@ namespace PetCare.Infrastructure.Migrations
 
             modelBuilder.Entity("PetCare.Core.Models.Procedure", b =>
                 {
-                    b.HasOne("PetCare.Core.Models.VetSpecialization", "VetSpezialization")
+                    b.HasOne("PetCare.Core.Models.VetSpecialization", "VetSpecialization")
                         .WithMany("Procedures")
-                        .HasForeignKey("VetSpezializationId")
+                        .HasForeignKey("VetSpecializationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("VetSpezialization");
+                    b.Navigation("VetSpecialization");
                 });
 
             modelBuilder.Entity("PetCare.Core.Models.ScheduleException", b =>

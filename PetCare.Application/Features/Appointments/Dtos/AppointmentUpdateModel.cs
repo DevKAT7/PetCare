@@ -1,0 +1,15 @@
+using System.ComponentModel.DataAnnotations;
+
+namespace PetCare.Application.Features.Appointments.Dto
+{
+    public class AppointmentUpdateModel
+    {
+        public DateTime AppointmentDateTime { get; set; }
+        public string? Description { get; set; }
+        public string ReasonForVisit { get; set; } = null!;
+        public string Diagnosis { get; set; } = string.Empty;
+        public string? Notes { get; set; }
+        public int PetId { get; set; }
+        public int VetId { get; set; }
+    }
+}
