@@ -9,12 +9,12 @@ namespace PetCare.Application.Features.VetSchedules.Commands
 {
     public class UpdateVetScheduleCommand : IRequest<int>
     {
-        public int VetScheduleId { get; }
+        public int Id { get; }
         public VetScheduleCreateModel Schedule { get; set; }
 
         public UpdateVetScheduleCommand(int id, VetScheduleCreateModel schedule)
         {
-            VetScheduleId = id;
+            Id = id;
             Schedule = schedule;
         }
     }
@@ -30,11 +30,11 @@ namespace PetCare.Application.Features.VetSchedules.Commands
 
         public async Task<int> Handle(UpdateVetScheduleCommand request, CancellationToken cancellationToken)
         {
-            var schedule = await _context.VetSchedules.FirstOrDefaultAsync(s => s.VetScheduleId == request.VetScheduleId, cancellationToken);
+            var schedule = await _context.VetSchedules.FirstOrDefaultAsync(s => s.VetScheduleId == request.Id, cancellationToken);
 
             if (schedule == null)
             {
-                throw new NotFoundException("Vet schedule not found.");
+                throw new NotFoundException("Vet schedule", request.Id);
             }
 
             //TODO: czy chce miec tutaj veta do zmiany?

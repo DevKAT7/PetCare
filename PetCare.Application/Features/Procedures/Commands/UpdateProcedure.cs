@@ -10,11 +10,11 @@ namespace PetCare.Application.Features.Procedures.Commands
     {
         public UpdateProcedureCommand(int id, ProcedureCreateModel model)
         {
-            ProcedureId = id;
+            Id = id;
             Model = model;
         }
 
-        public int ProcedureId { get; }
+        public int Id { get; }
         public ProcedureCreateModel Model { get; }
     }
 
@@ -30,11 +30,11 @@ namespace PetCare.Application.Features.Procedures.Commands
         public async Task<int> Handle(UpdateProcedureCommand request, CancellationToken cancellationToken)
         {
             var model = request.Model;
-            var procedure = await _context.Procedures.FirstOrDefaultAsync(p => p.ProcedureId == request.ProcedureId, cancellationToken);
+            var procedure = await _context.Procedures.FirstOrDefaultAsync(p => p.ProcedureId == request.Id, cancellationToken);
 
             if (procedure == null)
             {
-                throw new NotFoundException($"Procedure with id {request.ProcedureId} not found.");
+                throw new NotFoundException("Procedure", request.Id);
             }
 
             procedure.Name = model.Name;

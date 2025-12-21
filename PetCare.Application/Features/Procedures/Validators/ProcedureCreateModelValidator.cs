@@ -15,7 +15,7 @@ namespace PetCare.Application.Features.Procedures.Validators
                 .GreaterThanOrEqualTo(0).WithMessage("Cena nie mo¿e byæ wartoœci¹ ujemn¹.");
 
             RuleFor(x => x.VetSpecializationId)
-                .GreaterThan(0).WithMessage("VetSpecializationId jest wymagany.");
+                .GreaterThan(0).WithMessage("Id jest wymagany.");
 
             RuleFor(x => x.Description)
                 .MaximumLength(1000).WithMessage("Opis nie mo¿e przekroczyæ 1000 znaków.")

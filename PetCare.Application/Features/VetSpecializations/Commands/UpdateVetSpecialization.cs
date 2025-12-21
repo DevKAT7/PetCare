@@ -7,15 +7,15 @@ using PetCare.Infrastructure.Data;
 namespace PetCare.Application.Features.VetSpecializations.Commands
 {
     public class UpdateVetSpecializationCommand : IRequest<int>
-    {
+    {        
+        public int Id { get; }
+        public VetSpecializationCreateModel Model { get; }
+
         public UpdateVetSpecializationCommand(int id, VetSpecializationCreateModel model)
         {
-            VetSpecializationId = id;
+            Id = id;
             Model = model;
         }
-
-        public int VetSpecializationId { get; }
-        public VetSpecializationCreateModel Model { get; }
     }
 
     public class UpdateVetSpecializationHandler : IRequestHandler<UpdateVetSpecializationCommand, int>
@@ -30,11 +30,11 @@ namespace PetCare.Application.Features.VetSpecializations.Commands
         public async Task<int> Handle(UpdateVetSpecializationCommand request, CancellationToken cancellationToken)
         {
             var spec = await _context.VetSpecializations
-                .FirstOrDefaultAsync(s => s.VetSpecializationId == request.VetSpecializationId, cancellationToken);
+                .FirstOrDefaultAsync(s => s.VetSpecializationId == request.Id, cancellationToken);
 
             if (spec == null)
             {
-                throw new NotFoundException($"Vet specialization with id {request.VetSpecializationId} not found.");
+                throw new NotFoundException("Vet specialization", request.Id);
             }
 
             spec.Name = request.Model.Name;

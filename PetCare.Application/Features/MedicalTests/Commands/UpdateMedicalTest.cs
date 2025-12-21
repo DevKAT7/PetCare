@@ -34,7 +34,7 @@ namespace PetCare.Application.Features.MedicalTests.Commands
 
             if (medicalTest == null)
             {
-                throw new NotFoundException("Medical test not found.");
+                throw new NotFoundException("Medical test", request.Id);
             }
 
             var model = request.MedicalTest;

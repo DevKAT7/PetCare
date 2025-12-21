@@ -11,12 +11,12 @@ namespace PetCare.Application.Features.Vets.Commands
     public class UpdateVetCommand : IRequest<int>
     {
         public int VetId { get; }
-        public VetUpdateModel VetDto { get; set; } = null!;
+        public VetUpdateModel Vet { get; set; } = null!;
 
         public UpdateVetCommand(int vetId, VetUpdateModel vetDto)
         {
             VetId = vetId;
-            VetDto = vetDto;
+            Vet = vetDto;
         }
     }
 
@@ -33,7 +33,7 @@ namespace PetCare.Application.Features.Vets.Commands
 
         public async Task<int> Handle(UpdateVetCommand command, CancellationToken cancellationToken)
         {
-            var request = command.VetDto;
+            var request = command.Vet;
 
             var vet = await _context.Vets
                 .Include(v => v.User)
@@ -42,7 +42,7 @@ namespace PetCare.Application.Features.Vets.Commands
 
             if (vet == null)
             {
-                throw new NotFoundException("VetDto", command.VetId);
+                throw new NotFoundException("Vet", command.VetId);
             }
 
             vet.FirstName = request.FirstName;

@@ -24,7 +24,11 @@ namespace PetCare.Application.Features.Appointments.Commands
         public async Task<int> Handle(CancelAppointmentCommand request, CancellationToken cancellationToken)
         {
             var appointment = await _context.Appointments.FirstOrDefaultAsync(a => a.AppointmentId == request.AppointmentId, cancellationToken);
-            if (appointment == null) throw new NotFoundException("Appointment", request.AppointmentId);
+
+            if (appointment == null)
+            {
+                throw new NotFoundException("Appointment", request.AppointmentId);
+            }
 
             appointment.Status = AppointmentStatus.Cancelled;
 

@@ -25,10 +25,18 @@ namespace PetCare.Application.Features.Appointments.Commands
             var model = request.Appointment;
 
             var pet = await _context.Pets.FindAsync(new object[] { model.PetId }, cancellationToken);
-            if (pet == null) throw new NotFoundException("Pet", model.PetId);
+
+            if (pet == null)
+            {
+                throw new NotFoundException("Pet", model.PetId);
+            }
 
             var vet = await _context.Vets.FindAsync(new object[] { model.VetId }, cancellationToken);
-            if (vet == null) throw new NotFoundException("Vet", model.VetId);
+
+            if (vet == null)
+            {
+                throw new NotFoundException("Vet", model.VetId);
+            }
 
             var appointment = new Appointment
             {
@@ -43,6 +51,7 @@ namespace PetCare.Application.Features.Appointments.Commands
             };
 
             _context.Appointments.Add(appointment);
+
             await _context.SaveChangesAsync(cancellationToken);
 
             return appointment.AppointmentId;
