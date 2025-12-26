@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using PetCare.Application.Extensions;
 using PetCare.Infrastructure.Data;
 using PetCare.Infrastructure.Extensions;
+using Microsoft.EntityFrameworkCore;
 
 namespace PetCare.WebApp
 {
@@ -28,20 +29,20 @@ namespace PetCare.WebApp
 
                 try
                 {
-                    logger.LogInformation("Rozpoczynam inicjalizacj� bazy danych...");
+                    logger.LogInformation("Rozpoczynam inicjalizację bazy danych...");
 
                     var context = services.GetRequiredService<ApplicationDbContext>();
 
                     DomainSeed.SeedSpecializationsAsync(context).Wait();
-                    logger.LogInformation("Specjalizacje zosta�y zainicjalizowane.");
+                    logger.LogInformation("Specjalizacje zostały zainicjalizowane.");
 
                     var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
                     IdentitySeed.SeedRolesAsync(roleManager).Wait();
-                    logger.LogInformation("Role systemowe zosta�y zainicjalizowane.");
+                    logger.LogInformation("Role systemowe zostały zainicjalizowane.");
                 }
                 catch (Exception ex)
                 {
-                    logger.LogError(ex, "Wyst�pi� krytyczny b��d podczas inicjalizacji bazy danych.");
+                    logger.LogError(ex, "Wystąpił krytyczny błąd podczas inicjalizacji bazy danych.");
                 }
             }
 

@@ -19,13 +19,13 @@ namespace PetCare.Infrastructure.Extensions
             // Rejestracja Identity (Wspólna baza)
             // WAŻNE: Tutaj konfigurujemy tylko "wnętrze" Identity (Stores, Managers).
             // Sposób uwierzytelniania (Cookies vs Tokeny) konfigurujemy osobno w każdym Program.cs!
-            services.AddIdentityCore<User>(options =>
+            services.AddIdentity<User, IdentityRole>(options =>
             {
                 options.SignIn.RequireConfirmedAccount = false;
                 options.Password.RequireDigit = true;
             })
-            .AddRoles<IdentityRole>()
-            .AddEntityFrameworkStores<ApplicationDbContext>();
+            .AddEntityFrameworkStores<ApplicationDbContext>()
+            .AddDefaultTokenProviders();
 
             return services;
         }
