@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PetCare.Core.Models
 {
@@ -7,7 +8,7 @@ namespace PetCare.Core.Models
         public int ProcedureId { get; set; }
         public string Name { get; set; } = null!;
         public string Description { get; set; } = null!;
-        [Precision(18, 2)]
+        [Column(TypeName = "decimal(18,2)")]
         public decimal Price { get; set; }
         public bool IsActive { get; set; } = true;
         public int VetSpecializationId { get; set; }
