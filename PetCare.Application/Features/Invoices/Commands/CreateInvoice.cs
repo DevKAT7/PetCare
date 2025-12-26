@@ -53,7 +53,7 @@ namespace PetCare.Application.Features.Invoices.Commands
             }
 
             // generate invoice number
-            invoice.InvoiceNumber = $"FA-{DateTime.UtcNow:yyyyMMddHHmmss}-{Guid.NewGuid().ToString().Substring(0,6).ToUpper()}";
+            invoice.InvoiceNumber = $"FA-{DateTime.Now:yyyyMMddHHmmss}-{Guid.NewGuid().ToString().Substring(0,6).ToUpper()}";
 
             _context.Invoices.Add(invoice);
             await _context.SaveChangesAsync(cancellationToken);

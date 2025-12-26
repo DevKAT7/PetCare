@@ -38,10 +38,10 @@ namespace PetCare.Application.Features.Vets.Validators
                 .MaximumLength(50).WithMessage("Numer licencji zbyt długi.");
 
             RuleFor(x => x.HireDate)
-                .LessThanOrEqualTo(DateOnly.FromDateTime(DateTime.UtcNow)).WithMessage("Data zatrudnienia nie może być w przyszłości.");
+                .LessThanOrEqualTo(DateOnly.FromDateTime(DateTime.Now)).WithMessage("Data zatrudnienia nie może być w przyszłości.");
 
             RuleFor(x => x.CareerStartDate)
-                .LessThanOrEqualTo(DateOnly.FromDateTime(DateTime.UtcNow)).WithMessage("Data rozpoczęcia kariery nie może być w przyszłości.");
+                .LessThanOrEqualTo(DateOnly.FromDateTime(DateTime.Now)).WithMessage("Data rozpoczęcia kariery nie może być w przyszłości.");
 
             RuleFor(x => x.Address)
                 .NotEmpty().WithMessage("Adres jest wymagany.")

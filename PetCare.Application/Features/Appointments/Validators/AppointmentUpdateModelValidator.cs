@@ -9,7 +9,7 @@ namespace PetCare.Application.Features.Appointments.Validators
         {
             RuleFor(x => x.AppointmentDateTime)
                 .NotEmpty().WithMessage("Data i godzina wizyty są wymagane.")
-                .Must(dt => dt > DateTime.UtcNow.AddMinutes(-1)).WithMessage("Data wizyty musi być w przyszłości.");
+                .Must(dt => dt > DateTime.Now.AddMinutes(-1)).WithMessage("Data wizyty musi być w przyszłości.");
 
             RuleFor(x => x.ReasonForVisit)
                 .NotEmpty().WithMessage("Powód wizyty jest wymagany.")
