@@ -1,8 +1,9 @@
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using PetCare.Application.Extensions;
 using PetCare.Infrastructure.Data;
 using PetCare.Infrastructure.Extensions;
-using Microsoft.EntityFrameworkCore;
 
 namespace PetCare.WebApp
 {
@@ -20,6 +21,9 @@ namespace PetCare.WebApp
 
             builder.Services.AddRazorPages();
 
+            builder.Services.AddFluentValidationAutoValidation();
+            builder.Services.AddFluentValidationClientsideAdapters();
+
             var app = builder.Build();
 
             using (var scope = app.Services.CreateScope())
@@ -29,20 +33,20 @@ namespace PetCare.WebApp
 
                 try
                 {
-                    logger.LogInformation("Rozpoczynam inicjalizację bazy danych...");
+                    logger.LogInformation("Starting database initialization...");
 
                     var context = services.GetRequiredService<ApplicationDbContext>();
 
                     DomainSeed.SeedSpecializationsAsync(context).Wait();
-                    logger.LogInformation("Specjalizacje zostały zainicjalizowane.");
+                    logger.LogInformation("Specializations initialized.");
 
                     var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
-                    IdentitySeed.SeedRolesAsync(roleManager).Wait();
-                    logger.LogInformation("Role systemowe zostały zainicjalizowane.");
+                    IdentitySeed.SeedAsync(services).Wait();
+                    logger.LogInformation("System roles initialized.");
                 }
                 catch (Exception ex)
                 {
-                    logger.LogError(ex, "Wystąpił krytyczny błąd podczas inicjalizacji bazy danych.");
+                    logger.LogError(ex, "A critical error occurred during database initialization.");
                 }
             }
 
