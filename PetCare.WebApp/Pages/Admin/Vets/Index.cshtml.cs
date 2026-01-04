@@ -6,7 +6,7 @@ using PetCare.Application.Features.Vets.Commands;
 using PetCare.Application.Features.Vets.Dto;
 using PetCare.Application.Features.Vets.Queries;
 
-namespace PetCare.WebApp.Areas.Identity.Pages.Admin.Vets
+namespace PetCare.WebApp.Pages.Admin.Vets
 {
     [Authorize(Roles = "Admin")]
     public class IndexModel : PageModel

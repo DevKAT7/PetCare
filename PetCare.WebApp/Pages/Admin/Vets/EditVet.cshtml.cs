@@ -5,27 +5,35 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using PetCare.Application.Exceptions;
 using PetCare.Application.Features.Vets.Commands;
+using PetCare.Application.Features.Vets.Dto;
+using PetCare.Application.Features.Vets.Queries;
 using PetCare.Application.Features.VetSpecializations.Queries;
 using ValidationException = PetCare.Application.Exceptions.ValidationException;
 
-namespace PetCare.WebApp.Areas.Identity.Pages.Admin.Vets
+namespace PetCare.WebApp.Pages.Admin.Vets
 {
     [Authorize(Roles = "Admin")]
-    public class CreateVetModel : PageModel
+    public class EditVetModel : PageModel
     {
         private readonly IMediator _mediator;
 
-        public CreateVetModel(IMediator mediator)
+        public EditVetModel(IMediator mediator)
         {
             _mediator = mediator;
         }
 
+        [BindProperty(SupportsGet = true)]
+        public int Id { get; set; }
+
         [BindProperty]
-        public CreateVetCommand Input { get; set; } = default!;
+        public VetUpdateModel Input { get; set; } = new();
 
         public async Task OnGetAsync()
         {
             await LoadSpec();
+
+            var query = new GetVetForEditQuery { VetId = Id };
+            Input = await _mediator.Send(query);
         }
 
         public async Task LoadSpec()
@@ -46,9 +54,10 @@ namespace PetCare.WebApp.Areas.Identity.Pages.Admin.Vets
 
             try
             {
-                var newVetId = await _mediator.Send(Input);
+                var command = new UpdateVetCommand(Id, Input);
+                var updatedId = await _mediator.Send(command);
 
-                TempData["SuccessMessage"] = $"Vet account created successfully (ID: {newVetId}).";
+                TempData["SuccessMessage"] = $"Vet updated successfully (ID: {updatedId}).";
                 return RedirectToPage("./Index");
             }
             catch (ValidationException ex)
@@ -71,9 +80,9 @@ namespace PetCare.WebApp.Areas.Identity.Pages.Admin.Vets
                     ModelState.AddModelError(string.Empty, error);
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                ModelState.AddModelError(string.Empty, "An unexpected error occurred while creating the vet.");
+                ModelState.AddModelError(string.Empty, "An unexpected error occurred while updating the vet.");
             }
 
             await LoadSpec();

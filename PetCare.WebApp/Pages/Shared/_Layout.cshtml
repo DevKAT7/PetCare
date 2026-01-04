@@ -45,13 +45,13 @@
                 {
                     <li class="mt-4 px-3 text-uppercase small text-white-50">Administration</li>
                     <li>
-                        <a asp-area="Identity" asp-page="/Admin/Vets/Index"
+                        <a asp-area="" asp-page="/Admin/Vets/Index"
                            class="@(ViewContext.RouteData.Values["page"]?.ToString().Contains("/Admin/Vets/Index") == true ? "active" : "")">
                             <i class="bi bi-person-badge"></i> List of vets
                         </a>
                     </li>
                     <li>
-                        <a asp-area="Identity" asp-page="/Admin/Vets/CreateVet"
+                        <a asp-area="" asp-page="/Admin/Vets/CreateVet"
                            class="@(ViewContext.RouteData.Values["page"]?.ToString().Contains("/Admin/Vets/CreateVet") == true ? "active" : "")">
                             <i class="bi bi-plus-circle"></i> Add new vet
                         </a>
