@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace PetCare.Application.Features.Vets.Dto
+﻿namespace PetCare.Application.Features.Vets.Dto
 {
     public class VetUpdateModel
     {

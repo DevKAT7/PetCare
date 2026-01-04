@@ -16,7 +16,8 @@ namespace PetCare.Application.Features.Vets.Validators
             {
                 RuleFor(x => x.PhoneNumber)
                     .Matches("^[0-9+() -]*$").WithMessage("Invalid phone number format.")
-                    .MaximumLength(20).WithMessage("Phone number cannot be longer than 20 characters.");
+                    .MaximumLength(20).WithMessage("Phone number cannot be longer than 20 characters.")
+                    .MinimumLength(9).WithMessage("Phone number must be at least 9 characters long.");
             });
 
             When(x => !string.IsNullOrEmpty(x.FirstName), () =>

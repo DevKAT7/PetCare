@@ -1,0 +1,80 @@
+@page
+@model PetCare.WebApp.Areas.Identity.Pages.Admin.Vets.EditVetModel
+@{
+    ViewData["Title"] = "Edit Veterinarian";
+}
+
+<h2>Edit Veterinarian</h2>
+<hr />
+<div class="row">
+    <div class="col-md-6">
+        <form method="post">
+            <input asp-for="Id" type="hidden" />
+
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <h4>Account Details</h4>
+            <div class="mb-3">
+                <label asp-for="Input.Email" class="form-label">Email</label>
+                <input asp-for="Input.Email" class="form-control" type="email" />
+                <span asp-validation-for="Input.Email" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="Input.PhoneNumber" class="form-label">Phone Number</label>
+                <input asp-for="Input.PhoneNumber" class="form-control" />
+                <span asp-validation-for="Input.PhoneNumber" class="text-danger"></span>
+            </div>
+
+            <hr />
+            <h4>Personal Information</h4>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label asp-for="Input.FirstName" class="form-label">First Name</label>
+                    <input asp-for="Input.FirstName" class="form-control" />
+                    <span asp-validation-for="Input.FirstName" class="text-danger"></span>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label asp-for="Input.LastName" class="form-label">Last Name</label>
+                    <input asp-for="Input.LastName" class="form-control" />
+                    <span asp-validation-for="Input.LastName" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Input.Address" class="form-label">Home Address</label>
+                <input asp-for="Input.Address" class="form-control" />
+                <span asp-validation-for="Input.Address" class="text-danger"></span>
+            </div>
+
+            <hr />
+            <h4>Professional Information</h4>
+
+            <div class="mb-3">
+                <label asp-for="Input.ProfilePictureUrl" class="form-label">Profile Picture URL</label>
+                <input asp-for="Input.ProfilePictureUrl" class="form-control" />
+                <span asp-validation-for="Input.ProfilePictureUrl" class="text-danger"></span>
+                <small class="text-muted">Paste image link (file upload to be added later).</small>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Input.Description" class="form-label">Description / Bio</label>
+                <textarea asp-for="Input.Description" class="form-control" rows="4"></textarea>
+                <span asp-validation-for="Input.Description" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Input.SpecializationIds" class="form-label">Specializations</label>
+                <select asp-for="Input.SpecializationIds" class="form-control" asp-items="ViewBag.Specializations" multiple>
+                    <option disabled>Select specializations (hold Ctrl to select multiple)</option>
+                </select>
+                <span asp-validation-for="Input.SpecializationIds" class="text-danger"></span>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100 mt-3">Save Changes</button>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}
