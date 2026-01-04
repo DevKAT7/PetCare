@@ -46,8 +46,6 @@ namespace PetCare.WebApp.Areas.Identity.Pages.Admin.Users
 
             try
             {
-                // Tworzymy i wysy³amy komendê.
-                // Tutaj zadzia³a ValidationBehavior i rzuci ValidationException w razie b³êdów.   
                 var newVetId = await _mediator.Send(Input);
 
                 TempData["SuccessMessage"] = $"Vet account created successfully (ID: {newVetId}).";
@@ -55,16 +53,13 @@ namespace PetCare.WebApp.Areas.Identity.Pages.Admin.Users
             }
             catch (ValidationException ex)
             {
-                // Iterujemy po s³owniku b³êdów: IDictionary<string, string[]> Errors
                 foreach (var entry in ex.Errors)
                 {
-                    string propertyName = entry.Key;    // np. "Email"
-                    string[] errorMessages = entry.Value; // np. ["Email jest wymagany", "Z³y format"]
+                    string propertyName = entry.Key;
+                    string[] errorMessages = entry.Value;
 
                     foreach (var errorMessage in errorMessages)
                     {
-                        // Dodajemy prefiks "Input.", bo tak nazywa siê w³aœciwoœæ w PageModel,
-                        // aby formularz wiedzia³, pod którym polem wyœwietliæ b³¹d.
                         ModelState.AddModelError($"Input.{propertyName}", errorMessage);
                     }
                 }

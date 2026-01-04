@@ -1,102 +1,102 @@
 ﻿@page
 @model PetCare.WebApp.Areas.Identity.Pages.Admin.Users.CreateVetModel
 @{
-    ViewData["Title"] = "Dodaj Weterynarza";
+    ViewData["Title"] = "Add Veterinarian";
 }
 
-<h2>Dodaj Nowego Weterynarza</h2>
+<h2>Add New Veterinarian</h2>
 <hr />
 <div class="row">
     <div class="col-md-6">
         <form method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-            <h4>Dane konta</h4>
+            <h4>Account Details</h4>
             <div class="mb-3">
-                <label asp-for="Input.Email" class="form-label">Email</label>
-                <input asp-for="Input.Email" class="form-control" type="email" placeholder="name@example.com" />
-                <span asp-validation-for="Input.Email" class="text-danger"></span>
+                <label asp-for="Input.Vet.Email" class="form-label">Email</label>
+                <input asp-for="Input.Vet.Email" class="form-control" type="email" placeholder="name@example.com" />
+                <span asp-validation-for="Input.Vet.Email" class="text-danger"></span>
             </div>
             <div class="mb-3">
-                <label asp-for="Input.Password" class="form-label">Hasło tymczasowe</label>
-                <input asp-for="Input.Password" class="form-control" type="password" />
-                <span asp-validation-for="Input.Password" class="text-danger"></span>
+                <label asp-for="Input.Vet.Password" class="form-label">Temporary Password</label>
+                <input asp-for="Input.Vet.Password" class="form-control" type="password" />
+                <span asp-validation-for="Input.Vet.Password" class="text-danger"></span>
             </div>
 
             <hr />
-            <h4>Dane osobowe</h4>
+            <h4>Personal Information</h4>
             <div class="row">
                 <div class="col-md-6 mb-3">
-                    <label asp-for="Input.FirstName" class="form-label">Imię</label>
-                    <input asp-for="Input.FirstName" class="form-control" />
-                    <span asp-validation-for="Input.FirstName" class="text-danger"></span>
+                    <label asp-for="Input.Vet.FirstName" class="form-label">First Name</label>
+                    <input asp-for="Input.Vet.FirstName" class="form-control" />
+                    <span asp-validation-for="Input.Vet.FirstName" class="text-danger"></span>
                 </div>
                 <div class="col-md-6 mb-3">
-                    <label asp-for="Input.LastName" class="form-label">Nazwisko</label>
-                    <input asp-for="Input.LastName" class="form-control" />
-                    <span asp-validation-for="Input.LastName" class="text-danger"></span>
+                    <label asp-for="Input.Vet.LastName" class="form-label">Last Name</label>
+                    <input asp-for="Input.Vet.LastName" class="form-control" />
+                    <span asp-validation-for="Input.Vet.LastName" class="text-danger"></span>
                 </div>
             </div>
 
             <div class="mb-3">
-                <label asp-for="Input.Pesel" class="form-label">PESEL</label>
-                <input asp-for="Input.Pesel" class="form-control" />
-                <span asp-validation-for="Input.Pesel" class="text-danger"></span>
+                <label asp-for="Input.Vet.Pesel" class="form-label">PESEL (National ID)</label>
+                <input asp-for="Input.Vet.Pesel" class="form-control" />
+                <span asp-validation-for="Input.Vet.Pesel" class="text-danger"></span>
             </div>
             <div class="mb-3">
-                <label asp-for="Input.PhoneNumber" class="form-label">Numer telefonu</label>
-                <input asp-for="Input.PhoneNumber" class="form-control" />
-                <span asp-validation-for="Input.PhoneNumber" class="text-danger"></span>
+                <label asp-for="Input.Vet.PhoneNumber" class="form-label">Phone Number</label>
+                <input asp-for="Input.Vet.PhoneNumber" class="form-control" />
+                <span asp-validation-for="Input.Vet.PhoneNumber" class="text-danger"></span>
             </div>
             <div class="mb-3">
-                <label asp-for="Input.Address" class="form-label">Adres zamieszkania</label>
-                <input asp-for="Input.Address" class="form-control" />
-                <span asp-validation-for="Input.Address" class="text-danger"></span>
+                <label asp-for="Input.Vet.Address" class="form-label">Home Address</label>
+                <input asp-for="Input.Vet.Address" class="form-control" />
+                <span asp-validation-for="Input.Vet.Address" class="text-danger"></span>
             </div>
 
             <hr />
-            <h4>Informacje zawodowe</h4>
+            <h4>Professional Information</h4>
             <div class="mb-3">
-                <label asp-for="Input.LicenseNumber" class="form-label">Numer licencji (PWZ)</label>
-                <input asp-for="Input.LicenseNumber" class="form-control" />
-                <span asp-validation-for="Input.LicenseNumber" class="text-danger"></span>
+                <label asp-for="Input.Vet.LicenseNumber" class="form-label">License Number</label>
+                <input asp-for="Input.Vet.LicenseNumber" class="form-control" />
+                <span asp-validation-for="Input.Vet.LicenseNumber" class="text-danger"></span>
             </div>
 
             <div class="row">
                 <div class="col-md-6 mb-3">
-                    <label asp-for="Input.HireDate" class="form-label">Data zatrudnienia</label>
-                    <input asp-for="Input.HireDate" class="form-control" type="date" />
-                    <span asp-validation-for="Input.HireDate" class="text-danger"></span>
+                    <label asp-for="Input.Vet.HireDate" class="form-label">Hire Date</label>
+                    <input asp-for="Input.Vet.HireDate" class="form-control" type="date" />
+                    <span asp-validation-for="Input.Vet.HireDate" class="text-danger"></span>
                 </div>
                 <div class="col-md-6 mb-3">
-                    <label asp-for="Input.CareerStartDate" class="form-label">Data rozp. kariery</label>
-                    <input asp-for="Input.CareerStartDate" class="form-control" type="date" />
-                    <span asp-validation-for="Input.CareerStartDate" class="text-danger"></span>
+                    <label asp-for="Input.Vet.CareerStartDate" class="form-label">Career Start Date</label>
+                    <input asp-for="Input.Vet.CareerStartDate" class="form-control" type="date" />
+                    <span asp-validation-for="Input.Vet.CareerStartDate" class="text-danger"></span>
                 </div>
             </div>
 
             <div class="mb-3">
-                <label asp-for="Input.ProfilePictureUrl" class="form-label">URL zdjęcia profilowego</label>
-                <input asp-for="Input.ProfilePictureUrl" class="form-control" />
-                <span asp-validation-for="Input.ProfilePictureUrl" class="text-danger"></span>
-                <small class="text-muted">Wklej link do zdjęcia (lub w przyszłości dodaj upload plików).</small>
+                <label asp-for="Input.Vet.ProfilePictureUrl" class="form-label">Profile Picture URL</label>
+                <input asp-for="Input.Vet.ProfilePictureUrl" class="form-control" />
+                <span asp-validation-for="Input.Vet.ProfilePictureUrl" class="text-danger"></span>
+                <small class="text-muted">Paste image link (file upload to be added later).</small>
             </div>
 
             <div class="mb-3">
-                <label asp-for="Input.Description" class="form-label">Opis / O sobie</label>
-                <textarea asp-for="Input.Description" class="form-control" rows="4"></textarea>
-                <span asp-validation-for="Input.Description" class="text-danger"></span>
+                <label asp-for="Input.Vet.Description" class="form-label">Description / Bio</label>
+                <textarea asp-for="Input.Vet.Description" class="form-control" rows="4"></textarea>
+                <span asp-validation-for="Input.Vet.Description" class="text-danger"></span>
             </div>
 
             <div class="mb-3">
-                <label asp-for="Input.SpecializationIds" class="form-label">Specjalizacje</label>
-                <select asp-for="Input.SpecializationIds" class="form-control" asp-items="ViewBag.Specializations" multiple>
-                    <option disabled>Wybierz specjalizacje (przytrzymaj Ctrl, aby wybrać więcej)</option>
+                <label asp-for="Input.Vet.SpecializationIds" class="form-label">Specializations</label>
+                <select asp-for="Input.Vet.SpecializationIds" class="form-control" asp-items="ViewBag.Specializations" multiple>
+                    <option disabled>Select specializations (hold Ctrl to select multiple)</option>
                 </select>
-                <span asp-validation-for="Input.SpecializationIds" class="text-danger"></span>
+                <span asp-validation-for="Input.Vet.SpecializationIds" class="text-danger"></span>
             </div>
 
-            <button type="submit" class="btn btn-primary w-100 mt-3">Utwórz konto Weterynarza</button>
+            <button type="submit" class="btn btn-primary w-100 mt-3">Create Veterinarian Account</button>
         </form>
     </div>
 </div>
