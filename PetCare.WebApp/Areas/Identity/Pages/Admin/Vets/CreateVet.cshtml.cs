@@ -8,7 +8,7 @@ using PetCare.Application.Features.Vets.Commands;
 using PetCare.Application.Features.VetSpecializations.Queries;
 using ValidationException = PetCare.Application.Exceptions.ValidationException;
 
-namespace PetCare.WebApp.Areas.Identity.Pages.Admin.Users
+namespace PetCare.WebApp.Areas.Identity.Pages.Admin.Vets
 {
     [Authorize(Roles = "Admin")]
     public class CreateVetModel : PageModel
