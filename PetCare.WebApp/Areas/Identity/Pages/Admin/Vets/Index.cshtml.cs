@@ -1,6 +1,8 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using PetCare.Application.Features.Vets.Commands;
 using PetCare.Application.Features.Vets.Dto;
 using PetCare.Application.Features.Vets.Queries;
 
@@ -22,6 +24,13 @@ namespace PetCare.WebApp.Areas.Identity.Pages.Admin.Vets
         {
             var query = new GetAllVetsQuery();
             Vets = await _mediator.Send(query);
+        }
+
+        public async Task<IActionResult> OnPostDeleteAsync(int id)
+        {
+            await _mediator.Send(new DeleteVetCommand(id));
+            TempData["SuccessMessage"] = "Veterinarian deleted successfully.";
+            return RedirectToPage();
         }
     }
 }

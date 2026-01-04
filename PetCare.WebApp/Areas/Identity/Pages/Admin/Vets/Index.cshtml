@@ -87,9 +87,13 @@
                                         <a asp-page="EditVet" asp-route-id="@vet.VetId" class="btn btn-sm btn-outline-secondary" title="Edit">
                                             <i class="bi bi-pencil"></i>
                                         </a>
-                                        <a href="#" class="btn btn-sm btn-outline-danger" title="Delete">
+                                        <button type="button" class="btn btn-sm btn-outline-danger"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#deleteModal"
+                                                data-vet-id="@vet.VetId"
+                                                data-vet-name="@vet.FullName">
                                             <i class="bi bi-trash"></i>
-                                        </a>
+                                        </button>
                                     </div>
                                 </td>
                             </tr>
@@ -100,3 +104,48 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Confirm Deletion</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete <strong id="deleteVetName"></strong>?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+
+                <form method="post" asp-page-handler="Delete">
+                    <input type="hidden" name="id" id="deleteVetId" value="" />
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        var deleteModal = document.getElementById('deleteModal');
+        deleteModal.addEventListener('show.bs.modal', function (event) {
+            // Przycisk, który otworzył modal
+            var button = event.relatedTarget;
+
+            // Pobierz dane z atrybutów data-* przycisku
+            var vetId = button.getAttribute('data-vet-id');
+            var vetName = button.getAttribute('data-vet-name');
+
+            // Znajdź elementy wewnątrz modala
+            // Upewnij się, że te ID pasują do HTML powyżej!
+            var modalNamePlaceholder = deleteModal.querySelector('#deleteVetName');
+            var modalIdInput = deleteModal.querySelector('#deleteVetId');
+
+            // Przypisz wartości
+            modalNamePlaceholder.textContent = vetName;
+            modalIdInput.value = vetId;
+        });
+    </script>
+}
