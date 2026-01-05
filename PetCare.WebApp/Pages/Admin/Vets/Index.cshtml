@@ -84,6 +84,11 @@
                                 </td>
                                 <td class="text-end pe-4">
                                     <div class="btn-group">
+                                        <a asp-page="/ManageSchedule"
+                                           asp-route-vetId="@vet.VetId"
+                                           class="btn btn-primary btn-sm btn-rounded text-white">
+                                            <i class="bi bi-calendar-week"></i> Schedule
+                                        </a>
                                         <a asp-page="EditVet" asp-route-id="@vet.VetId" class="btn btn-sm btn-outline-secondary" title="Edit">
                                             <i class="bi bi-pencil"></i>
                                         </a>
