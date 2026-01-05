@@ -26,7 +26,7 @@
                     </a>
                 </li>
                 <li>
-                    <a href="#">
+                    <a asp-page="/Calendar/Calendar" class="@(ViewContext.RouteData.Values["page"]?.ToString() == "/Calendar/Calendar" ? "active" : "")">
                         <i class="bi bi-calendar-event"></i> Calendar
                     </a>
                 </li>

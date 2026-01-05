@@ -1,5 +1,3 @@
-using System.ComponentModel.DataAnnotations;
-
 namespace PetCare.Application.Features.VetSchedules.Dto
 {
     public class ScheduleExceptionCreateModel

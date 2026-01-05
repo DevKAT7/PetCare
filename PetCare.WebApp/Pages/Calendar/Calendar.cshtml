@@ -1,0 +1,176 @@
+﻿@page
+@model PetCare.WebApp.Pages.CalendarModel
+@{
+    ViewData["Title"] = "Calendar";
+    // Helper format for date display
+    var dateRangeStr = $"{Model.WeekDays.First():dd.MM.yyyy} - {Model.WeekDays.Last():dd.MM.yyyy}";
+}
+
+<style>
+    .calendar-container {
+        background-color: #f8f9fa;
+        padding: 20px;
+        border-radius: 8px;
+    }
+
+    .calendar-table {
+        border-collapse: collapse;
+        width: 100%;
+        table-layout: fixed; /* Ensures equal column width */
+        background-color: #e9ecef;
+    }
+
+        .calendar-table th, .calendar-table td {
+            border: 1px solid #ced4da;
+            vertical-align: top;
+            padding: 5px;
+        }
+
+        .calendar-table th {
+            background-color: #e9ecef;
+            text-align: center;
+            padding: 10px;
+            font-weight: 600;
+        }
+
+    .time-col {
+        width: 80px;
+        text-align: center;
+        vertical-align: middle !important;
+        font-weight: bold;
+        background-color: #f8f9fa;
+    }
+    /* Appointment Card Style */
+    .app-card {
+        background-color: #e2d9f3;
+        border: 1px solid #d1c4e9;
+        border-radius: 6px;
+        padding: 8px;
+        margin-bottom: 5px;
+        font-size: 0.85rem;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    }
+
+        .app-card .vet-name {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 2px;
+        }
+
+        .app-card .btn-view {
+            background-color: #9575cd;
+            color: white;
+            border: none;
+            padding: 2px 8px;
+            font-size: 0.75rem;
+            border-radius: 4px;
+            float: right;
+            text-decoration: none;
+        }
+
+            .app-card .btn-view:hover {
+                background-color: #7e57c2;
+                color: white;
+            }
+
+    .empty-slot {
+        min-height: 50px;
+    }
+</style>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Calendar</h2>
+</div>
+
+<div class="row mb-4 align-items-end">
+    <div class="col-md-8">
+        <form method="get" class="d-flex gap-3 align-items-center">
+            <input type="hidden" name="CurrentDate" value="@Model.WeekDays.First().ToString("yyyy-MM-dd")" />
+
+            <div class="d-flex align-items-center">
+                <label class="me-2 fw-bold">Filter view:</label>
+                <select asp-for="SelectedVetId" asp-items="Model.VetOptions" class="form-select form-select-sm" style="width: 200px;" onchange="this.form.submit()">
+                    <option value="">[All vets]</option>
+                </select>
+            </div>
+
+            <div class="d-flex align-items-center">
+                <a asp-page="./Calendar"
+                   asp-route-CurrentDate="@Model.WeekDays.First().AddDays(-7).ToString("yyyy-MM-dd")"
+                   asp-route-SelectedVetId="@Model.SelectedVetId"
+                   class="btn btn-sm btn-link text-dark text-decoration-none">
+                    <i class="bi bi-chevron-left"></i>
+                </a>
+
+                <span class="fw-bold mx-2">
+                    [ @dateRangeStr ]
+                </span>
+
+                <a asp-page="./Calendar"
+                   asp-route-CurrentDate="@Model.WeekDays.First().AddDays(7).ToString("yyyy-MM-dd")"
+                   asp-route-SelectedVetId="@Model.SelectedVetId"
+                   class="btn btn-sm btn-link text-dark text-decoration-none">
+                    <i class="bi bi-chevron-right"></i>
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="calendar-container">
+    <table class="calendar-table">
+        <thead>
+            <tr>
+                <th class="time-col"></th> @foreach (var day in Model.WeekDays)
+                {
+                    <th>
+                        <div>@day.ToString("dd.MM.yyyy")</div>
+                        <small class="text-muted text-uppercase">@day.ToString("dddd", new System.Globalization.CultureInfo("en-EN"))</small>
+                    </th>
+                }
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var timeSlot in Model.TimeSlots)
+            {
+                <tr>
+                    <td class="time-col">
+                        @timeSlot.ToString(@"hh\:mm")
+                    </td>
+
+                    @foreach (var day in Model.WeekDays)
+                    {
+                        <td>
+                            <div class="empty-slot">
+                                @{
+                                    // Filter appointments for this specific Day AND Time Slot
+                                    // Logic: Find appointmants starting within this 30 min window
+                                    var cellApps = Model.Appointments
+                                    .Where(a => a.AppointmentDateTime.Date == day.Date
+                                    && a.AppointmentDateTime.TimeOfDay == timeSlot)
+                                    .ToList();
+                                }
+
+                                @foreach (var app in cellApps)
+                                {
+                                    <div class="app-card">
+                                        <div class="d-flex justify-content-between align-items-start">
+                                            <div>
+                                                <span class="vet-name">
+                                                    dr @app.VetName
+                                                </span>
+                                                <small>@app.Description</small> <br />
+                                                <small class="text-muted">@app.PetName</small>
+                                            </div>
+                                            <a href="#" class="btn-view">View</a>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </td>
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
