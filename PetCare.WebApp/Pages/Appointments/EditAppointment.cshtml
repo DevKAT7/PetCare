@@ -1,0 +1,116 @@
+﻿@page
+@model PetCare.WebApp.Pages.Appointments.EditAppointmentModel
+@{
+    ViewData["Title"] = "Visit Details";
+}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-10 col-lg-8">
+
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h2>Visit Details</h2>
+                <a asp-page="./Index" class="btn btn-outline-secondary btn-sm">Back to List</a>
+            </div>
+
+            <form method="post">
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                <input type="hidden" asp-for="UpdateModel.PetId" />
+                <input type="hidden" asp-for="UpdateModel.VetId" />
+                <input type="hidden" asp-for="UpdateModel.AppointmentDateTime" />
+
+                <div class="card shadow-sm mb-4 bg-light border-0">
+                    <div class="card-body">
+                        <h5 class="card-title text-primary mb-3"><i class="bi bi-info-circle me-2"></i>Appointment Info</h5>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label text-muted small text-uppercase fw-bold">Date & Time</label>
+                                <p class="fs-5 fw-medium mb-0">@Model.UpdateModel.AppointmentDateTime.ToString("dd.MM.yyyy HH:mm")</p>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label text-muted small text-uppercase fw-bold">Veterinarian</label>
+                                <p class="fs-5 mb-0">@Model.VetName</p>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label text-muted small text-uppercase fw-bold">Patient</label>
+                                <p class="fs-5 mb-0">@Model.PetName <small class="text-muted">(@Model.OwnerName)</small></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card shadow-sm border-0">
+                    <div class="card-header bg-white py-3">
+                        <h5 class="mb-0 text-dark"><i class="bi bi-clipboard-pulse me-2"></i>Medical Record</h5>
+                    </div>
+                    <div class="card-body p-4">
+
+                        <div class="mb-4">
+                            <label asp-for="UpdateModel.Status" class="form-label fw-bold">Visit Status</label>
+                            <select asp-for="UpdateModel.Status" asp-items="Model.StatusOptions" class="form-select w-auto">
+                            </select>
+                            <span asp-validation-for="UpdateModel.Status" class="text-danger"></span>
+                        </div>
+
+                        <hr class="my-4" />
+
+                        <div class="mb-3">
+                            <label asp-for="UpdateModel.ReasonForVisit" class="form-label fw-bold">Reason for Visit</label>
+                            <input asp-for="UpdateModel.ReasonForVisit" class="form-control" />
+                            <span asp-validation-for="UpdateModel.ReasonForVisit" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="UpdateModel.Diagnosis" class="form-label fw-bold">Diagnosis</label>
+                            <textarea asp-for="UpdateModel.Diagnosis" class="form-control" rows="3" placeholder="Enter clinical diagnosis..."></textarea>
+                            <span asp-validation-for="UpdateModel.Diagnosis" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="UpdateModel.Notes" class="form-label fw-bold">Doctor's Notes / Treatment</label>
+                            <textarea asp-for="UpdateModel.Notes" class="form-control" rows="5" placeholder="Prescriptions, treatment details, next steps..."></textarea>
+                            <span asp-validation-for="UpdateModel.Notes" class="text-danger"></span>
+                        </div>
+
+                        <div class="row mt-4 pt-3 border-top">
+                            <div class="col-6">
+                                @if (Model.UpdateModel.Status != PetCare.Core.Enums.AppointmentStatus.Cancelled &&
+                                                                Model.UpdateModel.Status != PetCare.Core.Enums.AppointmentStatus.Completed)
+                                {
+                                    <button type="submit"
+                                            asp-page-handler="Cancel"
+                                            asp-route-id="@RouteData.Values["id"]"
+                                            class="btn btn-outline-danger"
+                                            onclick="return confirm('Are you sure you want to cancel this appointment?');">
+                                        <i class="bi bi-x-circle"></i> Cancel Appointment
+                                    </button>
+                                }
+                                else if (Model.UpdateModel.Status == PetCare.Core.Enums.AppointmentStatus.Cancelled)
+                                {
+                                    <span class="badge bg-danger p-2">This appointment is Cancelled</span>
+                                }
+                            </div>
+
+                            <div class="col-6 d-flex justify-content-end gap-2">
+                                <a asp-page="./Index" class="btn btn-light">Back</a>
+
+                                @if (Model.UpdateModel.Status != PetCare.Core.Enums.AppointmentStatus.Cancelled)
+                                {
+                                    <button type="submit" class="btn btn-primary px-4">
+                                        <i class="bi bi-save"></i> Save Details
+                                    </button>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

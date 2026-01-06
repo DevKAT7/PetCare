@@ -59,6 +59,7 @@ namespace PetCare.Application.Features.Appointments.Commands
             appointment.Notes = model.Notes;
             appointment.PetId = model.PetId;
             appointment.VetId = model.VetId;
+            appointment.Status = model.Status;
 
             await _context.SaveChangesAsync(cancellationToken);
 

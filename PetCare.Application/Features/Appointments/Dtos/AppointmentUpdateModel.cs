@@ -1,4 +1,4 @@
-using System.ComponentModel.DataAnnotations;
+using PetCare.Core.Enums;
 
 namespace PetCare.Application.Features.Appointments.Dto
 {
@@ -11,5 +11,6 @@ namespace PetCare.Application.Features.Appointments.Dto
         public string? Notes { get; set; }
         public int PetId { get; set; }
         public int VetId { get; set; }
+        public AppointmentStatus Status { get; set; }
     }
 }
