@@ -1,6 +1,7 @@
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.OpenApi;
+using PetCare.Api.Extensions;
 using PetCare.Api.Middleware;
 using PetCare.Application.Extensions;
 using PetCare.Infrastructure.Data;
@@ -24,6 +25,7 @@ namespace PetCare.Api
                 });
 
             builder.Services.AddFluentValidationAutoValidation();
+
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(c =>
@@ -42,27 +44,26 @@ namespace PetCare.Api
             {
                 var services = scope.ServiceProvider;
                 var logger = services.GetRequiredService<ILogger<Program>>();
-
                 try
                 {
-                    logger.LogInformation("Rozpoczynam inicjalizacj� bazy danych...");
+                    logger.LogInformation("Starting database initialization...");
 
                     var context = services.GetRequiredService<ApplicationDbContext>();
 
                     DomainSeed.SeedSpecializationsAsync(context).Wait();
-                    logger.LogInformation("Specjalizacje zosta�y zainicjalizowane.");
+                    logger.LogInformation("Specializations initialized.");
 
                     var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
-                    IdentitySeed.SeedRolesAsync(roleManager).Wait();
-                    logger.LogInformation("Role systemowe zosta�y zainicjalizowane.");
+                    IdentitySeed.SeedAsync(services).Wait();
+                    logger.LogInformation("System roles initialized.");
                 }
                 catch (Exception ex)
                 {
-                    logger.LogError(ex, "Wyst�pi� krytyczny b��d podczas inicjalizacji bazy danych.");
+                    logger.LogError(ex, "A critical error occurred during database initialization.");
                 }
             }
 
-            app.UseMiddleware<ExceptionHandlingMiddleware>();
+            app.UseGlobalExceptionHandler();
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())

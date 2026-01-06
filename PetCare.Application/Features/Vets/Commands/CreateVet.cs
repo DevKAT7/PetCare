@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using PetCare.Application.Exceptions;
-using PetCare.Application.Features.Vets.Dto;
+using PetCare.Application.Features.Vets.Dtos;
 using PetCare.Core.Models;
 using PetCare.Infrastructure.Data;
 
@@ -10,7 +10,7 @@ namespace PetCare.Application.Features.Vets.Commands
 {
     public class CreateVetCommand : IRequest<int>
     {
-        public required VetCreateModel Vet { get; set; } = null!;
+        public VetCreateModel Vet { get; set; } = new();
     }
 
     public class CreateVetHandler : IRequestHandler<CreateVetCommand, int>
@@ -43,7 +43,7 @@ namespace PetCare.Application.Features.Vets.Commands
             {
                 var errors = identityResult.Errors.Select(e => e.Description).ToList();
 
-                throw new BadRequestException("Nie udało się utworzyć konta użytkownika.", errors);
+                throw new BadRequestException("Unable to create user account.", errors);
             }
 
             await _userManager.AddToRoleAsync(user, "Employee");
@@ -51,15 +51,15 @@ namespace PetCare.Application.Features.Vets.Commands
             var vet = new Vet
             {
                 UserId = user.Id,
-                FirstName = request.FirstName,
-                LastName = request.LastName,
-                Pesel = request.Pesel,
-                LicenseNumber = request.LicenseNumber,
-                HireDate = request.HireDate,
-                CareerStartDate = request.CareerStartDate,
-                Address = request.Address,
-                ProfilePictureUrl = request.ProfilePictureUrl,
-                Description = request.Description,
+                FirstName = request.FirstName!,
+                LastName = request.LastName!,
+                Pesel = request.Pesel!,
+                LicenseNumber = request.LicenseNumber!,
+                HireDate = DateOnly.FromDateTime(request.HireDate),
+                CareerStartDate = DateOnly.FromDateTime(request.CareerStartDate),
+                Address = request.Address!,
+                ProfilePictureUrl = request.ProfilePictureUrl!,
+                Description = request.Description!,
                 IsActive = true,
                 SpecializationLinks = new List<VetSpecializationLink>()
             };

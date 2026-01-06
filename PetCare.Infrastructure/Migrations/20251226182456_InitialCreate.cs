@@ -127,8 +127,8 @@ namespace PetCare.Infrastructure.Migrations
                 name: "AspNetUserLogins",
                 columns: table => new
                 {
-                    LoginProvider = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
-                    ProviderKey = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
+                    LoginProvider = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    ProviderKey = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     ProviderDisplayName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
@@ -172,8 +172,8 @@ namespace PetCare.Infrastructure.Migrations
                 columns: table => new
                 {
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    LoginProvider = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
+                    LoginProvider = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Value = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
@@ -316,14 +316,14 @@ namespace PetCare.Infrastructure.Migrations
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     IsActive = table.Column<bool>(type: "bit", nullable: false),
-                    VetSpezializationId = table.Column<int>(type: "int", nullable: false)
+                    VetSpecializationId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Procedures", x => x.ProcedureId);
                     table.ForeignKey(
-                        name: "FK_Procedures_VetSpecializations_VetSpezializationId",
-                        column: x => x.VetSpezializationId,
+                        name: "FK_Procedures_VetSpecializations_VetSpecializationId",
+                        column: x => x.VetSpecializationId,
                         principalTable: "VetSpecializations",
                         principalColumn: "VetSpecializationId",
                         onDelete: ReferentialAction.Cascade);
@@ -578,7 +578,7 @@ namespace PetCare.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Vaccination",
+                name: "Vaccinations",
                 columns: table => new
                 {
                     VaccinationId = table.Column<int>(type: "int", nullable: false)
@@ -591,15 +591,15 @@ namespace PetCare.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Vaccination", x => x.VaccinationId);
+                    table.PrimaryKey("PK_Vaccinations", x => x.VaccinationId);
                     table.ForeignKey(
-                        name: "FK_Vaccination_Appointments_AppointmentId",
+                        name: "FK_Vaccinations_Appointments_AppointmentId",
                         column: x => x.AppointmentId,
                         principalTable: "Appointments",
                         principalColumn: "AppointmentId",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Vaccination_Pets_PetId",
+                        name: "FK_Vaccinations_Pets_PetId",
                         column: x => x.PetId,
                         principalTable: "Pets",
                         principalColumn: "PetId",
@@ -748,9 +748,9 @@ namespace PetCare.Infrastructure.Migrations
                 column: "MedicationId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Procedures_VetSpezializationId",
+                name: "IX_Procedures_VetSpecializationId",
                 table: "Procedures",
-                column: "VetSpezializationId");
+                column: "VetSpecializationId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ScheduleExceptions_VetId_ExceptionDate",
@@ -770,13 +770,13 @@ namespace PetCare.Infrastructure.Migrations
                 column: "MedicationId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Vaccination_AppointmentId",
-                table: "Vaccination",
+                name: "IX_Vaccinations_AppointmentId",
+                table: "Vaccinations",
                 column: "AppointmentId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Vaccination_PetId",
-                table: "Vaccination",
+                name: "IX_Vaccinations_PetId",
+                table: "Vaccinations",
                 column: "PetId");
 
             migrationBuilder.CreateIndex(
@@ -851,7 +851,7 @@ namespace PetCare.Infrastructure.Migrations
                 name: "StockTransactions");
 
             migrationBuilder.DropTable(
-                name: "Vaccination");
+                name: "Vaccinations");
 
             migrationBuilder.DropTable(
                 name: "VetSchedules");

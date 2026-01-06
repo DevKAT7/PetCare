@@ -12,8 +12,8 @@ using PetCare.Infrastructure.Data;
 namespace PetCare.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251216200641_typo")]
-    partial class typo
+    [Migration("20251226182456_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -771,7 +771,7 @@ namespace PetCare.Infrastructure.Migrations
 
                     b.HasIndex("PetId");
 
-                    b.ToTable("Vaccination");
+                    b.ToTable("Vaccinations");
                 });
 
             modelBuilder.Entity("PetCare.Core.Models.Vet", b =>

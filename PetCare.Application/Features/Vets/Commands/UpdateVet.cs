@@ -71,7 +71,7 @@ namespace PetCare.Application.Features.Vets.Commands
                 var identityResult = await _userManager.UpdateAsync(user);
                 if (!identityResult.Succeeded)
                 {
-                    throw new Exception("Błąd aktualizacji danych użytkownika: " + string.Join(", ", identityResult.Errors.Select(e => e.Description)));
+                    throw new Exception("Error updating user data: " + string.Join(", ", identityResult.Errors.Select(e => e.Description)));
                 }
             }
 

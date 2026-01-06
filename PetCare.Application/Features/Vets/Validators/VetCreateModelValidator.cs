@@ -1,5 +1,5 @@
 using FluentValidation;
-using PetCare.Application.Features.Vets.Dto;
+using PetCare.Application.Features.Vets.Dtos;
 
 namespace PetCare.Application.Features.Vets.Validators
 {
@@ -8,59 +8,70 @@ namespace PetCare.Application.Features.Vets.Validators
         public VetCreateModelValidator()
         {
             RuleFor(x => x.Email)
-                .NotEmpty().WithMessage("Email jest wymagany.")
-                .EmailAddress().WithMessage("Niepoprawny format adresu email.");
+                .NotEmpty().WithMessage("Email is required.")
+                .EmailAddress().WithMessage("Invalid email address format.");
 
             RuleFor(x => x.Password)
-                .NotEmpty().WithMessage("Hasło jest wymagane.")
-                .MinimumLength(8).WithMessage("Hasło musi mieć co najmniej 8 znaków.");
+                .NotEmpty().WithMessage("Password is required.")
+                .MinimumLength(8).WithMessage("Password must be at least 8 characters long.")
+                .Matches(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W]).+$")
+                .WithMessage("Password must contain at least one uppercase letter, one lowercase letter, one digit and one special character.");
 
             RuleFor(x => x.PhoneNumber)
-                .NotEmpty().WithMessage("Numer telefonu jest wymagany.")
-                .Matches("^[0-9+() -]*$").WithMessage("Niepoprawny format numeru telefonu.")
-                .MaximumLength(20).WithMessage("Numer telefonu nie może być dłuższy niż 20 znaków.");
+              .NotEmpty().WithMessage("Phone number is required.")
+              .MinimumLength(9).WithMessage("Phone number must be at least 9 characters long.")
+              .Matches("^[0-9+() -]*$").WithMessage("Invalid phone number format.")
+              .MaximumLength(20).WithMessage("Phone number cannot be longer than 20 characters.");
 
             RuleFor(x => x.FirstName)
-                .NotEmpty().WithMessage("Imię jest wymagane.")
-                .MaximumLength(100).WithMessage("Imię nie może być dłuższe niż 100 znaków.");
+              .NotEmpty().WithMessage("First name is required.")
+              .MaximumLength(100).WithMessage("First name cannot be longer than 100 characters.");
 
             RuleFor(x => x.LastName)
-                .NotEmpty().WithMessage("Nazwisko jest wymagane.")
-                .MaximumLength(100).WithMessage("Nazwisko nie może być dłuższe niż 100 znaków.");
+              .NotEmpty().WithMessage("Last name is required.")
+              .MaximumLength(100).WithMessage("Last name cannot be longer than 100 characters.");
 
             RuleFor(x => x.Pesel)
-                .NotEmpty().WithMessage("PESEL jest wymagany.")
-                .Length(11).WithMessage("PESEL musi mieć dokładnie 11 cyfr.")
-                .Matches("^[0-9]*$").WithMessage("PESEL może składać się tylko z cyfr.");
+              .NotEmpty().WithMessage("PESEL is required.")
+              .Length(11).WithMessage("PESEL must have exactly 11 digits.")
+              .Matches("^[0-9]*$").WithMessage("PESEL must consist of digits only.");
 
             RuleFor(x => x.LicenseNumber)
-                .NotEmpty().WithMessage("Numer licencji jest wymagany.")
-                .MaximumLength(50).WithMessage("Numer licencji zbyt długi.");
+              .NotEmpty().WithMessage("License number is required.")
+              .MaximumLength(50).WithMessage("License number is too long.");
 
             RuleFor(x => x.HireDate)
-                .LessThanOrEqualTo(DateOnly.FromDateTime(DateTime.UtcNow)).WithMessage("Data zatrudnienia nie może być w przyszłości.");
+                .NotEmpty().WithMessage("Hire date is required.")
+                .Must(date => date.Date <= DateTime.Today)
+                .WithMessage("Hire date cannot be in the future.");
 
             RuleFor(x => x.CareerStartDate)
-                .LessThanOrEqualTo(DateOnly.FromDateTime(DateTime.UtcNow)).WithMessage("Data rozpoczęcia kariery nie może być w przyszłości.");
+              .NotEmpty().WithMessage("Career start date is required.")
+              .Must(date => date.Date <= DateTime.Today)
+              .WithMessage("Career start date cannot be in the future.");
 
             RuleFor(x => x.Address)
-                .NotEmpty().WithMessage("Adres jest wymagany.")
-                .MaximumLength(500).WithMessage("Adres nie może być dłuższy niż 500 znaków.");
+              .NotEmpty().WithMessage("Address is required.")
+              .MaximumLength(500).WithMessage("Address cannot be longer than 500 characters.");
 
             RuleFor(x => x.ProfilePictureUrl)
-                .Must(uri => string.IsNullOrEmpty(uri) || Uri.IsWellFormedUriString(uri, UriKind.Absolute))
-                .WithMessage("Niepoprawny format adresu URL.");
+              .Must(uri => string.IsNullOrEmpty(uri) || Uri.IsWellFormedUriString(uri, UriKind.Absolute))
+              .WithMessage("Invalid URL format.");
 
             RuleFor(x => x.Description)
-                .NotEmpty().WithMessage("Opis jest wymagany.")
-                .MaximumLength(2000).WithMessage("Opis nie może być dłuższy niż 2000 znaków.");
+              .NotEmpty().WithMessage("Description is required.")
+              .MaximumLength(2000).WithMessage("Description cannot be longer than 2000 characters.");
 
-            RuleForEach(x => x.SpecializationIds).GreaterThan(0).WithMessage("Niepoprawne id specjalizacji.");
+            RuleFor(x => x.SpecializationIds)
+                .NotEmpty().WithMessage("At least one specialization is required.");
 
-            RuleFor(x => x).Custom((m, ctx) => {
+            RuleForEach(x => x.SpecializationIds).GreaterThan(0).WithMessage("Invalid specialization ID.");
+
+            RuleFor(x => x).Custom((m, ctx) =>
+            {
                 if (m.CareerStartDate > m.HireDate)
                 {
-                    ctx.AddFailure("CareerStartDate", "Data rozpoczęcia kariery nie może być późniejsza niż data zatrudnienia.");
+                    ctx.AddFailure("CareerStartDate", "Career start date cannot be later than hire date.");
                 }
             });
         }

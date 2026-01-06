@@ -41,7 +41,7 @@ namespace PetCare.Application.Features.Vets.Queries
 
             if (vet == null)
             {
-                throw new NotFoundException($"Nie znaleziono weterynarza o ID: {request.VetId}");
+                throw new NotFoundException($"Vet with ID: {request.VetId} was not found.");
             }
 
             var today = DateOnly.FromDateTime(DateTime.Now);

@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PetCare.Core.Models
 {
@@ -8,7 +7,7 @@ namespace PetCare.Core.Models
         [Key]
         public int StockTransactionId { get; set; }
         public int QuantityChange { get; set; }
-        public DateTime Timestamp { get; set; } = DateTime.UtcNow;
+        public DateTime Timestamp { get; set; } = DateTime.Now;
         [MaxLength(100)]
         public string Reason { get; set; } = null!;
         public int MedicationId { get; set; }

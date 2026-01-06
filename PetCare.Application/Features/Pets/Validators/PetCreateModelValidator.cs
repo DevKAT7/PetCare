@@ -19,7 +19,7 @@ namespace PetCare.Application.Features.Pets.Validators
                 .MaximumLength(50).WithMessage("Rasa nie może przekraczać 50 znaków.");
 
             RuleFor(x => x.DateOfBirth)
-                .LessThanOrEqualTo(DateTime.UtcNow).WithMessage("Data urodzenia nie może być w przyszłości.");
+                .LessThanOrEqualTo(DateTime.Now).WithMessage("Data urodzenia nie może być w przyszłości.");
 
             RuleFor(x => x.PetOwnerId)
                 .GreaterThan(0).WithMessage("PetOwnerId jest wymagany.");
