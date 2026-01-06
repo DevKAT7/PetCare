@@ -2,19 +2,21 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 #nullable disable
 
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using PetCare.Core.Models;
+using PetCare.Infrastructure.Data;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI.Services;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.Extensions.Logging;
-using PetCare.Core.Models;
 
 namespace PetCare.WebApp.Areas.Identity.Pages.Account
 {
@@ -22,11 +24,16 @@ namespace PetCare.WebApp.Areas.Identity.Pages.Account
     {
         private readonly SignInManager<User> _signInManager;
         private readonly ILogger<LoginModel> _logger;
+        private readonly UserManager<User> _userManager;
+        private readonly ApplicationDbContext _context;
 
-        public LoginModel(SignInManager<User> signInManager, ILogger<LoginModel> logger)
+        public LoginModel(SignInManager<User> signInManager, ILogger<LoginModel> logger,
+            UserManager<User> userManager, ApplicationDbContext context)
         {
             _signInManager = signInManager;
             _logger = logger;
+            _userManager = userManager;
+            _context = context;
         }
 
         /// <summary>
@@ -115,6 +122,29 @@ namespace PetCare.WebApp.Areas.Identity.Pages.Account
                 var result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);
                 if (result.Succeeded)
                 {
+                    var user = await _userManager.FindByEmailAsync(Input.Email);
+
+                    if (user != null && !user.IsActive)
+                    {
+                        await _signInManager.SignOutAsync();
+                        _logger.LogWarning("User attempted to login but account is inactive.");
+                        ModelState.AddModelError(string.Empty, "Your account is inactive.");
+                        return Page();
+                    }
+
+                    if (!await _userManager.IsInRoleAsync(user, "Admin"))
+                    {
+                        var vet = await _context.Vets.FirstOrDefaultAsync(v => v.UserId == user.Id);
+
+                        if (vet == null || !vet.IsActive)
+                        {
+                            await _signInManager.SignOutAsync();
+                            _logger.LogWarning("User logged in, but associated Vet profile is deleted/inactive.");
+                            ModelState.AddModelError(string.Empty, "Employee profile doesn't exist or is inactive.");
+                            return Page();
+                        }
+                    }
+
                     _logger.LogInformation("User logged in.");
                     return LocalRedirect(returnUrl);
                 }
