@@ -25,22 +25,33 @@
                         <i class="bi bi-speedometer2"></i> Dashboard
                     </a>
                 </li>
-                <li>
-                    <a asp-page="/Calendar/Calendar" class="@(ViewContext.RouteData.Values["page"]?.ToString() == "/Calendar/Calendar" ? "active" : "")">
-                        <i class="bi bi-calendar-event"></i> Calendar
-                    </a>
-                </li>
-                <li>
-                    <a href="#">
-                        <i class="bi bi-people"></i> Patients
-                    </a>
-                </li>
-                <li>
-                    <a href="#">
-                        <i class="bi bi-box-seam"></i> Storage
-                    </a>
-                </li>
+                @if (User.IsInRole("Admin") || User.IsInRole("Employee"))
+                {
+                    <li>
+                        <a asp-page="/Calendar/Calendar" class="@(ViewContext.RouteData.Values["page"]?.ToString() == "/Calendar/Calendar" ? "active" : "")">
+                            <i class="bi bi-calendar-event"></i> Calendar
+                        </a>
+                    </li>
 
+                    <li>
+                        <a href="#">
+                            <i class="bi bi-people"></i> Patients
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#">
+                            <i class="bi bi-box-seam"></i> Storage
+                        </a>
+                    </li>
+                }
+                @if (User.IsInRole("Employee"))
+                {
+                    <li>
+                        <a asp-page="/Employee/MySchedule" class="@(ViewContext.RouteData.Values["page"]?.ToString() == "/Employee/MySchedule" ? "active" : "")">
+                            <i class="bi bi-calendar-week"></i> My Schedule
+                        </a>
+                    </li>
+                }
                 @if (User.IsInRole("Admin"))
                 {
                     <li class="mt-4 px-3 text-uppercase small text-white-50">Administration</li>

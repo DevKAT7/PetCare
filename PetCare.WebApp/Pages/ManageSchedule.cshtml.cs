@@ -1,12 +1,16 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using PetCare.Application.Features.Vets.Queries;
 using PetCare.Application.Features.VetSchedules.Commands;
 using PetCare.Application.Features.VetSchedules.Dto;
 using PetCare.Application.Features.VetSchedules.Queries;
+using PetCare.Core.Models;
+using PetCare.Infrastructure.Data;
 using ValidationException = PetCare.Application.Exceptions.ValidationException;
 
 namespace PetCare.WebApp.Pages
@@ -15,10 +19,15 @@ namespace PetCare.WebApp.Pages
     public class ManageScheduleModel : PageModel
     {
         private readonly IMediator _mediator;
+        private readonly ApplicationDbContext _context;
+        private readonly UserManager<User> _userManager;
 
-        public ManageScheduleModel(IMediator mediator)
+        public ManageScheduleModel(IMediator mediator, ApplicationDbContext context,
+                UserManager<User> userManager)
         {
             _mediator = mediator;
+            _context = context;
+            _userManager = userManager;
         }
 
         [BindProperty(SupportsGet = true)]
@@ -37,6 +46,11 @@ namespace PetCare.WebApp.Pages
 
         public async Task<IActionResult> OnGetAsync()
         {
+            if (!await IsAuthorizedToManageExceptionsAsync())
+            {
+                return Forbid();
+            }
+
             try
             {
                 var vetDto = await _mediator.Send(new GetVetQuery { VetId = VetId });
@@ -75,6 +89,11 @@ namespace PetCare.WebApp.Pages
         public async Task<IActionResult> OnPostAddScheduleAsync(
             [Bind(Prefix = nameof(NewSchedule))] VetScheduleCreateModel inputSchedule)
         {
+            if (!User.IsInRole("Admin"))
+            {
+                return Forbid();
+            }
+
             NewSchedule = inputSchedule;
             NewSchedule.VetId = VetId;
 
@@ -127,6 +146,11 @@ namespace PetCare.WebApp.Pages
         public async Task<IActionResult> OnPostAddExceptionAsync(
             [Bind(Prefix = nameof(NewException))] ScheduleExceptionCreateModel inputException)
         {
+            if (!await IsAuthorizedToManageExceptionsAsync())
+            {
+                return Forbid();
+            }
+
             NewException = inputException;
             NewException.VetId = VetId;
 
@@ -179,6 +203,11 @@ namespace PetCare.WebApp.Pages
         public async Task<IActionResult> OnPostUpdateScheduleAsync(int id,
             [Bind(Prefix = nameof(UpdateSchedule))] VetScheduleCreateModel inputSchedule)
         {
+            if (!User.IsInRole("Admin"))
+            {
+                return Forbid();
+            }
+
             inputSchedule.VetId = VetId;
             UpdateSchedule = inputSchedule;
 
@@ -236,6 +265,11 @@ namespace PetCare.WebApp.Pages
         public async Task<IActionResult> OnPostUpdateExceptionAsync(int id,
             [Bind(Prefix = nameof(UpdateException))] ScheduleExceptionCreateModel inputException)
         {
+            if (!await IsAuthorizedToManageExceptionsAsync())
+            {
+                return Forbid();
+            }
+
             inputException.VetId = VetId;
             UpdateException = inputException;
 
@@ -294,6 +328,11 @@ namespace PetCare.WebApp.Pages
 
         public async Task<IActionResult> OnPostDeleteScheduleAsync(int scheduleId)
         {
+            if (!User.IsInRole("Admin"))
+            {
+                return Forbid();
+            }
+
             await _mediator.Send(new DeleteVetScheduleCommand(scheduleId));
 
             return RedirectToPage(new { vetId = VetId });
@@ -301,8 +340,38 @@ namespace PetCare.WebApp.Pages
 
         public async Task<IActionResult> OnPostDeleteExceptionAsync(int exceptionId)
         {
+            if (!await IsAuthorizedToManageExceptionsAsync())
+            {
+                return Forbid();
+            }
+
             await _mediator.Send(new DeleteScheduleExceptionCommand(exceptionId));
             return RedirectToPage(new { vetId = VetId });
+        }
+
+        private async Task<bool> IsAuthorizedToManageExceptionsAsync()
+        {
+            if (User.IsInRole("Admin"))
+            {
+                return true;
+            }
+
+            if (User.IsInRole("Employee"))
+            {
+                var user = await _userManager.GetUserAsync(User);
+                if (user == null) return false;
+
+                var vet = await _context.Vets.FirstOrDefaultAsync(v => v.UserId == user.Id);
+
+                if (vet == null || vet.VetId != VetId)
+                {
+                    return false;
+                }
+
+                return true;
+            }
+
+            return false;
         }
     }
 }
