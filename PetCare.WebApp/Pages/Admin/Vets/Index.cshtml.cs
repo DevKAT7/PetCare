@@ -29,7 +29,7 @@ namespace PetCare.WebApp.Pages.Admin.Vets
         public async Task<IActionResult> OnPostDeleteAsync(int id)
         {
             await _mediator.Send(new DeleteVetCommand(id));
-            TempData["SuccessMessage"] = "Veterinarian deleted successfully.";
+            TempData["SuccessMessage"] = "Vet deleted successfully.";
             return RedirectToPage();
         }
     }

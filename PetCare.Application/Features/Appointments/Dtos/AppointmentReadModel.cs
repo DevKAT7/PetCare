@@ -13,6 +13,7 @@ namespace PetCare.Application.Features.Appointments.Dto
         public string? Notes { get; set; }
         public int PetId { get; set; }
         public string PetName { get; set; } = string.Empty;
+        public string OwnerName { get; set; } = string.Empty;
         public int VetId { get; set; }
         public string VetName { get; set; } = string.Empty;
     }

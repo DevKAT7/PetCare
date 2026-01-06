@@ -71,7 +71,7 @@ namespace PetCare.WebApp.Pages.Admin.Vets
                     ModelState.AddModelError(string.Empty, error);
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 ModelState.AddModelError(string.Empty, "An unexpected error occurred while creating the vet.");
             }
