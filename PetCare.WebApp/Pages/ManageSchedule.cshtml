@@ -9,7 +9,7 @@
         <h2>Work Schedule (@Model.VetName)</h2>
         <a href="/Admin/Vets/Index" class="btn btn-outline-secondary">Back to list</a>
     </div>
-
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
     <div class="row">
         @*LEFT COLUMN: Standard Weekly Schedule*@
         <div class="col-md-6">
@@ -164,12 +164,14 @@
                     <div class="row">
                         <div class="col-6 mb-3">
                             <label class="form-label">From</label>
-                            <input type="time" asp-for="NewSchedule.StartTime" class="form-control" />
+                            <input type="time" asp-for="NewSchedule.StartTime" class="form-control"
+                                   min="09:00" max="16:30" step="1800" />
                             <span asp-validation-for="NewSchedule.StartTime" class="text-danger"></span>
                         </div>
                         <div class="col-6 mb-3">
                             <label class="form-label">To</label>
-                            <input type="time" asp-for="NewSchedule.EndTime" class="form-control" />
+                            <input type="time" asp-for="NewSchedule.EndTime" class="form-control"
+                                   min="09:00" max="16:30" step="1800" />
                             <span asp-validation-for="NewSchedule.EndTime" class="text-danger"></span>
                         </div>
                     </div>
@@ -267,7 +269,7 @@
                 </div>
                 <div class="modal-body">
 
-                    <input type="hidden" name="id" id="editScheduleId" />
+                    <input type="hidden" name="id" id="editScheduleId" value="@ViewData["EditScheduleId"]" />
 
                     <input type="hidden" asp-for="UpdateSchedule.VetId" value="@Model.VetId" />
 
@@ -284,12 +286,14 @@
                     <div class="row">
                         <div class="col-6 mb-3">
                             <label class="form-label">From</label>
-                            <input type="time" asp-for="UpdateSchedule.StartTime" class="form-control" id="editStartTime" />
+                            <input type="time" asp-for="UpdateSchedule.StartTime" class="form-control" id="editStartTime"
+                                   min="09:00" max="16:30" step="1800" />
                             <span asp-validation-for="UpdateSchedule.StartTime" class="text-danger"></span>
                         </div>
                         <div class="col-6 mb-3">
                             <label class="form-label">To</label>
-                            <input type="time" asp-for="UpdateSchedule.EndTime" class="form-control" id="editEndTime" />
+                            <input type="time" asp-for="UpdateSchedule.EndTime" class="form-control" id="editEndTime"
+                                   min="09:00" max="16:30" step="1800" />
                             <span asp-validation-for="UpdateSchedule.EndTime" class="text-danger"></span>
                         </div>
                     </div>
@@ -335,7 +339,7 @@
                 </div>
                 <div class="modal-body">
 
-                    <input type="hidden" name="id" id="editExceptionId" />
+                    <input type="hidden" name="id" id="editExceptionId" value="@ViewData["EditScheduleId"]" />
                     <input type="hidden" asp-for="UpdateException.VetId" value="@Model.VetId" />
 
                     <div class="mb-3">
@@ -373,6 +377,9 @@
     </div>
 </div>
 @section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
     <script>
         //hide time inputs when "Full day off" is checked
         document.getElementById('isFullDayCheck').addEventListener('change', function()
@@ -470,14 +477,30 @@
     @if (ViewData["OpenModal"] != null)
     {
         <script>
-            document.addEventListener("DOMContentLoaded", function() {
+            document.addEventListener("DOMContentLoaded", function() 
+            {
                 var modalId = '@ViewData["OpenModal"]';
                 var myModal = new bootstrap.Modal(document.getElementById(modalId));
                 myModal.show();
+
+                if (modalId === 'addExceptionModal') 
+                {
+                    var checkBox = document.getElementById('isFullDayCheck');
+                    if (checkBox && checkBox.checked) 
+                    {
+                        checkBox.dispatchEvent(new Event('change'));
+                    }
+                }
+
+                if (modalId === 'editExceptionModal') 
+                {
+                    var checkBox = document.getElementById('editIsFullDayCheck');
+                    if (checkBox && checkBox.checked) 
+                    {
+                        checkBox.dispatchEvent(new Event('change'));
+                    }
+                }
             });
         </script>
-    }
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
 }

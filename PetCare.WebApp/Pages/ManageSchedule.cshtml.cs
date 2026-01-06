@@ -84,25 +84,44 @@ namespace PetCare.WebApp.Pages
                 ModelState.Remove(key);
             }
 
-            // Walidacja biznesowa (np. czy taki dzieñ ju¿ istnieje) powinna byæ w Handlerze lub tu
-            // Tutaj prosty przyk³ad sprawdzenia duplikatów w pamiêci (opcjonalnie):
-            /* var existing = await _mediator.Send(new GetVetSchedulesByVetIdQuery { VetId = VetId });
-            if (existing.Any(x => x.DayOfWeek == NewSchedule.DayOfWeek))
-            {
-                ModelState.AddModelError("NewSchedule.DayOfWeek", "Ten dzieñ jest ju¿ zdefiniowany.");
-            }
-            */
-
             if (!ModelState.IsValid)
             {
+                ViewData["OpenModal"] = "addScheduleModal";
                 await OnGetAsync();
                 return Page();
             }
 
-            var command = new CreateVetScheduleCommand { Schedule = NewSchedule };
-            await _mediator.Send(command);
+            try
+            {
+                var command = new CreateVetScheduleCommand { Schedule = NewSchedule };
+                await _mediator.Send(command);
 
-            return RedirectToPage(new { vetId = VetId });
+                return RedirectToPage(new { vetId = VetId });
+            }
+            catch (ValidationException ex)
+            {
+                foreach (var entry in ex.Errors)
+                {
+                    string propertyName = entry.Key;
+                    string[] errorMessages = entry.Value;
+
+                    foreach (var message in errorMessages)
+                    {
+                        string key = $"{nameof(NewSchedule)}.{propertyName}";
+                        ModelState.AddModelError(key, message);
+                    }
+                }
+
+                ViewData["OpenModal"] = "addScheduleModal";
+            }
+            catch (Exception)
+            {
+                ModelState.AddModelError(string.Empty, "An error occurred while adding schedule.");
+                ViewData["OpenModal"] = "addScheduleModal";
+            }
+
+            await OnGetAsync();
+            return Page();
         }
 
         public async Task<IActionResult> OnPostAddExceptionAsync(
@@ -117,18 +136,9 @@ namespace PetCare.WebApp.Pages
                 ModelState.Remove(key);
             }
 
-            if (NewException.ExceptionDate == default)
-            {
-                ModelState.AddModelError("NewException.ExceptionDate", "Date is required.");
-            }
-
-            if (!NewException.IsFullDayAbsence && (NewException.StartTime == null || NewException.EndTime == null))
-            {
-                ModelState.AddModelError("NewException.StartTime", "Start and End time are required for partial absence.");
-            }
-
             if (!ModelState.IsValid)
             {
+                ViewData["OpenModal"] = "addExceptionModal";
                 await OnGetAsync();
                 return Page();
             }
@@ -153,19 +163,20 @@ namespace PetCare.WebApp.Pages
                         ModelState.AddModelError(key, message);
                     }
                 }
-            }
-            catch (Exception ex)
-            {
-                ModelState.AddModelError(string.Empty, "An error occurred while updating exception.");
-            }
 
-            ViewData["OpenModal"] = "addExceptionModal";
+                ViewData["OpenModal"] = "addExceptionModal";
+            }
+            catch (Exception)
+            {
+                ModelState.AddModelError(string.Empty, "An error occurred while adding exception.");
+                ViewData["OpenModal"] = "addExceptionModal";
+            }
 
             await OnGetAsync();
             return Page();
         }
 
-        public async Task<IActionResult> OnPostUpdateScheduleAsync(int id, 
+        public async Task<IActionResult> OnPostUpdateScheduleAsync(int id,
             [Bind(Prefix = nameof(UpdateSchedule))] VetScheduleCreateModel inputSchedule)
         {
             inputSchedule.VetId = VetId;
@@ -181,27 +192,45 @@ namespace PetCare.WebApp.Pages
 
             if (!ModelState.IsValid)
             {
+                ViewData["OpenModal"] = "editScheduleModal";
+                ViewData["EditScheduleId"] = id;
                 await OnGetAsync();
                 return Page();
             }
 
-            var command = new UpdateVetScheduleCommand(id, inputSchedule);
-            await _mediator.Send(command);
+            try
+            {
+                var command = new UpdateVetScheduleCommand(id, inputSchedule);
+                await _mediator.Send(command);
 
-            return RedirectToPage(new { vetId = VetId });
-        }
+                return RedirectToPage(new { vetId = VetId });
+            }
+            catch (ValidationException ex)
+            {
+                foreach (var entry in ex.Errors)
+                {
+                    string propertyName = entry.Key;
+                    string[] errorMessages = entry.Value;
 
-        public async Task<IActionResult> OnPostDeleteScheduleAsync(int scheduleId)
-        {
-            await _mediator.Send(new DeleteVetScheduleCommand(scheduleId));
+                    foreach (var message in errorMessages)
+                    {
+                        string key = $"{nameof(UpdateSchedule)}.{propertyName}";
+                        ModelState.AddModelError(key, message);
+                    }
+                }
 
-            return RedirectToPage(new { vetId = VetId });
-        }
+                ViewData["OpenModal"] = "editScheduleModal";
+                ViewData["EditScheduleId"] = id;
+            }
+            catch (Exception)
+            {
+                ModelState.AddModelError(string.Empty, "An error occurred while editing schedule.");
+                ViewData["OpenModal"] = "editScheduleModal";
+                ViewData["EditScheduleId"] = id;
+            }
 
-        public async Task<IActionResult> OnPostDeleteExceptionAsync(int exceptionId)
-        {
-            await _mediator.Send(new DeleteScheduleExceptionCommand(exceptionId));
-            return RedirectToPage(new { vetId = VetId });
+            await OnGetAsync();
+            return Page();
         }
 
         public async Task<IActionResult> OnPostUpdateExceptionAsync(int id,
@@ -222,6 +251,8 @@ namespace PetCare.WebApp.Pages
 
             if (!ModelState.IsValid)
             {
+                ViewData["OpenModal"] = "editExceptionModal";
+                ViewData["EditExceptionId"] = id;
                 await OnGetAsync();
                 return Page();
             }
@@ -246,15 +277,32 @@ namespace PetCare.WebApp.Pages
                         ModelState.AddModelError(key, message);
                     }
                 }
+
+                ViewData["OpenModal"] = "editExceptionModal";
+                ViewData["EditExceptionId"] = id;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 ModelState.AddModelError(string.Empty, "An error occurred while updating exception.");
+                ViewData["OpenModal"] = "editExceptionModal";
+                ViewData["EditExceptionId"] = id;
             }
 
-            ViewData["OpenModal"] = "editExceptionModal";
             await OnGetAsync();
             return Page();
+        }
+
+        public async Task<IActionResult> OnPostDeleteScheduleAsync(int scheduleId)
+        {
+            await _mediator.Send(new DeleteVetScheduleCommand(scheduleId));
+
+            return RedirectToPage(new { vetId = VetId });
+        }
+
+        public async Task<IActionResult> OnPostDeleteExceptionAsync(int exceptionId)
+        {
+            await _mediator.Send(new DeleteScheduleExceptionCommand(exceptionId));
+            return RedirectToPage(new { vetId = VetId });
         }
     }
 }

@@ -8,13 +8,13 @@ namespace PetCare.Application.Features.VetSchedules.Validators
         public ScheduleExceptionCreateModelValidator()
         {
             RuleFor(x => x.VetId)
-                .GreaterThan(0).WithMessage("VetId jest wymagane.");
+                            .GreaterThan(0).WithMessage("VetId is required.");
 
             RuleFor(x => x.ExceptionDate)
-                .NotEmpty().WithMessage("Data wyjątku w grafiku jest wymagana.");
+                .NotEmpty().WithMessage("Exception date is required.");
 
             RuleFor(x => x.Reason)
-                .MaximumLength(200).WithMessage("Powód może mieć maksymalnie 200 znaków.");
+                .MaximumLength(200).WithMessage("Reason cannot exceed 200 characters.");
 
             RuleFor(x => x).Custom((m, ctx) =>
             {
@@ -22,17 +22,17 @@ namespace PetCare.Application.Features.VetSchedules.Validators
                 {
                     if (!m.StartTime.HasValue)
                     {
-                        ctx.AddFailure("StartTime", "Czas rozpoczęcia jest wymagany jeśli nie jest to cały dzień nieobecności.");
+                        ctx.AddFailure("StartTime", "Start time is required for partial absence.");
                     }
 
                     if (!m.EndTime.HasValue)
                     {
-                        ctx.AddFailure("EndTime", "Czas zakończenia jest wymagany jeśli nie jest to cały dzień nieobecności.");
+                        ctx.AddFailure("EndTime", "End time is required for partial absence.");
                     }
 
                     if (m.StartTime.HasValue && m.EndTime.HasValue && m.EndTime <= m.StartTime)
                     {
-                        ctx.AddFailure("EndTime", "Czas zakończenia musi być późniejszy niż czas rozpoczęcia.");
+                        ctx.AddFailure("EndTime", "End time must be later than start time.");
                     }
                 }
             });
