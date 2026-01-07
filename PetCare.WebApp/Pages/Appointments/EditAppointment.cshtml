@@ -81,6 +81,95 @@
                             <span asp-validation-for="UpdateModel.Notes" class="text-danger"></span>
                         </div>
 
+                        <div class="card shadow-sm border-0 mb-4">
+                            <div class="card-header bg-white py-3">
+                                <h5 class="mb-0 text-dark"><i class="bi bi-bandaid me-2"></i>Medical Procedures</h5>
+                            </div>
+                            <div class="card-body p-4">
+
+                                @if (Model.ExistingProcedures != null && Model.ExistingProcedures.Any())
+                                {
+                                    <div class="table-responsive mb-3">
+                                        <table class="table table-hover align-middle">
+                                            <thead class="table-light">
+                                                <tr>
+                                                    <th>Procedure Name</th>
+                                                    <th class="text-center" style="width: 100px;">Qty</th>
+                                                    <th class="text-end" style="width: 120px;">Price</th>
+                                                    <th class="text-end" style="width: 120px;">Total</th>
+                                                    <th style="width: 50px;"></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach (var proc in Model.ExistingProcedures)
+                                                {
+                                                    <tr>
+                                                        <td>@proc.ProcedureName</td>
+                                                        <td class="text-center">@proc.Quantity</td>
+                                                        <td class="text-end">@proc.FinalPrice.ToString("C")</td>
+                                                        <td class="text-end fw-bold">@proc.TotalPrice.ToString("C")</td>
+                                                        <td class="text-end">
+                                                            <button type="submit"
+                                                                    asp-page-handler="RemoveProcedure"
+                                                                    asp-route-id="@Model.Id"
+                                                                    asp-route-procedureId="@proc.ProcedureId"
+                                                                    asp-route-source="@Model.Source"
+                                                                    class="btn btn-sm btn-outline-danger"
+                                                                    onclick="return confirm('Remove this procedure?')"
+                                                                    title="Remove">
+                                                                <i class="bi bi-trash"></i>
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                }
+                                                <tr class="table-active fw-bold">
+                                                    <td colspan="3" class="text-end">Total Cost:</td>
+                                                    <td class="text-end">@Model.ExistingProcedures.Sum(x => x.TotalPrice).ToString("C")</td>
+                                                    <td></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="alert alert-light text-center border mb-3">
+                                        <small class="text-muted">No procedures added to this visit yet.</small>
+                                    </div>
+                                }
+
+                                <hr class="my-3" />
+
+                                <h6 class="fw-bold mb-3 text-secondary">Add New Procedure</h6>
+                                <div class="row g-2 align-items-end bg-light p-3 rounded border">
+                                    <div class="col-md-5">
+                                        <label asp-for="NewProcedure.ProcedureId" class="form-label small fw-bold text-muted">Select Procedure</label>
+                                        <select asp-for="NewProcedure.ProcedureId" asp-items="Model.ProcedureOptions" class="form-select form-select-sm">
+                                            <option value="">-- Select Procedure --</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label asp-for="NewProcedure.Quantity" class="form-label small fw-bold text-muted">Qty</label>
+                                        <input asp-for="NewProcedure.Quantity" class="form-control form-control-sm" type="number" min="1" value="1" />
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label asp-for="NewProcedure.FinalPrice" class="form-label small fw-bold text-muted">Custom Price (Optional)</label>
+                                        <input asp-for="NewProcedure.FinalPrice" class="form-control form-control-sm" placeholder="Default price" />
+                                    </div>
+                                    <div class="col-md-2">
+                                        <button type="submit"
+                                                asp-page-handler="AddProcedure"
+                                                asp-route-id="@Model.Id"
+                                                asp-route-source="@Model.Source"
+                                                class="btn btn-sm btn-success w-100">
+                                            <i class="bi bi-plus-lg"></i> Add
+                                        </button>
+                                    </div>
+                                </div>
+                                <span asp-validation-for="NewProcedure.ProcedureId" class="text-danger small"></span>
+                            </div>
+                        </div>
+
                         <div class="row mt-4 pt-3 border-top">
                             <div class="col-6">
                                 @if (Model.UpdateModel.Status != PetCare.Core.Enums.AppointmentStatus.Cancelled 
@@ -104,7 +193,7 @@
 
                                 @if (Model.UpdateModel.Status != PetCare.Core.Enums.AppointmentStatus.Cancelled)
                                 {
-                                    <button type="submit" class="btn btn-primary px-4">
+                                    <button type="submit" class="btn btn-primary px-4" formnovalidate>
                                         <i class="bi bi-save"></i> Save Details
                                     </button>
                                 }

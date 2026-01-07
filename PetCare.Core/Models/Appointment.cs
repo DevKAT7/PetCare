@@ -14,7 +14,7 @@ namespace PetCare.Core.Models
         [MaxLength(200)]
         public string ReasonForVisit { get; set; } = null!;
         [MaxLength(2000)]
-        public string Diagnosis { get; set; } = string.Empty;
+        public string? Diagnosis { get; set; } = string.Empty;
         [MaxLength(2000)]
         public string? Notes { get; set; }
         public int PetId { get; set; }

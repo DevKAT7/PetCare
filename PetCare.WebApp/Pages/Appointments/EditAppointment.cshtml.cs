@@ -5,7 +5,9 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using PetCare.Application.Exceptions;
 using PetCare.Application.Features.Appointments.Commands;
 using PetCare.Application.Features.Appointments.Dto;
+using PetCare.Application.Features.Appointments.Dtos;
 using PetCare.Application.Features.Appointments.Queries;
+using PetCare.Application.Features.Procedures.Queries;
 using PetCare.Core.Enums;
 
 namespace PetCare.WebApp.Pages.Appointments
@@ -25,13 +27,18 @@ namespace PetCare.WebApp.Pages.Appointments
         [BindProperty(SupportsGet = true)]
         public string? Source { get; set; }
 
+        [BindProperty]
+        public AppointmentProcedureCreateModel NewProcedure { get; set; } = new();
+
         public int Id { get; set; }
         public string VetName { get; set; } = "";
         public string PetName { get; set; } = "";
         public string OwnerName { get; set; } = "";
 
         public SelectList? StatusOptions { get; set; }
-
+        public SelectList? ProcedureOptions { get; set; }
+        public List<AppointmentProcedureReadModel> ExistingProcedures { get; set; } = new();
+        
         public async Task<IActionResult> OnGetAsync(int id)
         {
             Id = id;
@@ -52,6 +59,18 @@ namespace PetCare.WebApp.Pages.Appointments
                 Status = appointment.Status
             };
 
+            ExistingProcedures = appointment.Procedures ?? new List<AppointmentProcedureReadModel>();
+
+            var allProcedures = await _mediator.Send(new GetAllProceduresQuery(isActive: true));
+
+            var procedureItems = allProcedures.Select(p => new
+            {
+                ProcedureId = p.ProcedureId,
+                DisplayText = $"{p.Name} ({p.Price:C})"
+            });
+
+            ProcedureOptions = new SelectList(procedureItems, "ProcedureId", "DisplayText");
+
             await LoadDataForView(id, appointment.Status);
 
             return Page();
@@ -60,6 +79,8 @@ namespace PetCare.WebApp.Pages.Appointments
         public async Task<IActionResult> OnPostAsync(int id)
         {
             Id = id;
+
+            ClearNewProcedureErrors();
 
             if (!ModelState.IsValid)
             {
@@ -120,6 +141,88 @@ namespace PetCare.WebApp.Pages.Appointments
             }
         }
 
+        public async Task<IActionResult> OnPostAddProcedureAsync(int id)
+        {
+            Id = id;
+
+/*            if (NewProcedure.ProcedureId <= 0)
+            {
+                ModelState.AddModelError("NewProcedure.ProcedureId", "Please select a procedure.");
+                await LoadDataForView(id, UpdateModel.Status);
+                return await OnGetAsync(id);
+            }*/
+
+            try
+            {
+                var updateCommand = new UpdateAppointmentCommand(id, UpdateModel);
+                await _mediator.Send(updateCommand);
+
+                var addCommand = new AddProcedureToAppointmentCommand
+                {
+                    AppointmentId = id,
+                    Model = NewProcedure
+                };
+
+                await _mediator.Send(addCommand);
+                TempData["SuccessMessage"] = "Procedure added successfully.";
+            }
+            catch (ValidationException ex)
+            {
+                foreach (var entry in ex.Errors)
+                {
+                    foreach (var err in entry.Value)
+                    {
+                        if (entry.Key.StartsWith("Quantity") || entry.Key.StartsWith("FinalPrice"))
+                        {
+                            ModelState.AddModelError($"NewProcedure.{entry.Key}", err);
+                        }
+                        else
+                        {
+                            ModelState.AddModelError($"UpdateModel.{entry.Key}", err);
+                        }
+                    }
+                }
+                await LoadDataForView(id, UpdateModel.Status);
+                return Page();
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", "Error adding procedure: " + ex.Message);
+                await LoadDataForView(id, UpdateModel.Status);
+                return Page();
+            }
+
+            return RedirectToPage(new { Id = id, source = Source });
+        }
+
+        public async Task<IActionResult> OnPostRemoveProcedureAsync(int id, int procedureId)
+        {
+            Id = id;
+
+            ClearNewProcedureErrors();
+
+            try
+            {
+                var updateCommand = new UpdateAppointmentCommand(id, UpdateModel);
+                await _mediator.Send(updateCommand);
+
+                var removeCommand = new RemoveProcedureFromAppointmentCommand
+                {
+                    AppointmentId = id,
+                    ProcedureId = procedureId
+                };
+
+                await _mediator.Send(removeCommand);
+                TempData["SuccessMessage"] = "Procedure removed.";
+            }
+            catch (Exception)
+            {
+                TempData["ErrorMessage"] = "Could not remove procedure.";
+            }
+
+            return RedirectToPage(new { Id = id, source = Source });
+        }
+
         private IActionResult GetRedirectResult()
         {
             if (Source == "calendar")
@@ -150,6 +253,24 @@ namespace PetCare.WebApp.Pages.Appointments
             }
 
             StatusOptions = new SelectList(allowedStatuses.Distinct());
+
+            var allProcedures = await _mediator.Send(new GetAllProceduresQuery(isActive: true));
+            var procedureItems = allProcedures.Select(p => new
+            {
+                ProcedureId = p.ProcedureId,
+                DisplayText = $"{p.Name} ({p.Price:C})"
+            });
+
+            ProcedureOptions = new SelectList(procedureItems, "ProcedureId", "DisplayText");
+        }
+
+        private void ClearNewProcedureErrors()
+        {
+            var keys = ModelState.Keys.Where(k => k.StartsWith("NewProcedure")).ToList();
+            foreach (var key in keys)
+            {
+                ModelState.Remove(key);
+            }
         }
     }
 }

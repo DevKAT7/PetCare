@@ -1,7 +1,8 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using PetCare.Application.Features.Appointments.Dto;
 using PetCare.Application.Exceptions;
+using PetCare.Application.Features.Appointments.Dto;
+using PetCare.Application.Features.Appointments.Dtos;
 using PetCare.Infrastructure.Data;
 
 namespace PetCare.Application.Features.Appointments.Queries
@@ -27,6 +28,8 @@ namespace PetCare.Application.Features.Appointments.Queries
                 .Include(a => a.Pet)
                     .ThenInclude(a => a.PetOwner)
                 .Include(a => a.Vet)
+                .Include(a => a.AppointmentProcedures)
+                    .ThenInclude(ap => ap.Procedure)
                 .FirstOrDefaultAsync(a => a.AppointmentId == request.AppointmentId, cancellationToken);
 
             if (appointment == null)
@@ -47,7 +50,15 @@ namespace PetCare.Application.Features.Appointments.Queries
                 PetName = appointment.Pet.Name,
                 OwnerName = appointment.Pet.PetOwner.FirstName + " " + appointment.Pet.PetOwner.LastName,
                 VetId = appointment.VetId,
-                VetName = appointment.Vet.FirstName + " " + appointment.Vet.LastName   
+                VetName = appointment.Vet.FirstName + " " + appointment.Vet.LastName,
+                Procedures = appointment.AppointmentProcedures.Select(ap => new AppointmentProcedureReadModel
+                {
+                    ProcedureId = ap.ProcedureId,
+                    ProcedureName = ap.Procedure.Name,
+                    Quantity = ap.Quantity,
+                    FinalPrice = ap.FinalPrice,
+                    TotalPrice = ap.FinalPrice * ap.Quantity
+                }).ToList()
             };
         }
     }

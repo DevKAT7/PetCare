@@ -8,12 +8,13 @@ namespace PetCare.Application.Features.Appointments.Validators
         public AppointmentProcedureCreateModelValidator()
         {
             RuleFor(x => x.ProcedureId)
-                .GreaterThan(0).WithMessage("Id jest wymagane.");
+                .NotNull().WithMessage("Procedure is required.")
+                .GreaterThan(0).WithMessage("Procedure is required.");
             RuleFor(x => x.Quantity)
-                .GreaterThanOrEqualTo(1).WithMessage("Iloœæ musi byæ wiêksza lub równa 1.");
+                .GreaterThanOrEqualTo(1).WithMessage("Quantity must be greater than or equal to 1.");
             RuleFor(x => x.FinalPrice)
                 .GreaterThanOrEqualTo(0)
-                .When(x => x.FinalPrice.HasValue).WithMessage("Cena ostateczna nie mo¿e byæ wartoœci¹ ujemn¹.");
+                .When(x => x.FinalPrice.HasValue).WithMessage("Final price cannot be a negative value.");
         }
     }
 }
