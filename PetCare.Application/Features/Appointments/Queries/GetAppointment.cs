@@ -25,6 +25,7 @@ namespace PetCare.Application.Features.Appointments.Queries
         {
             var appointment = await _context.Appointments
                 .Include(a => a.Pet)
+                    .ThenInclude(a => a.PetOwner)
                 .Include(a => a.Vet)
                 .FirstOrDefaultAsync(a => a.AppointmentId == request.AppointmentId, cancellationToken);
 
@@ -44,8 +45,9 @@ namespace PetCare.Application.Features.Appointments.Queries
                 Notes = appointment.Notes,
                 PetId = appointment.PetId,
                 PetName = appointment.Pet.Name,
+                OwnerName = appointment.Pet.PetOwner.FirstName + " " + appointment.Pet.PetOwner.LastName,
                 VetId = appointment.VetId,
-                VetName = appointment.Vet.FirstName + " " + appointment.Vet.LastName
+                VetName = appointment.Vet.FirstName + " " + appointment.Vet.LastName   
             };
         }
     }

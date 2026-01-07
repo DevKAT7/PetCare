@@ -22,6 +22,10 @@ namespace PetCare.WebApp.Pages.Appointments
         [BindProperty]
         public AppointmentUpdateModel UpdateModel { get; set; } = new();
 
+        [BindProperty(SupportsGet = true)]
+        public string? Source { get; set; }
+
+        public int Id { get; set; }
         public string VetName { get; set; } = "";
         public string PetName { get; set; } = "";
         public string OwnerName { get; set; } = "";
@@ -30,6 +34,8 @@ namespace PetCare.WebApp.Pages.Appointments
 
         public async Task<IActionResult> OnGetAsync(int id)
         {
+            Id = id;
+
             var appointment = await _mediator.Send(new GetAppointmentQuery(id));
 
             if (appointment == null) return NotFound();
@@ -53,6 +59,8 @@ namespace PetCare.WebApp.Pages.Appointments
 
         public async Task<IActionResult> OnPostAsync(int id)
         {
+            Id = id;
+
             if (!ModelState.IsValid)
             {
                 await LoadDataForView(id, UpdateModel.Status);
@@ -65,7 +73,7 @@ namespace PetCare.WebApp.Pages.Appointments
                 await _mediator.Send(command);
 
                 TempData["SuccessMessage"] = "Visit details updated successfully.";
-                return RedirectToPage("./Index");
+                return GetRedirectResult();
             }
             catch (ValidationException ex)
             {
@@ -103,13 +111,23 @@ namespace PetCare.WebApp.Pages.Appointments
             {
                 await _mediator.Send(new CancelAppointmentCommand(id));
                 TempData["SuccessMessage"] = "Appointment has been cancelled.";
-                return RedirectToPage("./Index");
+                return GetRedirectResult();
             }
             catch (Exception)
             {
                 await LoadDataForView(id, AppointmentStatus.Cancelled);
                 return Page();
             }
+        }
+
+        private IActionResult GetRedirectResult()
+        {
+            if (Source == "calendar")
+            {
+                return RedirectToPage("/Calendar/Calendar");
+            }
+
+            return RedirectToPage("./Index");
         }
 
         private async Task LoadDataForView(int appointmentId, AppointmentStatus currentStatus)
