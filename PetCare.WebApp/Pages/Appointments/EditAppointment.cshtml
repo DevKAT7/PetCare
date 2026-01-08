@@ -115,7 +115,8 @@
                                                                     asp-route-procedureId="@proc.ProcedureId"
                                                                     asp-route-source="@Model.Source"
                                                                     class="btn btn-sm btn-outline-danger"
-                                                                    onclick="return confirm('Remove this procedure?')"
+                                                                    formnovalidate
+                                                                    onclick="if(!confirm('Remove this procedure?')) return false; var f=this.form; if(window.jQuery){ $(f).removeData('validator'); $(f).removeData('unobtrusiveValidation'); }"
                                                                     title="Remove">
                                                                 <i class="bi bi-trash"></i>
                                                             </button>

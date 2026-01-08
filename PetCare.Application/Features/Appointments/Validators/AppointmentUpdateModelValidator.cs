@@ -8,8 +8,7 @@ namespace PetCare.Application.Features.Appointments.Validators
         public AppointmentUpdateModelValidator()
         {
             RuleFor(x => x.AppointmentDateTime)
-                .NotEmpty().WithMessage("Appointment date and time are required.")
-                .Must(dt => dt > DateTime.Now.AddMinutes(-1)).WithMessage("Appointment date must be in the future.");
+                .NotEmpty().WithMessage("Appointment date and time are required.");
 
             RuleFor(x => x.ReasonForVisit)
                 .NotEmpty().WithMessage("Reason for visit is required.")

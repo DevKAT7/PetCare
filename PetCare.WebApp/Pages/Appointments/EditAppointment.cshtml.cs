@@ -145,13 +145,6 @@ namespace PetCare.WebApp.Pages.Appointments
         {
             Id = id;
 
-/*            if (NewProcedure.ProcedureId <= 0)
-            {
-                ModelState.AddModelError("NewProcedure.ProcedureId", "Please select a procedure.");
-                await LoadDataForView(id, UpdateModel.Status);
-                return await OnGetAsync(id);
-            }*/
-
             try
             {
                 var updateCommand = new UpdateAppointmentCommand(id, UpdateModel);
