@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using PetCare.Application.Exceptions;
 using PetCare.Application.Features.Appointments.Commands;
-using PetCare.Application.Features.Appointments.Dto;
 using PetCare.Application.Features.Appointments.Dtos;
 using PetCare.Application.Features.Appointments.Queries;
 using PetCare.Application.Features.Procedures.Queries;
@@ -26,9 +25,6 @@ namespace PetCare.WebApp.Pages.Appointments
 
         [BindProperty(SupportsGet = true)]
         public string? Source { get; set; }
-
-        [BindProperty]
-        public AppointmentProcedureCreateModel NewProcedure { get; set; } = new();
 
         public int Id { get; set; }
         public string VetName { get; set; } = "";
@@ -56,7 +52,8 @@ namespace PetCare.WebApp.Pages.Appointments
                 Description = appointment.Description,
                 Diagnosis = appointment.Diagnosis,
                 Notes = appointment.Notes,
-                Status = appointment.Status
+                Status = appointment.Status,
+                Procedures = appointment.Procedures.ToList()
             };
 
             ExistingProcedures = appointment.Procedures ?? new List<AppointmentProcedureReadModel>();
@@ -80,7 +77,6 @@ namespace PetCare.WebApp.Pages.Appointments
         {
             Id = id;
 
-            ClearNewProcedureErrors();
 
             if (!ModelState.IsValid)
             {
@@ -141,81 +137,6 @@ namespace PetCare.WebApp.Pages.Appointments
             }
         }
 
-        public async Task<IActionResult> OnPostAddProcedureAsync(int id)
-        {
-            Id = id;
-
-            try
-            {
-                var updateCommand = new UpdateAppointmentCommand(id, UpdateModel);
-                await _mediator.Send(updateCommand);
-
-                var addCommand = new AddProcedureToAppointmentCommand
-                {
-                    AppointmentId = id,
-                    Model = NewProcedure
-                };
-
-                await _mediator.Send(addCommand);
-                TempData["SuccessMessage"] = "Procedure added successfully.";
-            }
-            catch (ValidationException ex)
-            {
-                foreach (var entry in ex.Errors)
-                {
-                    foreach (var err in entry.Value)
-                    {
-                        if (entry.Key.StartsWith("Quantity") || entry.Key.StartsWith("FinalPrice"))
-                        {
-                            ModelState.AddModelError($"NewProcedure.{entry.Key}", err);
-                        }
-                        else
-                        {
-                            ModelState.AddModelError($"UpdateModel.{entry.Key}", err);
-                        }
-                    }
-                }
-                await LoadDataForView(id, UpdateModel.Status);
-                return Page();
-            }
-            catch (Exception ex)
-            {
-                ModelState.AddModelError("", "Error adding procedure: " + ex.Message);
-                await LoadDataForView(id, UpdateModel.Status);
-                return Page();
-            }
-
-            return RedirectToPage(new { Id = id, source = Source });
-        }
-
-        public async Task<IActionResult> OnPostRemoveProcedureAsync(int id, int procedureId)
-        {
-            Id = id;
-
-            ClearNewProcedureErrors();
-
-            try
-            {
-                var updateCommand = new UpdateAppointmentCommand(id, UpdateModel);
-                await _mediator.Send(updateCommand);
-
-                var removeCommand = new RemoveProcedureFromAppointmentCommand
-                {
-                    AppointmentId = id,
-                    ProcedureId = procedureId
-                };
-
-                await _mediator.Send(removeCommand);
-                TempData["SuccessMessage"] = "Procedure removed.";
-            }
-            catch (Exception)
-            {
-                TempData["ErrorMessage"] = "Could not remove procedure.";
-            }
-
-            return RedirectToPage(new { Id = id, source = Source });
-        }
-
         private IActionResult GetRedirectResult()
         {
             if (Source == "calendar")
@@ -255,15 +176,6 @@ namespace PetCare.WebApp.Pages.Appointments
             });
 
             ProcedureOptions = new SelectList(procedureItems, "ProcedureId", "DisplayText");
-        }
-
-        private void ClearNewProcedureErrors()
-        {
-            var keys = ModelState.Keys.Where(k => k.StartsWith("NewProcedure")).ToList();
-            foreach (var key in keys)
-            {
-                ModelState.Remove(key);
-            }
         }
     }
 }

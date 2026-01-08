@@ -86,88 +86,81 @@
                                 <h5 class="mb-0 text-dark"><i class="bi bi-bandaid me-2"></i>Medical Procedures</h5>
                             </div>
                             <div class="card-body p-4">
-
-                                @if (Model.ExistingProcedures != null && Model.ExistingProcedures.Any())
-                                {
-                                    <div class="table-responsive mb-3">
-                                        <table class="table table-hover align-middle">
-                                            <thead class="table-light">
-                                                <tr>
-                                                    <th>Procedure Name</th>
-                                                    <th class="text-center" style="width: 100px;">Qty</th>
-                                                    <th class="text-end" style="width: 120px;">Price</th>
-                                                    <th class="text-end" style="width: 120px;">Total</th>
-                                                    <th style="width: 50px;"></th>
+                                <div class="table-responsive mb-3">
+                                    <table class="table table-hover align-middle" id="proceduresTable">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>Procedure Name</th>
+                                                <th class="text-center" style="width: 100px;">Qty</th>
+                                                <th class="text-end" style="width: 120px;">Price</th>
+                                                <th class="text-end" style="width: 120px;">Total</th>
+                                                <th style="width: 50px;"></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="proceduresTableBody">
+                                            @for (int i = 0; i < Model.UpdateModel.Procedures.Count; i++)
+                                            {
+                                                var proc = Model.UpdateModel.Procedures[i];
+                                                <tr class="procedure-row">
+                                                    <td>
+                                                        <span class="proc-name-text">@proc.ProcedureName</span>
+                                                        <input type="hidden" name="UpdateModel.Procedures[@i].ProcedureId" value="@proc.ProcedureId" />
+                                                        <input type="hidden" name="UpdateModel.Procedures[@i].ProcedureName" value="@proc.ProcedureName" />
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <span class="proc-qty-text">@proc.Quantity</span>
+                                                        <input type="hidden" name="UpdateModel.Procedures[@i].Quantity" value="@proc.Quantity" />
+                                                    </td>
+                                                    <td class="text-end">
+                                                        <span class="proc-price-text">@proc.FinalPrice.ToString("C")</span>
+                                                        <input type="hidden" name="UpdateModel.Procedures[@i].FinalPrice" value="@proc.FinalPrice" />
+                                                    </td>
+                                                    <td class="text-end fw-bold">
+                                                        <span class="proc-total-text">@proc.TotalPrice.ToString("C")</span>
+                                                    </td>
+                                                    <td class="text-end">
+                                                        <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeProcedureRow(this)">
+                                                            <i class="bi bi-trash"></i>
+                                                        </button>
+                                                    </td>
                                                 </tr>
-                                            </thead>
-                                            <tbody>
-                                                @foreach (var proc in Model.ExistingProcedures)
-                                                {
-                                                    <tr>
-                                                        <td>@proc.ProcedureName</td>
-                                                        <td class="text-center">@proc.Quantity</td>
-                                                        <td class="text-end">@proc.FinalPrice.ToString("C")</td>
-                                                        <td class="text-end fw-bold">@proc.TotalPrice.ToString("C")</td>
-                                                        <td class="text-end">
-                                                            <button type="submit"
-                                                                    asp-page-handler="RemoveProcedure"
-                                                                    asp-route-id="@Model.Id"
-                                                                    asp-route-procedureId="@proc.ProcedureId"
-                                                                    asp-route-source="@Model.Source"
-                                                                    class="btn btn-sm btn-outline-danger"
-                                                                    formnovalidate
-                                                                    onclick="if(!confirm('Remove this procedure?')) return false; var f=this.form; if(window.jQuery){ $(f).removeData('validator'); $(f).removeData('unobtrusiveValidation'); }"
-                                                                    title="Remove">
-                                                                <i class="bi bi-trash"></i>
-                                                            </button>
-                                                        </td>
-                                                    </tr>
-                                                }
-                                                <tr class="table-active fw-bold">
-                                                    <td colspan="3" class="text-end">Total Cost:</td>
-                                                    <td class="text-end">@Model.ExistingProcedures.Sum(x => x.TotalPrice).ToString("C")</td>
-                                                    <td></td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                }
-                                else
-                                {
-                                    <div class="alert alert-light text-center border mb-3">
-                                        <small class="text-muted">No procedures added to this visit yet.</small>
-                                    </div>
-                                }
+                                            }
+                                        </tbody>
+                                        <tfoot>
+                                            <tr class="table-active fw-bold">
+                                                <td colspan="3" class="text-end">Total Cost:</td>
+                                                <td class="text-end" id="grandTotal">@Model.UpdateModel.Procedures.Sum(x => x.TotalPrice).ToString("C")</td>
+                                                <td></td>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
 
                                 <hr class="my-3" />
 
                                 <h6 class="fw-bold mb-3 text-secondary">Add New Procedure</h6>
                                 <div class="row g-2 align-items-end bg-light p-3 rounded border">
                                     <div class="col-md-5">
-                                        <label asp-for="NewProcedure.ProcedureId" class="form-label small fw-bold text-muted">Select Procedure</label>
-                                        <select asp-for="NewProcedure.ProcedureId" asp-items="Model.ProcedureOptions" class="form-select form-select-sm">
+                                        <label class="form-label small fw-bold text-muted">Select Procedure</label>
+                                        <select id="js-proc-id" class="form-select form-select-sm" asp-items="Model.ProcedureOptions">
                                             <option value="">-- Select Procedure --</option>
                                         </select>
                                     </div>
                                     <div class="col-md-2">
-                                        <label asp-for="NewProcedure.Quantity" class="form-label small fw-bold text-muted">Qty</label>
-                                        <input asp-for="NewProcedure.Quantity" class="form-control form-control-sm" type="number" min="1" value="1" />
+                                        <label class="form-label small fw-bold text-muted">Qty</label>
+                                        <input type="number" id="js-proc-qty" class="form-control form-control-sm" value="1" min="1" />
                                     </div>
                                     <div class="col-md-3">
-                                        <label asp-for="NewProcedure.FinalPrice" class="form-label small fw-bold text-muted">Custom Price (Optional)</label>
-                                        <input asp-for="NewProcedure.FinalPrice" class="form-control form-control-sm" placeholder="Default price" />
+                                        <label class="form-label small fw-bold text-muted">Custom Price (Optional)</label>
+                                        <input type="number" id="js-proc-price" class="form-control form-control-sm" placeholder="Default price" step="0.01" />
                                     </div>
                                     <div class="col-md-2">
-                                        <button type="submit"
-                                                asp-page-handler="AddProcedure"
-                                                asp-route-id="@Model.Id"
-                                                asp-route-source="@Model.Source"
-                                                class="btn btn-sm btn-success w-100">
+                                        <button type="button" class="btn btn-sm btn-success w-100" onclick="addProcedureToTable()">
                                             <i class="bi bi-plus-lg"></i> Add
                                         </button>
                                     </div>
                                 </div>
-                                <span asp-validation-for="NewProcedure.ProcedureId" class="text-danger small"></span>
+                                <div id="js-proc-error" class="text-danger small mt-1" style="display:none;">Please select a procedure.</div>
                             </div>
                         </div>
 
@@ -240,4 +233,96 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+    <script>
+        function addProcedureToTable() {
+            const select = document.getElementById('js-proc-id');
+            const qtyInput = document.getElementById('js-proc-qty');
+            const priceInput = document.getElementById('js-proc-price');
+            const errorDiv = document.getElementById('js-proc-error');
+
+            if (!select.value) {
+                errorDiv.style.display = 'block';
+                return;
+            }
+            errorDiv.style.display = 'none';
+
+            const procId = select.value;
+            const procNameFull = select.options[select.selectedIndex].text;
+            const qty = parseInt(qtyInput.value) || 1;
+            
+            //logika pobierania ceny: jeśli wpisano ręcznie użyj jej, jeśli nie - wyciągnij z nawiasu w nazwie
+            let price = parseFloat(priceInput.value);
+            if (isNaN(price)) {
+                const priceMatch = procNameFull.match(/\(([^)]+)\)/);
+                price = priceMatch ? parseFloat(priceMatch[1].replace(/[^\d.,]/g, '').replace(',', '.')) : 0;
+            }
+
+            const procName = procNameFull.split(' (')[0];
+            const total = (qty * price);
+            const tableBody = document.getElementById('proceduresTableBody');
+            const index = tableBody.querySelectorAll('tr').length;
+
+            const newRow = `
+                <tr class="procedure-row">
+                    <td>
+                        <span class="proc-name-text">${procName}</span>
+                        <input type="hidden" name="UpdateModel.Procedures[${index}].ProcedureId" value="${procId}" />
+                        <input type="hidden" name="UpdateModel.Procedures[${index}].ProcedureName" value="${procName}" />
+                    </td>
+                    <td class="text-center">
+                        <span class="proc-qty-text">${qty}</span>
+                        <input type="hidden" name="UpdateModel.Procedures[${index}].Quantity" value="${qty}" />
+                    </td>
+                    <td class="text-end">
+                        <span class="proc-price-text">${formatCurrency(price)}</span>
+                        <input type="hidden" name="UpdateModel.Procedures[${index}].FinalPrice" value="${price.toFixed(2).replace('.',',')}" />
+                    </td>
+                    <td class="text-end fw-bold">
+                        <span class="proc-total-text">${formatCurrency(total)}</span>
+                    </td>
+                    <td class="text-end">
+                        <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeProcedureRow(this)">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </td>
+                </tr>`;
+
+            tableBody.insertAdjacentHTML('beforeend', newRow);
+            updateGrandTotal();
+            
+            select.value = "";
+            qtyInput.value = 1;
+            priceInput.value = "";
+        }
+
+        function removeProcedureRow(button) {
+            button.closest('tr').remove();
+            reindexTable();
+            updateGrandTotal();
+        }
+
+        function reindexTable() {
+            const rows = document.querySelectorAll('#proceduresTableBody tr');
+            rows.forEach((row, index) => {
+                const inputs = row.querySelectorAll('input');
+                inputs.forEach(input => {
+                    input.name = input.name.replace(/\[\d+\]/, `[${index}]`);
+                });
+            });
+        }
+
+        function updateGrandTotal() {
+            let sum = 0;
+            document.querySelectorAll('#proceduresTableBody tr').forEach(row => {
+                const qty = parseInt(row.querySelector('input[name*="Quantity"]').value);
+                const price = parseFloat(row.querySelector('input[name*="FinalPrice"]').value.replace(',', '.'));
+                sum += (qty * price);
+            });
+            document.getElementById('grandTotal').innerText = formatCurrency(sum);
+        }
+
+        function formatCurrency(value) {
+            return new Intl.NumberFormat('pl-PL', { style: 'currency', currency: 'PLN' }).format(value);
+        }
+    </script>
 }

@@ -1,6 +1,7 @@
+using PetCare.Application.Features.Appointments.Dtos;
 using PetCare.Core.Enums;
 
-namespace PetCare.Application.Features.Appointments.Dto
+namespace PetCare.Application.Features.Appointments.Dtos
 {
     public class AppointmentUpdateModel
     {
@@ -12,5 +13,6 @@ namespace PetCare.Application.Features.Appointments.Dto
         public int PetId { get; set; }
         public int VetId { get; set; }
         public AppointmentStatus Status { get; set; }
+        public List<AppointmentProcedureReadModel> Procedures { get; set; } = new();
     }
 }
