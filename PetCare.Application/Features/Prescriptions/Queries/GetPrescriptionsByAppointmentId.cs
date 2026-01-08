@@ -35,7 +35,8 @@ namespace PetCare.Application.Features.Prescriptions.Queries
                 Instructions = entity.Instructions,
                 PacksToDispense = entity.PacksToDispense,
                 AppointmentId = entity.AppointmentId,
-                MedicationId = entity.MedicationId
+                MedicationId = entity.MedicationId,
+                MedicationName = entity.Medication?.Name ?? "Unknown Drug"
             }).ToList();
         }
     }

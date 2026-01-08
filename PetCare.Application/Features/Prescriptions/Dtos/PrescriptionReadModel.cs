@@ -11,5 +11,6 @@ namespace PetCare.Application.Features.Prescriptions.Dtos
         public int PacksToDispense { get; set; }
         public int AppointmentId { get; set; }
         public int MedicationId { get; set; }
+        public string MedicationName { get; set; } = string.Empty;
     }
 }

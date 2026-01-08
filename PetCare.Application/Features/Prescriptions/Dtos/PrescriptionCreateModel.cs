@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations;
 
 namespace PetCare.Application.Features.Prescriptions.Dtos
 {

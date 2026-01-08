@@ -48,6 +48,8 @@ namespace PetCare.Application.Features.Appointments.Queries
                 Notes = appointment.Notes,
                 PetId = appointment.PetId,
                 PetName = appointment.Pet.Name,
+                PetSpecies = appointment.Pet.Species,
+                PetImageUrl = appointment.Pet.ImageUrl,
                 OwnerName = appointment.Pet.PetOwner.FirstName + " " + appointment.Pet.PetOwner.LastName,
                 VetId = appointment.VetId,
                 VetName = appointment.Vet.FirstName + " " + appointment.Vet.LastName,
