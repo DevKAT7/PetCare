@@ -32,7 +32,7 @@ namespace PetCare.WebApp.Pages.Admin.Vets
         {
             var query = new GetAllVetSpecializationsQuery();
             var result = await _mediator.Send(query);
-
+            
             ViewData["Specializations"] = new SelectList(result, "VetSpecializationId", "Name");
         }
 

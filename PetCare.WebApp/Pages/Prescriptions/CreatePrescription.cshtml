@@ -1,0 +1,98 @@
+﻿@page
+@model PetCare.WebApp.Pages.Prescriptions.CreatePrescriptionModel
+@{
+    ViewData["Title"] = "Issue Prescription";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-primary text-white py-3">
+                    <h4 class="mb-0"><i class="bi bi-capsule-pill me-2"></i>Issue Prescription</h4>
+                </div>
+                <div class="card-body p-4">
+
+                    <form method="post">
+                        <input type="hidden" asp-for="Input.AppointmentId" />
+
+                        <div class="alert alert-light border shadow-sm mb-4">
+                            <div class="row align-items-center">
+                                <div class="col-md-8">
+                                    <label asp-for="SelectedTemplateId" class="fw-bold mb-1"><i class="bi bi-printer me-1"></i>Print Template</label>
+                                    <small class="d-block text-muted mb-2">Select the document format for export.</small>
+                                    <select asp-for="SelectedTemplateId" asp-items="Model.TemplateOptions" class="form-select">
+                                    </select>
+                                </div>
+                                <div class="col-md-4 text-end text-muted">
+                                    <i class="bi bi-file-earmark-word fs-3 me-2"></i>
+                                    <i class="bi bi-file-earmark-pdf fs-3"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <h5 class="text-secondary border-bottom pb-2 mb-3">Treatment Details</h5>
+
+                        <div class="mb-3">
+                            <label asp-for="Input.MedicationId" class="form-label fw-bold">Medication</label>
+                            <select asp-for="Input.MedicationId" asp-items="Model.MedicationOptions" class="form-select">
+                                <option value="">-- Select Medication --</option>
+                            </select>
+                            <span asp-validation-for="Input.MedicationId" class="text-danger"></span>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label asp-for="Input.Dosage" class="form-label fw-bold">Dosage</label>
+                                <input asp-for="Input.Dosage" class="form-control" placeholder="e.g. 1 tablet" />
+                                <span asp-validation-for="Input.Dosage" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="Input.Frequency" class="form-label fw-bold">Frequency</label>
+                                <input asp-for="Input.Frequency" class="form-control" placeholder="e.g. twice a day" />
+                                <span asp-validation-for="Input.Frequency" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <label asp-for="Input.StartDate" class="form-label">Start Date</label>
+                                <input asp-for="Input.StartDate" type="date" class="form-control" />
+                                <span asp-validation-for="Input.StartDate" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-4">
+                                <label asp-for="Input.EndDate" class="form-label">End Date</label>
+                                <input asp-for="Input.EndDate" type="date" class="form-control" />
+                                <span asp-validation-for="Input.EndDate" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-4">
+                                <label asp-for="Input.PacksToDispense" class="form-label">Packs</label>
+                                <input asp-for="Input.PacksToDispense" type="number" class="form-control" min="1" max="20" />
+                                <span asp-validation-for="Input.PacksToDispense" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="Input.Instructions" class="form-label fw-bold">Instructions for Owner</label>
+                            <textarea asp-for="Input.Instructions" class="form-control" rows="3" placeholder="e.g. Give with food, monitor for side effects..."></textarea>
+                            <span asp-validation-for="Input.Instructions" class="text-danger"></span>
+                        </div>
+
+                        <div class="d-flex justify-content-between mt-4">
+                            <a asp-page="/Appointments/Details" asp-route-id="@Model.Input.AppointmentId" class="btn btn-light border">Cancel</a>
+                            <button type="submit" class="btn btn-success px-4">
+                                <i class="bi bi-save me-2"></i> Save Prescription
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

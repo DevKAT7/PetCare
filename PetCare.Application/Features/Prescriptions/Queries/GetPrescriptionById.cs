@@ -23,6 +23,7 @@ namespace PetCare.Application.Features.Prescriptions.Queries
         public async Task<PrescriptionReadModel> Handle(GetPrescriptionQuery request, CancellationToken cancellationToken)
         {
             var entity = await _context.Prescriptions
+                .Include(p => p.Medication)
                 .FirstOrDefaultAsync(p => p.PrescriptionId == request.Id, cancellationToken);
 
             if (entity == null)
@@ -40,7 +41,8 @@ namespace PetCare.Application.Features.Prescriptions.Queries
                 Instructions = entity.Instructions,
                 PacksToDispense = entity.PacksToDispense,
                 AppointmentId = entity.AppointmentId,
-                MedicationId = entity.MedicationId
+                MedicationId = entity.MedicationId,
+                MedicationName = entity.Medication.Name
             };
         }
     }

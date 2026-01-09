@@ -9,6 +9,8 @@ namespace PetCare.Application.Features.Prescriptions.Dtos
         public DateOnly EndDate { get; set; }
         public string Instructions { get; set; } = string.Empty;
         public int PacksToDispense { get; set; } = 1;
+        public string CreatedBy { get; set; } = string.Empty;
+        public DateOnly CreatedDate { get; set; }
         public int AppointmentId { get; set; }
         public int MedicationId { get; set; }
     }

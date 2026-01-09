@@ -22,6 +22,7 @@ namespace PetCare.Application.Features.Prescriptions.Queries
         public async Task<List<PrescriptionReadModel>> Handle(GetPrescriptionsByAppointmentIdQuery request, CancellationToken cancellationToken)
         {
             var items = await _context.Prescriptions
+                .Include(p => p.Medication)
                 .Where(p => p.AppointmentId == request.AppointmentId)
                 .ToListAsync(cancellationToken);
 
