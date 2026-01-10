@@ -253,14 +253,14 @@
             //cene brana z ostatniego nawiasu gdyby w nazwie procedury również był nawias
             let price = parseFloat(priceInput.value);
             if (isNaN(price)) {
-                // try to get text inside the LAST parentheses pair (should contain the price)
+
                 const lastOpen = procNameFull.lastIndexOf('(');
                 const lastClose = procNameFull.lastIndexOf(')');
                 let priceText = null;
                 if (lastOpen !== -1 && lastClose > lastOpen) {
                     priceText = procNameFull.substring(lastOpen + 1, lastClose);
                 } else {
-                    // fallback to the first parentheses if no last pair found
+
                     const priceMatch = procNameFull.match(/\(([^)]+)\)/);
                     priceText = priceMatch ? priceMatch[1] : null;
                 }

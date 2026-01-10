@@ -5,6 +5,7 @@ using PetCare.Application.Extensions;
 using PetCare.Application.Interfaces;
 using PetCare.Infrastructure.Data;
 using PetCare.Infrastructure.Extensions;
+using PetCare.Infrastructure.Services;
 
 namespace PetCare.WebApp
 {
@@ -20,8 +21,7 @@ namespace PetCare.WebApp
 
             builder.Services.AddScoped<IApplicationDbContext>(provider => provider.GetRequiredService<ApplicationDbContext>());
 
-            // Application u¿ywa IDocumentGenerator, a Infrastructure dostarcza DocumentGenerator
-            //builder.Services.AddScoped<IDocumentGenerator, DocumentGenerator>();
+            builder.Services.AddScoped<IDocumentGenerator, DocumentGenerator>();
 
             builder.Services.AddDatabaseDeveloperPageExceptionFilter();
             builder.Services.AddRazorPages();

@@ -29,4 +29,8 @@
     <ProjectReference Include="..\PetCare.Infrastructure\PetCare.Infrastructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\templates\" />
+  </ItemGroup>
+
 </Project>

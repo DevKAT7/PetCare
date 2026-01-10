@@ -5,16 +5,19 @@ using PetCare.Application.Features.Appointments.Dto;
 using PetCare.Application.Features.Appointments.Queries;
 using PetCare.Application.Features.Prescriptions.Dtos;
 using PetCare.Application.Features.Prescriptions.Queries;
+using PetCare.Application.Interfaces;
 
 namespace PetCare.WebApp.Pages.Appointments
 {
     public class DetailsModel : PageModel
     {
         private readonly IMediator _mediator;
+        private readonly IDocumentGenerator _documentGenerator;
 
-        public DetailsModel(IMediator mediator)
+        public DetailsModel(IMediator mediator, IDocumentGenerator documentGenerator)
         {
             _mediator = mediator;
+            _documentGenerator = documentGenerator;
         }
 
         public AppointmentReadModel Appointment { get; private set; } = default!;
@@ -37,6 +40,24 @@ namespace PetCare.WebApp.Pages.Appointments
             Prescriptions = await _mediator.Send(new GetPrescriptionsByAppointmentIdQuery { AppointmentId = id });
 
             return Page();
+        }
+
+        public async Task<IActionResult> OnGetDownloadPrescriptionAsync(int prescriptionId, string format)
+        {
+            var rx = await _mediator.Send(new GetPrescriptionQuery { Id = prescriptionId });
+
+            if (rx == null) return NotFound();
+
+            string templateId = format switch
+            {
+                "word" => "nfz_word",
+                "pdf" => "standard_pdf",
+                _ => "custom_print"
+            };
+
+            var fileData = _documentGenerator.GeneratePrescription(rx, templateId);
+
+            return File(fileData.Content, fileData.ContentType, fileData.FileName);
         }
     }
 }

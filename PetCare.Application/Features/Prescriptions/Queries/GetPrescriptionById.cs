@@ -24,6 +24,11 @@ namespace PetCare.Application.Features.Prescriptions.Queries
         {
             var entity = await _context.Prescriptions
                 .Include(p => p.Medication)
+                .Include(p => p.Appointment)
+                    .ThenInclude(a => a.Vet)
+                 .Include(p => p.Appointment)
+                    .ThenInclude(a => a.Pet)
+                        .ThenInclude(pet => pet.PetOwner)
                 .FirstOrDefaultAsync(p => p.PrescriptionId == request.Id, cancellationToken);
 
             if (entity == null)
@@ -42,7 +47,11 @@ namespace PetCare.Application.Features.Prescriptions.Queries
                 PacksToDispense = entity.PacksToDispense,
                 AppointmentId = entity.AppointmentId,
                 MedicationId = entity.MedicationId,
-                MedicationName = entity.Medication.Name
+                CreatedBy = $"{entity.Appointment.Vet.FirstName} {entity.Appointment.Vet.LastName}",
+                CreatedDate = entity.Appointment.AppointmentDateTime,
+                MedicationName = entity.Medication.Name,
+                PetName = entity.Appointment.Pet.Name,
+                OwnerName = $"{entity.Appointment.Pet.PetOwner.FirstName} {entity.Appointment.Pet.PetOwner.LastName}"
             };
         }
     }
