@@ -19,9 +19,14 @@ namespace PetCare.Infrastructure.Services
 
         public (byte[] Content, string ContentType, string FileName) GeneratePrescription(PrescriptionReadModel data, string templateId)
         {
-            if (templateId == "nfz_word")
+            if (templateId == "with_logo_word")
             {
-                var fileContent = GenerateWordFromTemplate(data, "templates/template_nfz.docx");
+                var fileContent = GenerateWordFromTemplate(data, "templates/template_logo.docx");
+                return (fileContent, "application/vnd.openxmlformats-officedocument.wordprocessingml.document", $"Prescription_{data.PrescriptionId}.docx");
+            }
+            else if (templateId == "simple_word")
+            {
+                var fileContent = GenerateWordFromTemplate(data, "templates/template_simple.docx");
                 return (fileContent, "application/vnd.openxmlformats-officedocument.wordprocessingml.document", $"Prescription_{data.PrescriptionId}.docx");
             }
             else if (templateId == "standard_pdf")
@@ -46,9 +51,16 @@ namespace PetCare.Infrastructure.Services
                     page.Margin(1, Unit.Centimetre);
                     page.DefaultTextStyle(x => x.FontSize(10));
 
-                    page.Header()
-                        .Text("PET CARE CLINIC")
-                        .SemiBold().FontSize(16).FontColor(Colors.Blue.Medium);
+                    page.Header().Row(row =>
+                    {
+                        var logoPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "logo-petcare-transparent3.png");
+
+                        if (File.Exists(logoPath))
+                        {
+                            row.ConstantItem(130).Image(logoPath);
+                            row.ConstantItem(5);
+                        }
+                    });
 
                     page.Content().PaddingVertical(1, Unit.Centimetre).Column(column =>
                     {

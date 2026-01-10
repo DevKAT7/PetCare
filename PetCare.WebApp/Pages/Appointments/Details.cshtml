@@ -120,18 +120,33 @@
                                             <td><small class="text-muted">@rx.Dosage, @rx.Frequency</small></td>
                                             <td class="text-end pe-4">
                                                 <div class="btn-group">
+                                                    <div class="dropdown d-inline-block">
+                                                        <button class="btn btn-sm btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                            <i class="bi bi-file-word"></i> Word
+                                                        </button>
+                                                        <ul class="dropdown-menu">
+                                                            <li>
+                                                                <a class="dropdown-item"
+                                                                   asp-page-handler="DownloadPrescription"
+                                                                   asp-route-prescriptionId="@rx.PrescriptionId"
+                                                                   asp-route-format="with_logo_word">
+                                                                    With Logo
+                                                                </a>
+                                                            </li>
+                                                            <li>
+                                                                <a class="dropdown-item"
+                                                                   asp-page-handler="DownloadPrescription"
+                                                                   asp-route-prescriptionId="@rx.PrescriptionId"
+                                                                   asp-route-format="simple_word">
+                                                                    Simple
+                                                                </a>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
 
                                                     <a asp-page-handler="DownloadPrescription"
                                                        asp-route-prescriptionId="@rx.PrescriptionId"
-                                                       asp-route-format="word"
-                                                       class="btn btn-sm btn-outline-primary"
-                                                       title="Download Word (.docx)">
-                                                        <i class="bi bi-file-word"></i>
-                                                    </a>
-
-                                                    <a asp-page-handler="DownloadPrescription"
-                                                       asp-route-prescriptionId="@rx.PrescriptionId"
-                                                       asp-route-format="pdf"
+                                                       asp-route-format="standard_pdf"
                                                        class="btn btn-sm btn-outline-secondary"
                                                        title="Download PDF">
                                                         <i class="bi bi-file-pdf"></i>

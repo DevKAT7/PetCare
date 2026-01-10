@@ -48,14 +48,7 @@ namespace PetCare.WebApp.Pages.Appointments
 
             if (rx == null) return NotFound();
 
-            string templateId = format switch
-            {
-                "word" => "nfz_word",
-                "pdf" => "standard_pdf",
-                _ => "custom_print"
-            };
-
-            var fileData = _documentGenerator.GeneratePrescription(rx, templateId);
+            var fileData = _documentGenerator.GeneratePrescription(rx, format);
 
             return File(fileData.Content, fileData.ContentType, fileData.FileName);
         }
