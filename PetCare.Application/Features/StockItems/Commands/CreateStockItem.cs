@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using PetCare.Application.Exceptions;
 using PetCare.Application.Features.StockItems.Dtos;
 using PetCare.Core.Models;
-using PetCare.Infrastructure.Data;
+using PetCare.Application.Interfaces;
 
 namespace PetCare.Application.Features.StockItems.Commands
 {
@@ -14,9 +14,9 @@ namespace PetCare.Application.Features.StockItems.Commands
 
     public class CreateStockItemHandler : IRequestHandler<CreateStockItemCommand, int>
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IApplicationDbContext _context;
 
-        public CreateStockItemHandler(ApplicationDbContext context)
+        public CreateStockItemHandler(IApplicationDbContext context)
         {
             _context = context;
         }

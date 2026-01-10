@@ -3,8 +3,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using PetCare.Application.Exceptions;
 using PetCare.Application.Features.Vets.Dto;
+using PetCare.Application.Interfaces;
 using PetCare.Core.Models;
-using PetCare.Infrastructure.Data;
 
 namespace PetCare.Application.Features.Vets.Commands
 {
@@ -22,10 +22,10 @@ namespace PetCare.Application.Features.Vets.Commands
 
     public class UpdateVetHandler : IRequestHandler<UpdateVetCommand, int>
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IApplicationDbContext _context;
         private readonly UserManager<User> _userManager;
 
-        public UpdateVetHandler(ApplicationDbContext context, UserManager<User> userManager)
+        public UpdateVetHandler(IApplicationDbContext context, UserManager<User> userManager)
         {
             _context = context;
             _userManager = userManager;

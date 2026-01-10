@@ -1,7 +1,7 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using PetCare.Application.Features.StockTransactions.Dtos;
-using PetCare.Infrastructure.Data;
+using PetCare.Application.Interfaces;
 
 namespace PetCare.Application.Features.StockTransactions.Queries
 {
@@ -9,9 +9,9 @@ namespace PetCare.Application.Features.StockTransactions.Queries
 
     public class GetStockTransactionsHandler : IRequestHandler<GetStockTransactionsQuery, List<StockTransactionReadModel>>
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IApplicationDbContext _context;
 
-        public GetStockTransactionsHandler(ApplicationDbContext context)
+        public GetStockTransactionsHandler(IApplicationDbContext context)
         {
             _context = context;
         }

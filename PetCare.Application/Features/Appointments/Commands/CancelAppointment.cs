@@ -1,8 +1,8 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using PetCare.Application.Exceptions;
+using PetCare.Application.Interfaces;
 using PetCare.Core.Enums;
-using PetCare.Infrastructure.Data;
 
 namespace PetCare.Application.Features.Appointments.Commands
 {
@@ -14,9 +14,9 @@ namespace PetCare.Application.Features.Appointments.Commands
 
     public class CancelAppointmentHandler : IRequestHandler<CancelAppointmentCommand, int>
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IApplicationDbContext _context;
 
-        public CancelAppointmentHandler(ApplicationDbContext context)
+        public CancelAppointmentHandler(IApplicationDbContext context)
         {
             _context = context;
         }

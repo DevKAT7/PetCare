@@ -1,7 +1,7 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using PetCare.Application.Exceptions;
-using PetCare.Infrastructure.Data;
+using PetCare.Application.Interfaces;
 
 namespace PetCare.Application.Features.MedicalTests.Commands
 {
@@ -13,9 +13,9 @@ namespace PetCare.Application.Features.MedicalTests.Commands
 
     public class DeleteMedicalTestHandler : IRequestHandler<DeleteMedicalTestCommand, int>
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IApplicationDbContext _context;
 
-        public DeleteMedicalTestHandler(ApplicationDbContext context)
+        public DeleteMedicalTestHandler(IApplicationDbContext context)
         {
             _context = context;
         }

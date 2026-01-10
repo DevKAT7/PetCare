@@ -2,7 +2,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using PetCare.Application.Features.VetSchedules.Dto;
 using PetCare.Application.Exceptions;
-using PetCare.Infrastructure.Data;
+using PetCare.Application.Interfaces;
 
 namespace PetCare.Application.Features.VetSchedules.Queries
 {
@@ -13,9 +13,9 @@ namespace PetCare.Application.Features.VetSchedules.Queries
 
     public class GetVetScheduleHandler : IRequestHandler<GetVetScheduleQuery, VetScheduleReadModel>
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IApplicationDbContext _context;
 
-        public GetVetScheduleHandler(ApplicationDbContext context)
+        public GetVetScheduleHandler(IApplicationDbContext context)
         {
             _context = context;
         }

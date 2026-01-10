@@ -1,8 +1,8 @@
 using MediatR;
 using PetCare.Application.Features.Appointments.Dto;
 using PetCare.Core.Models;
-using PetCare.Infrastructure.Data;
 using PetCare.Application.Exceptions;
+using PetCare.Application.Interfaces;
 
 namespace PetCare.Application.Features.Appointments.Commands
 {
@@ -13,9 +13,9 @@ namespace PetCare.Application.Features.Appointments.Commands
 
     public class CreateAppointmentHandler : IRequestHandler<CreateAppointmentCommand, int>
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IApplicationDbContext _context;
 
-        public CreateAppointmentHandler(ApplicationDbContext context)
+        public CreateAppointmentHandler(IApplicationDbContext context)
         {
             _context = context;
         }

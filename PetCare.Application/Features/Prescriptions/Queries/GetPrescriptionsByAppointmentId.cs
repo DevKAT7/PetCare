@@ -1,7 +1,7 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using PetCare.Application.Features.Prescriptions.Dtos;
-using PetCare.Infrastructure.Data;
+using PetCare.Application.Interfaces;
 
 namespace PetCare.Application.Features.Prescriptions.Queries
 {
@@ -12,9 +12,9 @@ namespace PetCare.Application.Features.Prescriptions.Queries
 
     public class GetPrescriptionsByAppointmentIdHandler : IRequestHandler<GetPrescriptionsByAppointmentIdQuery, List<PrescriptionReadModel>>
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IApplicationDbContext _context;
 
-        public GetPrescriptionsByAppointmentIdHandler(ApplicationDbContext context)
+        public GetPrescriptionsByAppointmentIdHandler(IApplicationDbContext context)
         {
             _context = context;
         }

@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using PetCare.Application.Exceptions;
 using PetCare.Application.Features.Appointments.Dto;
 using PetCare.Application.Features.Appointments.Dtos;
-using PetCare.Infrastructure.Data;
+using PetCare.Application.Interfaces;
 
 namespace PetCare.Application.Features.Appointments.Queries
 {
@@ -15,9 +15,9 @@ namespace PetCare.Application.Features.Appointments.Queries
 
     public class GetAppointmentHandler : IRequestHandler<GetAppointmentQuery, AppointmentReadModel>
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IApplicationDbContext _context;
 
-        public GetAppointmentHandler(ApplicationDbContext context)
+        public GetAppointmentHandler(IApplicationDbContext context)
         {
             _context = context;
         }

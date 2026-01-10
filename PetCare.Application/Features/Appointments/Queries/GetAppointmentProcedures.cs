@@ -1,7 +1,7 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using PetCare.Application.Features.Appointments.Dtos;
-using PetCare.Infrastructure.Data;
+using PetCare.Application.Interfaces;
 
 namespace PetCare.Application.Features.Appointments.Queries
 {
@@ -13,9 +13,9 @@ namespace PetCare.Application.Features.Appointments.Queries
 
     public class GetAppointmentProceduresHandler : IRequestHandler<GetAppointmentProceduresQuery, List<AppointmentProcedureReadModel>>
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IApplicationDbContext _context;
 
-        public GetAppointmentProceduresHandler(ApplicationDbContext context)
+        public GetAppointmentProceduresHandler(IApplicationDbContext context)
         {
             _context = context;
         }

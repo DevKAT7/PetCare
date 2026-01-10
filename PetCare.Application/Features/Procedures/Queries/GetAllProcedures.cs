@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
 using PetCare.Application.Features.Procedures.Dtos;
-using PetCare.Infrastructure.Data;
+using PetCare.Application.Interfaces;
 
 namespace PetCare.Application.Features.Procedures.Queries
 {
@@ -19,9 +19,9 @@ namespace PetCare.Application.Features.Procedures.Queries
 
     public class GetAllProceduresHandler : IRequestHandler<GetAllProceduresQuery, List<ProcedureReadModel>>
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IApplicationDbContext _context;
 
-        public GetAllProceduresHandler(ApplicationDbContext context)
+        public GetAllProceduresHandler(IApplicationDbContext context)
         {
             _context = context;
         }

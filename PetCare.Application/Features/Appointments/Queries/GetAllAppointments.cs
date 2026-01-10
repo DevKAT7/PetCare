@@ -1,8 +1,8 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using PetCare.Application.Features.Appointments.Dto;
+using PetCare.Application.Interfaces;
 using PetCare.Core.Enums;
-using PetCare.Infrastructure.Data;
 
 namespace PetCare.Application.Features.Appointments.Queries
 {
@@ -43,9 +43,9 @@ namespace PetCare.Application.Features.Appointments.Queries
 
     public class GetAllAppointmentsHandler : IRequestHandler<GetAllAppointmentsQuery, List<AppointmentReadModel>>
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IApplicationDbContext _context;
 
-        public GetAllAppointmentsHandler(ApplicationDbContext context)
+        public GetAllAppointmentsHandler(IApplicationDbContext context)
         {
             _context = context;
         }

@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using PetCare.Application.Exceptions;
 using PetCare.Application.Features.VetSpecializations.Dtos;
 using PetCare.Application.Features.Procedures.Dtos;
-using PetCare.Infrastructure.Data;
+using PetCare.Application.Interfaces;
 
 namespace PetCare.Application.Features.VetSpecializations.Queries
 {
@@ -15,9 +15,9 @@ namespace PetCare.Application.Features.VetSpecializations.Queries
 
     public class GetVetSpecializationHandler : IRequestHandler<GetVetSpecializationQuery, VetSpecializationReadModel>
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IApplicationDbContext _context;
 
-        public GetVetSpecializationHandler(ApplicationDbContext context)
+        public GetVetSpecializationHandler(IApplicationDbContext context)
         {
             _context = context;
         }

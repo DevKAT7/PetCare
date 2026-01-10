@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using PetCare.Application.Exceptions;
 using PetCare.Application.Features.Vaccinations.Dtos;
 using PetCare.Core.Models;
-using PetCare.Infrastructure.Data;
+using PetCare.Application.Interfaces;
 
 namespace PetCare.Application.Features.Vaccinations.Commands
 {
@@ -14,9 +14,9 @@ namespace PetCare.Application.Features.Vaccinations.Commands
 
     public class CreateVaccinationHandler : IRequestHandler<CreateVaccinationCommand, int>
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IApplicationDbContext _context;
 
-        public CreateVaccinationHandler(ApplicationDbContext context)
+        public CreateVaccinationHandler(IApplicationDbContext context)
         {
             _context = context;
         }

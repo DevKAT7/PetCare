@@ -2,7 +2,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using PetCare.Application.Exceptions;
 using PetCare.Application.Features.Notifications.Dtos;
-using PetCare.Infrastructure.Data;
+using PetCare.Application.Interfaces;
 
 namespace PetCare.Application.Features.Notifications.Queries
 {
@@ -13,9 +13,9 @@ namespace PetCare.Application.Features.Notifications.Queries
 
     public class GetNotificationHandler : IRequestHandler<GetNotificationQuery, NotificationReadModel>
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IApplicationDbContext _context;
 
-        public GetNotificationHandler(ApplicationDbContext context)
+        public GetNotificationHandler(IApplicationDbContext context)
         {
             _context = context;
         }

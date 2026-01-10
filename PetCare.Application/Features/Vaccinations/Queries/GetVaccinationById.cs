@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using PetCare.Application.Exceptions;
 using PetCare.Application.Features.Vaccinations.Dtos;
 using PetCare.Core.Models;
-using PetCare.Infrastructure.Data;
+using PetCare.Application.Interfaces;
 
 namespace PetCare.Application.Features.Vaccinations.Queries
 {
@@ -14,16 +14,16 @@ namespace PetCare.Application.Features.Vaccinations.Queries
 
     public class GetVaccinationHandler : IRequestHandler<GetVaccinationQuery, VaccinationReadModel>
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IApplicationDbContext _context;
 
-        public GetVaccinationHandler(ApplicationDbContext context)
+        public GetVaccinationHandler(IApplicationDbContext context)
         {
             _context = context;
         }
 
         public async Task<VaccinationReadModel> Handle(GetVaccinationQuery request, CancellationToken cancellationToken)
         {
-            var vaccination = await _context.Set<Vaccination>()
+            var vaccination = await _context.Vaccinations
                 .FirstOrDefaultAsync(v => v.VaccinationId == request.VaccinationId, cancellationToken);
 
             if (vaccination == null)

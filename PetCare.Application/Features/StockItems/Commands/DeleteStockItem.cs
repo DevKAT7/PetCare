@@ -1,7 +1,8 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using PetCare.Application.Exceptions;
-using PetCare.Infrastructure.Data;
+using PetCare.Application.Interfaces;
+
 
 namespace PetCare.Application.Features.StockItems.Commands
 {
@@ -17,9 +18,9 @@ namespace PetCare.Application.Features.StockItems.Commands
 
     public class DeleteStockItemHandler : IRequestHandler<DeleteStockItemCommand, int>
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IApplicationDbContext _context;
 
-        public DeleteStockItemHandler(ApplicationDbContext context)
+        public DeleteStockItemHandler(IApplicationDbContext context)
         {
             _context = context;
         }

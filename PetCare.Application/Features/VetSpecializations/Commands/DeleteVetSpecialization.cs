@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
 using PetCare.Application.Exceptions;
-using PetCare.Infrastructure.Data;
+using PetCare.Application.Interfaces;
 
 namespace PetCare.Application.Features.VetSpecializations.Commands
 {
@@ -13,9 +13,9 @@ namespace PetCare.Application.Features.VetSpecializations.Commands
 
     public class DeleteVetSpecializationHandler : IRequestHandler<DeleteVetSpecializationCommand, int>
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IApplicationDbContext _context;
 
-        public DeleteVetSpecializationHandler(ApplicationDbContext context)
+        public DeleteVetSpecializationHandler(IApplicationDbContext context)
         {
             _context = context;
         }

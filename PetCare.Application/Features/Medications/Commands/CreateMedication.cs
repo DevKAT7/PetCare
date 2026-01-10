@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using PetCare.Application.Features.Medications.Dtos;
 using PetCare.Application.Exceptions;
 using PetCare.Core.Models;
-using PetCare.Infrastructure.Data;
+using PetCare.Application.Interfaces;
 
 namespace PetCare.Application.Features.Medications.Commands
 {
@@ -14,9 +14,9 @@ namespace PetCare.Application.Features.Medications.Commands
 
     public class CreateMedicationHandler : IRequestHandler<CreateMedicationCommand, int>
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IApplicationDbContext _context;
 
-        public CreateMedicationHandler(ApplicationDbContext context)
+        public CreateMedicationHandler(IApplicationDbContext context)
         {
             _context = context;
         }

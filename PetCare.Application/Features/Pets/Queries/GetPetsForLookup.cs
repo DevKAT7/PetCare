@@ -1,6 +1,6 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
-using PetCare.Infrastructure.Data;
+using PetCare.Application.Interfaces;
 
 namespace PetCare.Application.Features.Pets.Queries
 {
@@ -14,9 +14,9 @@ namespace PetCare.Application.Features.Pets.Queries
 
     public class GetPetsForLookupHandler : IRequestHandler<GetPetsForLookupQuery, List<PetLookupDto>>
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IApplicationDbContext _context;
 
-        public GetPetsForLookupHandler(ApplicationDbContext context)
+        public GetPetsForLookupHandler(IApplicationDbContext context)
         {
             _context = context;
         }

@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using PetCare.Application.Exceptions;
 using PetCare.Application.Features.VetSpecializations.Dtos;
-using PetCare.Infrastructure.Data;
+using PetCare.Application.Interfaces;
 
 namespace PetCare.Application.Features.VetSpecializations.Commands
 {
@@ -20,9 +20,9 @@ namespace PetCare.Application.Features.VetSpecializations.Commands
 
     public class UpdateVetSpecializationHandler : IRequestHandler<UpdateVetSpecializationCommand, int>
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IApplicationDbContext _context;
 
-        public UpdateVetSpecializationHandler(ApplicationDbContext context)
+        public UpdateVetSpecializationHandler(IApplicationDbContext context)
         {
             _context = context;
         }

@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using PetCare.Application.Exceptions;
 using PetCare.Application.Features.Procedures.Dtos;
-using PetCare.Infrastructure.Data;
+using PetCare.Application.Interfaces;
 
 namespace PetCare.Application.Features.Procedures.Queries
 {
@@ -14,9 +14,9 @@ namespace PetCare.Application.Features.Procedures.Queries
 
     public class GetProcedureHandler : IRequestHandler<GetProcedureQuery, ProcedureReadModel>
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IApplicationDbContext _context;
 
-        public GetProcedureHandler(ApplicationDbContext context)
+        public GetProcedureHandler(IApplicationDbContext context)
         {
             _context = context;
         }

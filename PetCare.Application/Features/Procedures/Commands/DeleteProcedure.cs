@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
 using PetCare.Application.Exceptions;
-using PetCare.Infrastructure.Data;
+using PetCare.Application.Interfaces;
 
 namespace PetCare.Application.Features.Procedures.Commands
 {
@@ -13,9 +13,9 @@ namespace PetCare.Application.Features.Procedures.Commands
 
     public class DeleteProcedureHandler : IRequestHandler<DeleteProcedureCommand, int>
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IApplicationDbContext _context;
 
-        public DeleteProcedureHandler(ApplicationDbContext context)
+        public DeleteProcedureHandler(IApplicationDbContext context)
         {
             _context = context;
         }

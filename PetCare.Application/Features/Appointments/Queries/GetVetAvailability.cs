@@ -1,6 +1,6 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
-using PetCare.Infrastructure.Data;
+using PetCare.Application.Interfaces;
 
 namespace PetCare.Application.Features.Appointments.Queries
 {
@@ -13,9 +13,9 @@ namespace PetCare.Application.Features.Appointments.Queries
 
     public class GetVetAvailabilityHandler : IRequestHandler<GetVetAvailabilityQuery, List<TimeSpan>>
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IApplicationDbContext _context;
 
-        public GetVetAvailabilityHandler(ApplicationDbContext context)
+        public GetVetAvailabilityHandler(IApplicationDbContext context)
         {
             _context = context;
         }

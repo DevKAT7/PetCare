@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using PetCare.Application.Exceptions;
 using PetCare.Application.Features.PetOwners.Dto;
 using PetCare.Core.Models;
-using PetCare.Infrastructure.Data;
+using PetCare.Application.Interfaces;
 
 namespace PetCare.Application.Features.PetOwners.Commands
 {
@@ -22,10 +22,10 @@ namespace PetCare.Application.Features.PetOwners.Commands
 
     public class UpdatePetOwnerHandler : IRequestHandler<UpdatePetOwnerCommand, int>
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IApplicationDbContext _context;
         private readonly UserManager<User> _userManager;
 
-        public UpdatePetOwnerHandler(ApplicationDbContext context, UserManager<User> userManager)
+        public UpdatePetOwnerHandler(IApplicationDbContext context, UserManager<User> userManager)
         {
             _context = context;
             _userManager = userManager;

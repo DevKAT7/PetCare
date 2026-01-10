@@ -2,7 +2,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using PetCare.Application.Features.Vaccinations.Dtos;
 using PetCare.Core.Models;
-using PetCare.Infrastructure.Data;
+using PetCare.Application.Interfaces;
 
 namespace PetCare.Application.Features.Vaccinations.Queries
 {
@@ -13,16 +13,16 @@ namespace PetCare.Application.Features.Vaccinations.Queries
 
     public class GetVaccinationsByPetIdHandler : IRequestHandler<GetVaccinationsByPetIdQuery, List<VaccinationReadModel>>
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IApplicationDbContext _context;
 
-        public GetVaccinationsByPetIdHandler(ApplicationDbContext context)
+        public GetVaccinationsByPetIdHandler(IApplicationDbContext context)
         {
             _context = context;
         }
 
         public async Task<List<VaccinationReadModel>> Handle(GetVaccinationsByPetIdQuery request, CancellationToken cancellationToken)
         {
-            var items = await _context.Set<Vaccination>()
+            var items = await _context.Vaccinations
                 .Where(v => v.PetId == request.PetId)
                 .ToListAsync(cancellationToken);
 

@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
 using PetCare.Application.Features.Vets.Dto;
-using PetCare.Infrastructure.Data;
+using PetCare.Application.Interfaces;
 namespace PetCare.Application.Features.Vets.Queries
 {
     public class GetAllVetsQuery : IRequest<List<VetReadModel>>
@@ -10,9 +10,9 @@ namespace PetCare.Application.Features.Vets.Queries
 
     public class GetAllVetsHandler : IRequestHandler<GetAllVetsQuery, List<VetReadModel>>
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IApplicationDbContext _context;
 
-        public GetAllVetsHandler(ApplicationDbContext context)
+        public GetAllVetsHandler(IApplicationDbContext context)
         {
             _context = context;
         }

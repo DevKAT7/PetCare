@@ -2,7 +2,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using PetCare.Application.Features.Medications.Dtos;
 using PetCare.Application.Exceptions;
-using PetCare.Infrastructure.Data;
+using PetCare.Application.Interfaces;
 
 namespace PetCare.Application.Features.Medications.Commands
 {
@@ -20,9 +20,9 @@ namespace PetCare.Application.Features.Medications.Commands
 
     public class UpdateMedicationHandler : IRequestHandler<UpdateMedicationCommand, int>
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IApplicationDbContext _context;
 
-        public UpdateMedicationHandler(ApplicationDbContext context)
+        public UpdateMedicationHandler(IApplicationDbContext context)
         {
             _context = context;
         }

@@ -2,8 +2,8 @@ using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using PetCare.Application.Exceptions;
+using PetCare.Application.Interfaces;
 using PetCare.Core.Models;
-using PetCare.Infrastructure.Data;
 
 namespace PetCare.Application.Features.PetOwners.Commands
 {
@@ -18,10 +18,10 @@ namespace PetCare.Application.Features.PetOwners.Commands
 
     public class DeletePetOwnerHandler : IRequestHandler<DeletePetOwnerCommand, int>
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IApplicationDbContext _context;
         private readonly UserManager<User> _userManager;
 
-        public DeletePetOwnerHandler(ApplicationDbContext context, UserManager<User> userManager)
+        public DeletePetOwnerHandler(IApplicationDbContext context, UserManager<User> userManager)
         {
             _context = context;
             _userManager = userManager;

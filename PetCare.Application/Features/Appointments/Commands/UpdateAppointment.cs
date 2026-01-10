@@ -2,8 +2,8 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using PetCare.Application.Exceptions;
 using PetCare.Application.Features.Appointments.Dtos;
+using PetCare.Application.Interfaces;
 using PetCare.Core.Models;
-using PetCare.Infrastructure.Data;
 
 namespace PetCare.Application.Features.Appointments.Commands
 {
@@ -21,9 +21,9 @@ namespace PetCare.Application.Features.Appointments.Commands
 
     public class UpdateAppointmentHandler : IRequestHandler<UpdateAppointmentCommand, int>
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IApplicationDbContext _context;
 
-        public UpdateAppointmentHandler(ApplicationDbContext context)
+        public UpdateAppointmentHandler(IApplicationDbContext context)
         {
             _context = context;
         }

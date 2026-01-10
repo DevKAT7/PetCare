@@ -1,7 +1,7 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using PetCare.Application.Features.MedicalTests.Dto;
-using PetCare.Infrastructure.Data;
+using PetCare.Application.Interfaces;
 
 namespace PetCare.Application.Features.MedicalTests.Queries
 {
@@ -12,9 +12,9 @@ namespace PetCare.Application.Features.MedicalTests.Queries
 
     public class GetMedicalTestsByPetIdHandler : IRequestHandler<GetMedicalTestsByPetIdQuery, List<MedicalTestReadModel>>
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IApplicationDbContext _context;
 
-        public GetMedicalTestsByPetIdHandler(ApplicationDbContext context)
+        public GetMedicalTestsByPetIdHandler(IApplicationDbContext context)
         {
             _context = context;
         }

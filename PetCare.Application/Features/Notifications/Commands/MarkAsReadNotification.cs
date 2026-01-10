@@ -1,7 +1,7 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using PetCare.Application.Exceptions;
-using PetCare.Infrastructure.Data;
+using PetCare.Application.Interfaces;
 
 namespace PetCare.Application.Features.Notifications.Commands
 {
@@ -17,9 +17,9 @@ namespace PetCare.Application.Features.Notifications.Commands
 
     public class MarkAsReadNotificationHandler : IRequestHandler<MarkAsReadNotificationCommand, int>
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IApplicationDbContext _context;
 
-        public MarkAsReadNotificationHandler(ApplicationDbContext context)
+        public MarkAsReadNotificationHandler(IApplicationDbContext context)
         {
             _context = context;
         }
