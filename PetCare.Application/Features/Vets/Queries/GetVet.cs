@@ -32,8 +32,13 @@ namespace PetCare.Application.Features.Vets.Queries
                         ProfilePictureUrl = vet.ProfilePictureUrl,
                         Description = vet.Description,
                         CareerStartDate = vet.CareerStartDate,
+                        HireDate = vet.HireDate,
+                        Address = vet.Address,
+                    Pesel = vet.Pesel,
                         PhoneNumber = vet.User.PhoneNumber,
-                        Specializations = vet.SpecializationLinks
+                        Email = vet.User.Email,
+                        LicenseNumber = vet.LicenseNumber,
+                    Specializations = vet.SpecializationLinks
                             .Select(link => link.VetSpecialization.Name)
                             .ToList()
                      })

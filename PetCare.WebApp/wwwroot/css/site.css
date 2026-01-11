@@ -115,6 +115,21 @@ body {
         border-color: var(--petcare-dark);
     }
 
+.btn-petcare-outline {
+    background-color: transparent;
+    border: 1px solid var(--petcare-primary);
+    color: var(--petcare-primary);
+    border-radius: 6px;
+    padding: 8px 20px;
+    transition: all 0.3s ease;
+}
+
+    .btn-petcare-outline:hover {
+        background-color: var(--petcare-dark);
+        color: #ffffff;
+        border-color: var(--petcare-dark);
+    }
+
 /*Mobile Responsiveness*/
 @media (max-width: 768px) {
     #sidebar {
@@ -208,7 +223,7 @@ body {
         line-height: 1.2;
     }
 
-    /* Przycisk "View" w karcie */
+    /* Przycisk "Go" w karcie */
     .app-card .btn-view {
         border: none;
         padding: 2px 10px;

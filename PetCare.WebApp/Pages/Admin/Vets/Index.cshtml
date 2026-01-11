@@ -156,16 +156,19 @@
                                     }
                                 </td>
                                 <td class="text-end pe-4">
-                                    <div class="btn-group">
+                                    <div class="d-flex gap-1 justify-content-end">
                                         <a asp-page="/ManageSchedule"
                                            asp-route-vetId="@vet.VetId"
-                                           class="btn btn-primary btn-sm btn-rounded text-white">
-                                            <i class="bi bi-calendar-week"></i> Schedule
+                                           class="btn btn-primary btn-sm text-white d-flex align-items-center">
+                                            <i class="bi bi-calendar-week me-2"></i> Schedule
                                         </a>
-                                        <a asp-page="EditVet" asp-route-id="@vet.VetId" class="btn btn-sm btn-outline-primary" title="Edit">
+                                        <a asp-page="Details" asp-route-id="@vet.VetId" 
+                                            class="btn btn-sm btn-outline-secondary d-flex align-items-center justify-content-center"><i class="bi bi-eye"></i></a>
+                                        <a asp-page="EditVet" asp-route-id="@vet.VetId" 
+                                            class="btn btn-sm btn-outline-primary d-flex align-items-center justify-content-center" title="Edit">
                                             <i class="bi bi-pencil"></i>
                                         </a>
-                                        <button type="button" class="btn btn-sm btn-outline-danger"
+                                        <button type="button" class="btn btn-sm btn-outline-danger d-flex align-items-center justify-content-center"
                                                 data-bs-toggle="modal"
                                                 data-bs-target="#deleteModal"
                                                 data-vet-id="@vet.VetId"
