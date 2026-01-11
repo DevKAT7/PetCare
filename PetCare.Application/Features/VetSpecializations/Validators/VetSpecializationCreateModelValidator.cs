@@ -8,8 +8,8 @@ namespace PetCare.Application.Features.VetSpecializations.Validators
         public VetSpecializationCreateModelValidator()
         {
             RuleFor(x => x.Name)
-                .NotEmpty().WithMessage("Nazwa jest wymagana.")
-                .MaximumLength(50).WithMessage("Nazwa nie mo¿e przekraczaæ 50 znaków.");
+                .NotEmpty().WithMessage("Name is required.")
+                .MaximumLength(50).WithMessage("Name must not exceed 50 characters.");
         }
     }
 }

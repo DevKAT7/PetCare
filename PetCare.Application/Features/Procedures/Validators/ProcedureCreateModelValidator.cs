@@ -8,17 +8,17 @@ namespace PetCare.Application.Features.Procedures.Validators
         public ProcedureCreateModelValidator()
         {
             RuleFor(x => x.Name)
-                .NotEmpty().WithMessage("Nazwa jest wymagana.")
-                .MaximumLength(100).WithMessage("Nazwa nie mo¿e przekraczaæ 100 znaków.");
+                .NotEmpty().WithMessage("Name is required.")
+                .MaximumLength(100).WithMessage("Name must not exceed 100 characters.");
 
             RuleFor(x => x.Price)
-                .GreaterThanOrEqualTo(0).WithMessage("Cena nie mo¿e byæ wartoœci¹ ujemn¹.");
+                .GreaterThan(0).WithMessage("Price must be a positive value.");
 
             RuleFor(x => x.VetSpecializationId)
-                .GreaterThan(0).WithMessage("VetSpecializationId jest wymagany.");
+                .GreaterThan(0).WithMessage("Specialization is required.");
 
             RuleFor(x => x.Description)
-                .MaximumLength(1000).WithMessage("Opis nie mo¿e przekroczyæ 1000 znaków.")
+                .MaximumLength(1000).WithMessage("Description must not exceed 1000 characters.")
                 .When(x => !string.IsNullOrEmpty(x.Description));
         }
     }

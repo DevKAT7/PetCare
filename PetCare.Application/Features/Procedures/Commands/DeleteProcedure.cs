@@ -30,7 +30,24 @@ namespace PetCare.Application.Features.Procedures.Commands
                 throw new NotFoundException("Procedure", request.ProcedureId);
             }
 
-            _context.Procedures.Remove(procedure);
+            if (!procedure.IsActive)
+            {
+                throw new Exception("This procedure is already archived/inactive.");
+            }
+
+            bool isUsedInAppointments = await _context.AppointmentProcedures
+            .AnyAsync(ap => ap.ProcedureId == request.ProcedureId, cancellationToken);
+
+            if (isUsedInAppointments)
+            {
+                procedure.IsActive = false;
+
+                procedure.Name += " (Archived)"; 
+            }
+            else
+            {
+                _context.Procedures.Remove(procedure);
+            }
             await _context.SaveChangesAsync(cancellationToken);
 
             return procedure.ProcedureId;

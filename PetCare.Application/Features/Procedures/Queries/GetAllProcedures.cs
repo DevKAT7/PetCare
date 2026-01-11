@@ -7,14 +7,19 @@ namespace PetCare.Application.Features.Procedures.Queries
 {
     public class GetAllProceduresQuery : IRequest<List<ProcedureReadModel>>
     {
+        public GetAllProceduresQuery() { }
+
         public GetAllProceduresQuery(int? vetSpecializationId = null, bool? isActive = null)
         {
             VetSpecializationId = vetSpecializationId;
             IsActive = isActive;
         }
 
-        public int? VetSpecializationId { get; }
-        public bool? IsActive { get; }
+        public string? SearchTerm { get; set; }
+        public string? SortColumn { get; set; } = "Name";
+        public string? SortDirection { get; set; } = "asc";
+        public int? VetSpecializationId { get; init; }
+        public bool? IsActive { get; set; }
     }
 
     public class GetAllProceduresHandler : IRequestHandler<GetAllProceduresQuery, List<ProcedureReadModel>>
@@ -28,13 +33,31 @@ namespace PetCare.Application.Features.Procedures.Queries
 
         public async Task<List<ProcedureReadModel>> Handle(GetAllProceduresQuery request, CancellationToken cancellationToken)
         {
-            var query = _context.Procedures.AsQueryable();
+            var query = _context.Procedures
+                .Include(p => p.VetSpecialization)
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(request.SearchTerm))
+            {
+                var term = request.SearchTerm.ToLower();
+                query = query.Where(p => p.Name.ToLower().Contains(term));
+            }
 
             if (request.VetSpecializationId.HasValue)
                 query = query.Where(p => p.VetSpecializationId == request.VetSpecializationId.Value);
 
             if (request.IsActive.HasValue)
                 query = query.Where(p => p.IsActive == request.IsActive.Value);
+
+            bool isDesc = request.SortDirection?.ToLower() == "desc";
+
+            query = request.SortColumn switch
+            {
+                "Price" => isDesc ? query.OrderByDescending(p => p.Price) : query.OrderBy(p => p.Price),
+                "Specialization" => isDesc ? query.OrderByDescending(p => p.VetSpecialization.Name) : query.OrderBy(p => p.VetSpecialization.Name),
+                "Status" => isDesc ? query.OrderByDescending(p => p.IsActive) : query.OrderBy(p => p.IsActive),
+                _ => isDesc ? query.OrderByDescending(p => p.Name) : query.OrderBy(p => p.Name)
+            };
 
             return await query
                 .Select(p => new ProcedureReadModel
