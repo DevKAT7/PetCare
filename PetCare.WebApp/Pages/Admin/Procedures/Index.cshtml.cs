@@ -180,7 +180,7 @@ namespace PetCare.WebApp.Pages.Admin.Procedures
 
         public string GetSortIcon(string column)
         {
-            if (SortColumn != column) return "text-muted opacity-25";
+            if (SortColumn != column) return "bi-arrow-down-up text-muted opacity-25";
             return SortDirection == "asc" ? "bi-arrow-up-short" : "bi-arrow-down-short";
         }
     }

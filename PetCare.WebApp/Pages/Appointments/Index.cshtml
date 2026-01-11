@@ -16,7 +16,7 @@
 
     string GetSortIcon(string column)
     {
-        if (Model.SortColumn != column) return "text-muted opacity-25";
+        if (Model.SortColumn != column) return "bi-arrow-down-up text-muted opacity-25";
         return Model.SortDirection == "asc" ? "bi-arrow-up-short" : "bi-arrow-down-short";
     }
 }
