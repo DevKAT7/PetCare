@@ -62,13 +62,19 @@
                     <li>
                         <a asp-area="" asp-page="/Admin/Vets/Index"
                            class="@(ViewContext.RouteData.Values["page"]?.ToString().Contains("/Admin/Vets/Index") == true ? "active" : "")">
-                            <i class="bi bi-person-badge"></i> List of vets
+                            <i class="bi bi-person-badge"></i> List of Vets
                         </a>
                     </li>
                     <li>
                         <a asp-area="" asp-page="/Admin/Vets/CreateVet"
                            class="@(ViewContext.RouteData.Values["page"]?.ToString().Contains("/Admin/Vets/CreateVet") == true ? "active" : "")">
-                            <i class="bi bi-plus-circle"></i> Add new vet
+                            <i class="bi bi-plus-circle"></i> Add New Vet
+                        </a>
+                    </li>
+                    <li>
+                        <a asp-area="" asp-page="/Admin/VetSpecializations/Index"
+                           class="@(ViewContext.RouteData.Values["page"]?.ToString().Contains("/Admin/Specializations") == true ? "active" : "")">
+                            <i class="bi bi-tags"></i> Vet Specializations
                         </a>
                     </li>
                 }

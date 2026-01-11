@@ -31,6 +31,12 @@ namespace PetCare.Application.Features.VetSpecializations.Commands
                 throw new NotFoundException("VetSpecialization", request.VetSpecializationId);
             }
 
+            if (spec.Procedures.Any())
+            {
+                throw new Exception($"Cannot delete '{spec.Name}' because it contains {spec.Procedures.Count} " +
+                    $"linked procedures. Please remove or reassign them first.");
+            }
+
             _context.VetSpecializations.Remove(spec);
             await _context.SaveChangesAsync(cancellationToken);
 

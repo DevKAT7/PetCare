@@ -51,7 +51,7 @@ namespace PetCare.Infrastructure.Data
                 e.HasMany(vs => vs.Procedures)
                     .WithOne(p => p.VetSpecialization)
                     .HasForeignKey(p => p.VetSpecializationId)
-                    .OnDelete(DeleteBehavior.Cascade);
+                    .OnDelete(DeleteBehavior.Restrict);
             });
 
             builder.Entity<VetSpecializationLink>(e =>
