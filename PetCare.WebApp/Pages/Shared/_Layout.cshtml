@@ -38,14 +38,19 @@
                         </a>
                     </li>
                     <li>
-                        <a asp-area="" asp-page="/Admin/Procedures/Index"
-                           class="@(ViewContext.RouteData.Values["page"]?.ToString().Contains("/Admin/Procedures") == true ? "active" : "")">
+                        <a asp-area="" asp-page="/Admin/Procedures/Index" 
+                        class="@(ViewContext.RouteData.Values["page"]?.ToString() == "/Admin/Procedures/Index" ? "active" : "")">
                             <i class="bi bi-bandaid"></i> Medical Procedures
                         </a>
                     </li>
                     <li>
                         <a href="#">
                             <i class="bi bi-people"></i> Patients
+                        </a>
+                    </li>
+                    <li>
+                        <a asp-area="" asp-page="/Medications/Index" class="@(ViewContext.RouteData.Values["page"]?.ToString() == "/Medications/Index" ? "active" : "")">
+                            <i class="bi bi-capsule"></i> Medications
                         </a>
                     </li>
                     <li>
@@ -67,19 +72,19 @@
                     <li class="mt-4 px-3 text-uppercase small text-white-50">Administration</li>
                     <li>
                         <a asp-area="" asp-page="/Admin/Vets/Index"
-                           class="@(ViewContext.RouteData.Values["page"]?.ToString().Contains("/Admin/Vets/Index") == true ? "active" : "")">
+                           class="@(ViewContext.RouteData.Values["page"]?.ToString() == "/Admin/Vets/Index" ? "active" : "")">
                             <i class="bi bi-person-badge"></i> List of Vets
                         </a>
                     </li>
                     <li>
                         <a asp-area="" asp-page="/Admin/Vets/CreateVet"
-                           class="@(ViewContext.RouteData.Values["page"]?.ToString().Contains("/Admin/Vets/CreateVet") == true ? "active" : "")">
+                           class="@(ViewContext.RouteData.Values["page"]?.ToString() == "/Admin/Vets/CreateVet" ? "active" : "")">
                             <i class="bi bi-plus-circle"></i> Add New Vet
                         </a>
                     </li>
                     <li>
                         <a asp-area="" asp-page="/Admin/VetSpecializations/Index"
-                           class="@(ViewContext.RouteData.Values["page"]?.ToString().Contains("/Admin/Specializations") == true ? "active" : "")">
+                           class="@(ViewContext.RouteData.Values["page"]?.ToString() == "/Admin/Specializations" ? "active" : "")">
                             <i class="bi bi-tags"></i> Vet Specializations
                         </a>
                     </li>

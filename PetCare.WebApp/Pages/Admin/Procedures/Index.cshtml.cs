@@ -1,4 +1,3 @@
-using DocumentFormat.OpenXml.Spreadsheet;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -54,7 +53,7 @@ namespace PetCare.WebApp.Pages.Admin.Procedures
             {
                 "active" => true,
                 "inactive" => false,
-                _ => null 
+                _ => null
             };
 
             Procedures = await _mediator.Send(new GetAllProceduresQuery

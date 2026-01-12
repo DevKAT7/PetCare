@@ -8,19 +8,19 @@ namespace PetCare.Application.Features.Medications.Validators
         public MedicationCreateModelValidator()
         {
             RuleFor(x => x.Name)
-                .NotEmpty().WithMessage("Nazwa leku jest wymagana.")
-                .MaximumLength(200).WithMessage("Nazwa może mieć maksymalnie 200 znaków.");
+                .NotEmpty().WithMessage("Medication name is required.")
+                .MaximumLength(200).WithMessage("Medication name can have a maximum of 200 characters.");
 
             RuleFor(x => x.Description)
-                .NotEmpty().WithMessage("Opis leku jest wymagany.")
-                .MaximumLength(500).WithMessage("Opis może mieć maksymalnie 500 znaków.");
+                .NotEmpty().WithMessage("Medication description is required.")
+                .MaximumLength(500).WithMessage("Medication description can have a maximum of 500 characters.");
 
             RuleFor(x => x.Manufacturer)
-                .NotEmpty().WithMessage("Producent leku jest wymagany.")
-                .MaximumLength(100).WithMessage("Producent może mieć maksymalnie 100 znaków.");
+                .NotEmpty().WithMessage("Medication manufacturer is required.")
+                .MaximumLength(100).WithMessage("Manufacturer name can have a maximum of 100 characters.");
 
             RuleFor(x => x.Price)
-                .GreaterThanOrEqualTo(0).WithMessage("Cena musi być nieujemna.");
+                .GreaterThanOrEqualTo(0).WithMessage("Price must be greater than zero.");
         }
     }
 }
