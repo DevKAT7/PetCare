@@ -8,13 +8,13 @@ namespace PetCare.Application.Features.StockItems.Validators
         public StockItemCreateModelValidator()
         {
             RuleFor(x => x.CurrentStock)
-                .GreaterThanOrEqualTo(0).WithMessage("Stan magazynowy nie może być ujemny.");
+                .GreaterThanOrEqualTo(0).WithMessage("Stock level cannot be negative.");
 
             RuleFor(x => x.ReorderLevel)
-                .GreaterThanOrEqualTo(0).WithMessage("Poziom ponownego zamówienia nie może być ujemny.");
+                .GreaterThanOrEqualTo(0).WithMessage("Reorder level cannot be negative.");
 
             RuleFor(x => x.MedicationId)
-                .GreaterThan(0).WithMessage("Id leku jest wymagane.");
+                .GreaterThan(0).WithMessage("Medication is required.");
         }
     }
 }
