@@ -14,22 +14,8 @@
                 <div class="card-body p-4">
 
                     <form method="post">
+                        <div asp-validation-summary="All" class="text-danger"></div>
                         <input type="hidden" asp-for="Input.AppointmentId" />
-
-                        <div class="alert alert-light border shadow-sm mb-4">
-                            <div class="row align-items-center">
-                                <div class="col-md-8">
-                                    <label asp-for="SelectedTemplateId" class="fw-bold mb-1"><i class="bi bi-printer me-1"></i>Print Template</label>
-                                    <small class="d-block text-muted mb-2">Select the document format for export.</small>
-                                    <select asp-for="SelectedTemplateId" asp-items="Model.TemplateOptions" class="form-select">
-                                    </select>
-                                </div>
-                                <div class="col-md-4 text-end text-muted">
-                                    <i class="bi bi-file-earmark-word fs-3 me-2"></i>
-                                    <i class="bi bi-file-earmark-pdf fs-3"></i>
-                                </div>
-                            </div>
-                        </div>
 
                         <h5 class="text-secondary border-bottom pb-2 mb-3">Treatment Details</h5>
 
@@ -80,7 +66,7 @@
 
                         <div class="d-flex justify-content-between mt-4">
                             <a asp-page="/Appointments/Details" asp-route-id="@Model.Input.AppointmentId" class="btn btn-light border">Cancel</a>
-                            <button type="submit" class="btn btn-success px-4">
+                            <button type="submit" class="btn btn-primary px-4">
                                 <i class="bi bi-save me-2"></i> Save Prescription
                             </button>
                         </div>

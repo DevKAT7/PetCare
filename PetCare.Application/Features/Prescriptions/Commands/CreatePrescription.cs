@@ -32,12 +32,38 @@ namespace PetCare.Application.Features.Prescriptions.Commands
                 throw new NotFoundException("Appointment not found.");
             }
 
-            var medicationExists = await _context.Medications.AnyAsync(m => m.MedicationId == model.MedicationId, cancellationToken);
+            var stockItem = await _context.StockItems
+                .Include(s => s.Medication)
+                .FirstOrDefaultAsync(s => s.MedicationId == model.MedicationId, cancellationToken);
 
-            if (!medicationExists)
+            if (stockItem == null)
             {
-                throw new NotFoundException("Medication not found.");
+                var medExists = await _context.Medications.AnyAsync(m => m.MedicationId == model.MedicationId, cancellationToken);
+                if (!medExists)
+                {
+                    throw new NotFoundException("Medication not found.");
+                }
+
+                throw new InvalidOperationException($"No stock record for medication. Cannot dispense.");
             }
+
+            if (stockItem.CurrentStock < model.PacksToDispense)
+            {
+                throw new InvalidOperationException($"Not enough stock for '{stockItem.Medication.Name}'. " +
+                    $"Available: {stockItem.CurrentStock}, Requested: {model.PacksToDispense}");
+            }
+
+            stockItem.CurrentStock -= model.PacksToDispense;
+
+            var transaction = new StockTransaction
+            {
+                MedicationId = model.MedicationId,
+                QuantityChange = -model.PacksToDispense,
+                Reason = $"Prescription for Appointment #{model.AppointmentId}",
+                Timestamp = DateTime.Now
+            };
+
+            _context.StockTransactions.Add(transaction);
 
             var prescription = new Prescription
             {

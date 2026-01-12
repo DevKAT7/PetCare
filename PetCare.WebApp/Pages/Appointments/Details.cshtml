@@ -206,21 +206,18 @@
         {
                 <text>
                 var msg = '@TempData["SuccessMessage"]';
-                var tmpl = '@TempData["PreferredTemplate"]';
 
-                // Tworzymy element alertu dynamicznie
                 var alertHtml = `
-                    <div class="alert alert-success alert-dismissible fade show fixed-top m-3 shadow" role="alert" style="z-index: 1050; max-width: 500px; left: 50%; transform: translateX(-50%);">
+                    <div class="alert alert-success alert-dismissible fade show fixed-top m-3 shadow" role="alert" 
+                        style="z-index: 1050; max-width: 500px; left: 50%; transform: translateX(-50%);">
                         <strong><i class="bi bi-check-circle-fill me-2"></i>Success!</strong> ${msg}
                         <hr>
-                        <p class="mb-0 small">You chose the <strong>${tmpl === 'nfz_word' ? 'Word' : 'PDF'}</strong> template.</p>
                         <p class="mb-0 small">Find the prescription in the list below and click the download icon.</p>
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                 `;
                 document.body.insertAdjacentHTML('afterbegin', alertHtml);
 
-                // Automatyczne znikanie po 5 sek
                 setTimeout(function() {
                     var alert = document.querySelector('.alert');
                     if(alert) {

@@ -21,11 +21,7 @@ namespace PetCare.WebApp.Pages.Prescriptions
         [BindProperty]
         public PrescriptionCreateModel Input { get; set; } = new();
 
-        [BindProperty]
-        public string SelectedTemplateId { get; set; }
-
         public SelectList MedicationOptions { get; set; }
-        public SelectList TemplateOptions { get; set; }
 
         public async Task<IActionResult> OnGetAsync(int appointmentId)
         {
@@ -50,7 +46,6 @@ namespace PetCare.WebApp.Pages.Prescriptions
                 var prescriptionId = await _mediator.Send(new CreatePrescriptionCommand { Prescription = Input });
 
                 TempData["SuccessMessage"] = "Prescription issued successfully.";
-                TempData["PreferredTemplate"] = SelectedTemplateId;
 
                 return RedirectToPage("/Appointments/Details", new { id = Input.AppointmentId });
             }
@@ -70,6 +65,18 @@ namespace PetCare.WebApp.Pages.Prescriptions
                 await LoadOptions();
                 return Page();
             }
+            catch (InvalidOperationException ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+                await LoadOptions();
+                return Page();
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, "An unexpected error occurred: " + ex.Message);
+                await LoadOptions();
+                return Page();
+            }
         }
 
         private async Task LoadOptions()
@@ -79,18 +86,12 @@ namespace PetCare.WebApp.Pages.Prescriptions
             var medItems = medicationsList.Select(m => new
             {
                 Id = m.MedicationId,
-                DisplayName = $"{m.Name} - {m.Price:C}"
+                DisplayName = m.CurrentStock > 0
+                    ? $"{m.Name} - {m.Price:C} (Stock: {m.CurrentStock})"
+                    : $"{m.Name} - {m.Price:C} [OUT OF STOCK]"
             });
 
             MedicationOptions = new SelectList(medItems, "Id", "DisplayName");
-
-            var templates = new List<object>
-            {
-                new { Id = "nfz_word", Name = "National Health Fund (Word)" },
-                new { Id = "standard_pdf", Name = "Standard Prescription (PDF)" },
-                new { Id = "custom_print", Name = "Clinic Letterhead (Recommendations)" }
-            };
-            TemplateOptions = new SelectList(templates, "Id", "Name", "nfz_word");
         }
     }
 }
