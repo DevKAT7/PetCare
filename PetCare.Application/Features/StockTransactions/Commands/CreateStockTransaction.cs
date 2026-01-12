@@ -49,8 +49,8 @@ namespace PetCare.Application.Features.StockTransactions.Commands
 
             if (stockItem.CurrentStock < 0)
             {
-                throw new BadRequestException($"Niewystarczaj¹ca iloœæ towaru w magazynie. " +
-                    $"Obecny stan: {stockItem.CurrentStock - model.QuantityChange}, Próba odjêcia: {Math.Abs(model.QuantityChange)}");
+                throw new BadRequestException($"Insufficient storage quantity. " +
+                    $"Current stock: {stockItem.CurrentStock - model.QuantityChange}, Attempted deduction: {Math.Abs(model.QuantityChange)}");
             }
 
             var transaction = new StockTransaction
