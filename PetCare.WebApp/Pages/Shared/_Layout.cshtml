@@ -38,6 +38,12 @@
                         </a>
                     </li>
                     <li>
+                        <a asp-area="" asp-page="/Admin/Procedures/Index"
+                           class="@(ViewContext.RouteData.Values["page"]?.ToString().Contains("/Admin/Procedures") == true ? "active" : "")">
+                            <i class="bi bi-bandaid"></i> Medical Procedures
+                        </a>
+                    </li>
+                    <li>
                         <a href="#">
                             <i class="bi bi-people"></i> Patients
                         </a>
@@ -75,12 +81,6 @@
                         <a asp-area="" asp-page="/Admin/VetSpecializations/Index"
                            class="@(ViewContext.RouteData.Values["page"]?.ToString().Contains("/Admin/Specializations") == true ? "active" : "")">
                             <i class="bi bi-tags"></i> Vet Specializations
-                        </a>
-                    </li>
-                    <li>
-                        <a asp-area="" asp-page="/Admin/Procedures/Index"
-                           class="@(ViewContext.RouteData.Values["page"]?.ToString().Contains("/Admin/Procedures") == true ? "active" : "")">
-                            <i class="bi bi-bandaid"></i> Medical Procedures
                         </a>
                     </li>
                 }

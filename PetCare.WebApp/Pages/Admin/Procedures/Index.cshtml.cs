@@ -12,7 +12,7 @@ using PetCare.Application.Features.VetSpecializations.Queries;
 
 namespace PetCare.WebApp.Pages.Admin.Procedures
 {
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin, Employee")]
     public class IndexModel : PageModel
     {
         private readonly IMediator _mediator;
@@ -75,6 +75,8 @@ namespace PetCare.WebApp.Pages.Admin.Procedures
 
         public async Task<IActionResult> OnPostCreateAsync()
         {
+            if (!User.IsInRole("Admin")) return Forbid();
+
             if (!ModelState.IsValid)
             {
                 await LoadDataAsync();
@@ -109,6 +111,8 @@ namespace PetCare.WebApp.Pages.Admin.Procedures
 
         public async Task<IActionResult> OnPostEditAsync()
         {
+            if (!User.IsInRole("Admin")) return Forbid();
+
             if (!ModelState.IsValid)
             {
                 await LoadDataAsync();
@@ -143,6 +147,8 @@ namespace PetCare.WebApp.Pages.Admin.Procedures
 
         public async Task<IActionResult> OnPostDeleteAsync()
         {
+            if (!User.IsInRole("Admin")) return Forbid();
+
             try
             {
                 await _mediator.Send(new DeleteProcedureCommand(SelectedId));
