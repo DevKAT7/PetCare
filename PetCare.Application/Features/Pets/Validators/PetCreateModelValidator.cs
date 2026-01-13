@@ -8,25 +8,26 @@ namespace PetCare.Application.Features.Pets.Validators
         public PetCreateModelValidator()
         {
             RuleFor(x => x.Name)
-                .NotEmpty().WithMessage("Nazwa jest wymagana.")
-                .MaximumLength(50).WithMessage("Nazwa nie może przekraczać 50 znaków.");
+                .NotEmpty().WithMessage("Name is required.")
+                .MaximumLength(50).WithMessage("Name cannot exceed 50 characters.");
 
             RuleFor(x => x.Species)
-                .NotEmpty().WithMessage("Gatunek jest wymagany.")
-                .MaximumLength(50).WithMessage("Gatunek nie może przekraczać 50 znaków.");
+                .NotEmpty().WithMessage("Species is required.")
+                .MaximumLength(50).WithMessage("Species cannot exceed 50 characters.");
 
             RuleFor(x => x.Breed)
-                .MaximumLength(50).WithMessage("Rasa nie może przekraczać 50 znaków.");
+                .MaximumLength(50).WithMessage("Breed cannot exceed 50 characters.");
 
             RuleFor(x => x.DateOfBirth)
-                .LessThanOrEqualTo(DateTime.Now).WithMessage("Data urodzenia nie może być w przyszłości.");
+                .LessThanOrEqualTo(DateTime.Now).WithMessage("Date of birth cannot be in the future.");
 
             RuleFor(x => x.PetOwnerId)
-                .GreaterThan(0).WithMessage("PetOwnerId jest wymagany.");
+                .GreaterThan(0).WithMessage("Pet Owner is required.");
 
             RuleFor(x => x.ImageUrl)
                 .Must(uri => string.IsNullOrEmpty(uri) || Uri.IsWellFormedUriString(uri, UriKind.Absolute))
-                .WithMessage("Niepoprawny URL obrazu.");
+                .WithMessage("Invalid image URL.");
         }
+
     }
 }

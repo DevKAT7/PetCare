@@ -1,5 +1,3 @@
-using System.ComponentModel.DataAnnotations;
-
 namespace PetCare.Application.Features.Vaccinations.Dtos
 {
     public class VaccinationCreateModel

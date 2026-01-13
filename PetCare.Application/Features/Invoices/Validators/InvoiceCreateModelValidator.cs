@@ -8,20 +8,30 @@ namespace PetCare.Application.Features.Invoices.Validators
         public InvoiceCreateModelValidator()
         {
             RuleFor(x => x.InvoiceDate)
-                .NotEmpty().WithMessage("Data faktury jest wymagana.");
-            RuleFor(x => x.DueDate)
-                .NotEmpty().WithMessage("Termin płatności jest wymagany.");
-            RuleFor(x => x.PetOwnerId)
-                .GreaterThan(0).WithMessage("PetOwnerId jest wymagane.");
-            RuleFor(x => x.AppointmentId)
-                .GreaterThan(0).WithMessage("AppointmentId jest wymagane.");
+                .NotEmpty().WithMessage("Invoice date is required.");
 
-            RuleFor(x => x.Items).NotNull().WithMessage("Items nie może być puste.");
+            RuleFor(x => x.DueDate)
+                .NotEmpty().WithMessage("Due date is required.");
+
+            RuleFor(x => x.PetOwnerId)
+                .GreaterThan(0).WithMessage("PetOwner is required.");
+
+            RuleFor(x => x.AppointmentId)
+                .GreaterThan(0).WithMessage("Appointment is required.");
+
+            RuleFor(x => x.Items)
+                .NotNull().WithMessage("Items cannot be null.");
+
             RuleForEach(x => x.Items).ChildRules(items =>
             {
-                items.RuleFor(i => i.Description).NotEmpty().WithMessage("Opis pozycji jest wymagany.");
-                items.RuleFor(i => i.UnitPrice).GreaterThanOrEqualTo(0).WithMessage("Cena jednostkowa nie może być ujemna.");
-                items.RuleFor(i => i.Quantity).GreaterThan(0).WithMessage("Ilość musi być większa od 0.");
+                items.RuleFor(i => i.Description)
+                    .NotEmpty().WithMessage("Item description is required.");
+
+                items.RuleFor(i => i.UnitPrice)
+                    .GreaterThanOrEqualTo(0).WithMessage("Unit price cannot be negative.");
+
+                items.RuleFor(i => i.Quantity)
+                    .GreaterThan(0).WithMessage("Quantity must be greater than 0.");
             });
         }
     }
