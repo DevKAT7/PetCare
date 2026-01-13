@@ -1,7 +1,7 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using PetCare.Application.Features.MedicalTests.Commands;
-using PetCare.Application.Features.MedicalTests.Dto;
+using PetCare.Application.Features.MedicalTests.Dtos;
 using PetCare.Application.Features.MedicalTests.Queries;
 
 namespace PetCare.Api.Controllers
@@ -41,7 +41,7 @@ namespace PetCare.Api.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody] MedicalTestCreateModel request)
+        public async Task<IActionResult> Update(int id, [FromBody] MedicalTestUpdateModel request)
         {
             var command = new UpdateMedicalTestCommand(id, request);
             var result = await _mediator.Send(command);

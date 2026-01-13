@@ -9,9 +9,9 @@ namespace PetCare.Core.Models
         [MaxLength(200)]
         public string TestName { get; set; } = string.Empty;
         [MaxLength(2000)]
-        public string Result { get; set; } = string.Empty;
+        public string? Result { get; set; }
         public DateOnly TestDate { get; set; }
-        public string AttachmentUrl { get; set; } = string.Empty;
+        public string? AttachmentUrl { get; set; }
         public int PetId { get; set; }
         public Pet Pet { get; set; } = null!;
         public int AppointmentId { get; set; }

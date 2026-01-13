@@ -16,6 +16,7 @@ namespace PetCare.Core.Models
         public string Instructions { get; set; } = null!;
         [Range(1, 20)]
         public int PacksToDispense { get; set; } = 1;
+        public DateOnly CreatedDate { get; set; }
         public int AppointmentId { get; set; }
         public Appointment Appointment { get; set; } = null!;
         public int MedicationId { get; set; }

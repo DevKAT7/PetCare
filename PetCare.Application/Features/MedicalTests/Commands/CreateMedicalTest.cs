@@ -1,6 +1,6 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using PetCare.Application.Features.MedicalTests.Dto;
+using PetCare.Application.Features.MedicalTests.Dtos;
 using PetCare.Application.Exceptions;
 using PetCare.Core.Models;
 using PetCare.Application.Interfaces;

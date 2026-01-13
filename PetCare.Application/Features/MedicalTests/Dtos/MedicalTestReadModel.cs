@@ -1,4 +1,4 @@
-namespace PetCare.Application.Features.MedicalTests.Dto
+namespace PetCare.Application.Features.MedicalTests.Dtos
 {
     public class MedicalTestReadModel
     {
