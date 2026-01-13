@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using PetCare.Application.Features.Appointments.Dto;
 using PetCare.Application.Features.Appointments.Queries;
+using PetCare.Application.Features.MedicalTests.Dtos;
+using PetCare.Application.Features.MedicalTests.Queries;
 using PetCare.Application.Features.Prescriptions.Dtos;
 using PetCare.Application.Features.Prescriptions.Queries;
 using PetCare.Application.Interfaces;
@@ -24,6 +26,8 @@ namespace PetCare.WebApp.Pages.Appointments
 
         public List<PrescriptionReadModel> Prescriptions { get; private set; } = new();
 
+        public List<MedicalTestReadModel> MedicalTests { get; set; } = new();
+
         public int petAge { get; set; }
 
         public async Task<IActionResult> OnGetAsync(int id)
@@ -38,6 +42,8 @@ namespace PetCare.WebApp.Pages.Appointments
             }
 
             Prescriptions = await _mediator.Send(new GetPrescriptionsByAppointmentIdQuery { AppointmentId = id });
+
+            MedicalTests = await _mediator.Send(new GetMedicalTestsByAppointmentIdQuery { AppointmentId = id });
 
             return Page();
         }

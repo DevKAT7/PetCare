@@ -1,0 +1,88 @@
+﻿@page "{id:int}"
+@model PetCare.WebApp.Pages.MedicalTests.EditMedicalTestModel
+@{
+    ViewData["Title"] = "Edit Medical Test";
+}
+
+<div class="container mt-4" style="max-width: 600px;">
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3>Edit Medical Test</h3>
+        <a asp-page="/Appointments/Details" asp-route-id="@Model.AppointmentId" class="btn btn-outline-secondary btn-sm">
+            <i class="bi bi-arrow-left"></i> Back to Visit
+        </a>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+            <form method="post" asp-page-handler="Edit">
+
+                <input type="hidden" asp-for="MedicalTestId" />
+                <input type="hidden" asp-for="AppointmentId" />
+
+                <div class="mb-3">
+                    <label class="form-label text-muted small text-uppercase fw-bold">Date Ordered</label>
+                    <input type="text" class="form-control bg-light" value="@Model.TestDate.ToString("yyyy-MM-dd")" readonly />
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Input.TestName" class="form-label fw-bold">Test Name</label>
+                    <input asp-for="Input.TestName" class="form-control" placeholder="e.g. Blood Count" />
+                    <span asp-validation-for="Input.TestName" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Input.Result" class="form-label fw-bold">Results / Interpretation</label>
+                    <textarea asp-for="Input.Result" class="form-control" rows="5" placeholder="Enter detailed results here..."></textarea>
+                    <span asp-validation-for="Input.Result" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Input.AttachmentUrl" class="form-label">Attachment URL (Optional)</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-link-45deg"></i></span>
+                        <input asp-for="Input.AttachmentUrl" class="form-control" placeholder="https://..." />
+                    </div>
+                    <div class="form-text">Link to external file or cloud storage.</div>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top">
+                    <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                        <i class="bi bi-trash"></i> Delete Test
+                    </button>
+
+                    <button type="submit" class="btn btn-primary px-4">
+                        <i class="bi bi-check-lg me-2"></i>Save Changes
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirm Deletion</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete the test <strong>@Model.Input.TestName</strong>?</p>
+                <p class="text-danger small mb-0">This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form method="post" asp-page-handler="Delete">
+                    <input type="hidden" asp-for="MedicalTestId" />
+                    <input type="hidden" asp-for="AppointmentId" />
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
