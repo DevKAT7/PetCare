@@ -2,7 +2,6 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using PetCare.Application.Exceptions;
 using PetCare.Application.Features.Vaccinations.Dtos;
-using PetCare.Core.Models;
 using PetCare.Application.Interfaces;
 
 namespace PetCare.Application.Features.Vaccinations.Queries

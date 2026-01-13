@@ -1,26 +1,27 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using PetCare.Application.Features.MedicalTests.Commands;
-using PetCare.Application.Features.MedicalTests.Dtos;
+using PetCare.Application.Features.Vaccinations.Commands;
+using PetCare.Application.Features.Vaccinations.Dtos;
 using ValidationException = PetCare.Application.Exceptions.ValidationException;
 
-namespace PetCare.WebApp.Pages.MedicalTests
+namespace PetCare.WebApp.Pages.Vaccinations
 {
-    public class CreateMedicalTestModel : PageModel
+    public class CreateVaccinationModel : PageModel
     {
         private readonly IMediator _mediator;
-
-        public CreateMedicalTestModel(IMediator mediator) => _mediator = mediator;
+        public CreateVaccinationModel(IMediator mediator) => _mediator = mediator;
 
         [BindProperty]
-        public MedicalTestCreateModel Input { get; set; } = new();
+        public VaccinationCreateModel Input { get; set; } = new();
 
         public void OnGet(int appointmentId, int petId)
         {
             Input.AppointmentId = appointmentId;
             Input.PetId = petId;
-            Input.TestDate = DateOnly.FromDateTime(DateTime.Today);
+            Input.VaccinationDate = DateOnly.FromDateTime(DateTime.Today);
+
+            Input.NextDueDate = DateOnly.FromDateTime(DateTime.Today.AddYears(1));
         }
 
         public async Task<IActionResult> OnPostAsync()
@@ -29,17 +30,17 @@ namespace PetCare.WebApp.Pages.MedicalTests
 
             try
             {
-                var command = new CreateMedicalTestCommand { MedicalTest = Input };
+                var command = new CreateVaccinationCommand { Vaccination = Input };
                 await _mediator.Send(command);
 
-                TempData["SuccessMessage"] = "Medical test ordered successfully!";
-                return RedirectToPage("/Appointments/Details", new { id = Input.AppointmentId }); ;
+                TempData["SuccessMessage"] = "Vaccination added successfully!";
+                return RedirectToPage("/Appointments/Details", new { id = Input.AppointmentId });
             }
             catch (ValidationException ex)
             {
                 foreach (var error in ex.Errors)
                 {
-                    ModelState.AddModelError($"Input.{error.Key}", error.Value.First());
+                    ModelState.AddModelError($"NewAppointment.{error.Key}", error.Value.First());
                 }
                 return Page();
             }

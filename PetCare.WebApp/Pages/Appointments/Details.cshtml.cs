@@ -7,6 +7,8 @@ using PetCare.Application.Features.MedicalTests.Dtos;
 using PetCare.Application.Features.MedicalTests.Queries;
 using PetCare.Application.Features.Prescriptions.Dtos;
 using PetCare.Application.Features.Prescriptions.Queries;
+using PetCare.Application.Features.Vaccinations.Dtos;
+using PetCare.Application.Features.Vaccinations.Queries;
 using PetCare.Application.Interfaces;
 
 namespace PetCare.WebApp.Pages.Appointments
@@ -28,6 +30,8 @@ namespace PetCare.WebApp.Pages.Appointments
 
         public List<MedicalTestReadModel> MedicalTests { get; set; } = new();
 
+        public List<VaccinationReadModel> Vaccinations { get; set; } = new();
+
         public int petAge { get; set; }
 
         public async Task<IActionResult> OnGetAsync(int id)
@@ -44,6 +48,8 @@ namespace PetCare.WebApp.Pages.Appointments
             Prescriptions = await _mediator.Send(new GetPrescriptionsByAppointmentIdQuery { AppointmentId = id });
 
             MedicalTests = await _mediator.Send(new GetMedicalTestsByAppointmentIdQuery { AppointmentId = id });
+
+            Vaccinations = await _mediator.Send(new GetVaccinationsByAppointmentIdQuery { AppointmentId = id });
 
             return Page();
         }
