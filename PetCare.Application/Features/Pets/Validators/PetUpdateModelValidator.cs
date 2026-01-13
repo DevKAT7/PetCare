@@ -19,7 +19,9 @@ namespace PetCare.Application.Features.Pets.Validators
                 .MaximumLength(50).WithMessage("Breed cannot exceed 50 characters.");
 
             RuleFor(x => x.DateOfBirth)
-                .LessThanOrEqualTo(DateTime.Now).WithMessage("Date of birth cannot be in the future.");
+                .NotEmpty().WithMessage("Date of birth is required.")
+                .Must(date => date.Date <= DateTime.Today)
+                .WithMessage("Date of birth cannot be in the future.");
 
             RuleFor(x => x.ImageUrl)
                 .Must(uri => string.IsNullOrEmpty(uri) || Uri.IsWellFormedUriString(uri, UriKind.Absolute))

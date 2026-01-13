@@ -10,5 +10,6 @@ namespace PetCare.Application.Features.Pets.Dto
         public DateTime DateOfBirth { get; set; }
         public bool IsMale { get; set; }
         public string? ImageUrl { get; set; }
+        public int PetOwnerId { get; set; }
     }
 }

@@ -42,6 +42,7 @@ namespace PetCare.Application.Features.Pets.Commands
             pet.DateOfBirth = DateOnly.FromDateTime(request.Pet.DateOfBirth);
             pet.IsMale = request.Pet.IsMale;
             pet.ImageUrl = request.Pet.ImageUrl;
+            pet.PetOwnerId = request.Pet.PetOwnerId;
 
             await _context.SaveChangesAsync(cancellationToken);
 
