@@ -20,7 +20,7 @@ namespace PetCare.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllPets([FromQuery] int? ownerId)
         {
-            var query = new GetAllPetsQuery(ownerId);
+            var query = new GetAllPetsByOwnerQuery(ownerId);
             var result = await _mediator.Send(query);
             return Ok(result);
         }

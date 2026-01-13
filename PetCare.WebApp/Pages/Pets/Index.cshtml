@@ -1,0 +1,233 @@
+﻿@page
+@model PetCare.WebApp.Pages.Pets.IndexModel
+@{
+    ViewData["Title"] = "Patients List";
+
+    string GetNextSort(string column)
+    {
+        if (Model.SortColumn == column)
+            return Model.SortDirection == "asc" ? "desc" : "asc";
+        return "asc";
+    }
+
+    string GetSortIcon(string column)
+    {
+        if (Model.SortColumn != column) return "bi-arrow-down-up text-muted opacity-25";
+        return Model.SortDirection == "asc" ? "bi-arrow-up-short" : "bi-arrow-down-short";
+    }
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>Patients</h2>
+    <a asp-page="Create" class="btn btn-primary">
+        <i class="bi bi-plus-lg"></i> Add New Patient
+    </a>
+</div>
+
+<partial name="_StatusMessage" model='TempData["SuccessMessage"]' />
+
+<div class="card shadow-sm mb-4">
+    <div class="card-body bg-light">
+        <form method="get" class="row g-3">
+            <input type="hidden" asp-for="SortColumn" />
+            <input type="hidden" asp-for="SortDirection" />
+
+            <div class="col-md-4">
+                <input type="text" asp-for="SearchTerm" class="form-control" placeholder="Search by Name, Owner or Date...">
+            </div>
+
+            <div class="col-md-2">
+                <select asp-for="FilterSpecies" asp-items="Model.SpeciesOptions" class="form-select">
+                    <option value="">Status: All Species</option>
+                </select>
+            </div>
+
+            <div class="col-md-2">
+                <select asp-for="FilterSex" asp-items="Model.SexOptions" class="form-select">
+                    <option value="">Sex: All</option>
+                </select>
+            </div>
+
+            <div class="col-md-2 d-flex gap-2">
+                <button type="submit"
+                        class="btn btn-secondary btn-sm flex-grow-1 d-flex align-items-center justify-content-center"
+                        title="Apply filters">
+                    <i class="bi bi-funnel me-2"></i> Filter
+                </button>
+                <a asp-page="./Index"
+                   class="btn btn-outline-secondary btn-sm flex-grow-1 d-flex align-items-center justify-content-center"
+                   title="Clear filters">
+                    Clear
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover table-striped align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th scope="col" class="ps-4">
+                            <a asp-page="./Index"
+                               asp-route-sortColumn="Name"
+                               asp-route-sortDirection="@GetNextSort("Name")"
+                               asp-route-searchTerm="@Model.SearchTerm"
+                               asp-route-filterSpecies="@Model.FilterSpecies"
+                               asp-route-filterSex="@Model.FilterSex"
+                               class="text-decoration-none text-dark d-flex align-items-center">
+                                Patient <i class="bi fs-5 ms-1 @GetSortIcon("Name")"></i>
+                            </a>
+                        </th>
+
+                        <th scope="col">
+                            <a asp-page="./Index" asp-route-sortColumn="Species" asp-route-sortDirection="@GetNextSort("Species")" class="text-decoration-none text-dark d-flex align-items-center">
+                                Species <i class="bi fs-5 ms-1 @GetSortIcon("Species")"></i>
+                            </a>
+                        </th>
+
+                        <th scope="col">
+                            <a asp-page="./Index" asp-route-sortColumn="Sex" asp-route-sortDirection="@GetNextSort("Sex")" class="text-decoration-none text-dark d-flex align-items-center">
+                                Sex <i class="bi fs-5 ms-1 @GetSortIcon("Sex")"></i>
+                            </a>
+                        </th>
+
+                        <th scope="col">
+                            <a asp-page="./Index" asp-route-sortColumn="DateOfBirth" asp-route-sortDirection="@GetNextSort("DateOfBirth")" class="text-decoration-none text-dark d-flex align-items-center">
+                                Age / Date of Birth <i class="bi fs-5 ms-1 @GetSortIcon("DateOfBirth")"></i>
+                            </a>
+                        </th>
+
+                        <th scope="col">
+                            <a asp-page="./Index" asp-route-sortColumn="OwnerFullName" asp-route-sortDirection="@GetNextSort("OwnerFullName")" class="text-decoration-none text-dark d-flex align-items-center">
+                                Owner <i class="bi fs-5 ms-1 @GetSortIcon("OwnerFullName")"></i>
+                            </a>
+                        </th>
+
+                        <th scope="col" class="text-end pe-4">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!Model.Pets.Any())
+                    {
+                        <tr>
+                            <td colspan="6" class="text-center py-5 text-muted">
+                                <i class="bi bi-search display-6 opacity-25 mb-3 d-block"></i>
+                                No patients found matching your criteria.
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        @foreach (var pet in Model.Pets)
+                        {
+                            <tr>
+                                <td class="ps-4">
+                                    <div class="d-flex align-items-center">
+                                        @if (!string.IsNullOrEmpty(pet.ImageUrl))
+                                        {
+                                            <img src="@pet.ImageUrl" alt="@pet.Name" class="rounded-circle me-3 object-fit-cover shadow-sm" style="width: 48px; height: 48px;">
+                                        }
+                                        else
+                                        {
+                                            <div class="rounded-circle me-3 bg-light text-secondary d-flex align-items-center justify-content-center border" style="width: 48px; height: 48px; font-size: 1.2rem;">
+                                                <i class="bi bi-paw"></i>
+                                            </div>
+                                        }
+                                        <div>
+                                            <div class="fw-bold text-primary">@pet.Name</div>
+                                            <small class="text-muted">@pet.Breed</small>
+                                        </div>
+                                    </div>
+                                </td>
+
+                                <td>@pet.Species</td>
+
+                                <td>
+                                    @if (pet.IsMale)
+                                    {
+                                        <span class="badge bg-blue-light text-primary border border-primary-subtle"><i class="bi bi-gender-male"></i> Male</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-pink-light text-danger border border-danger-subtle"><i class="bi bi-gender-female"></i> Female</span>
+                                    }
+                                </td>
+
+                                <td>
+                                    <div>@pet.DateOfBirth.ToShortDateString()</div>
+                                    <small class="text-muted">
+                                        @{
+                                            var age = DateTime.Today.Year - pet.DateOfBirth.Year;
+                                            if (pet.DateOfBirth > DateTime.Today.AddYears(-age)) age--;
+                                        }
+                                        (@age years)
+                                    </small>
+                                </td>
+
+                                <td>
+                                    <a asp-page="/Owners/Details" asp-route-id="@pet.PetOwnerId" class="text-decoration-none text-dark fw-medium">
+                                        @pet.PetOwnerName
+                                    </a>
+                                </td>
+
+                                <td class="text-end pe-4">
+                                    <div class="d-flex gap-1 justify-content-end">
+                                        <a asp-page="Details" asp-route-id="@pet.PetId" class="btn btn-sm btn-outline-secondary" title="View Details">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        <a asp-page="Edit" asp-route-id="@pet.PetId" class="btn btn-sm btn-outline-primary" title="Edit">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <button type="button" class="btn btn-sm btn-outline-danger"
+                                                data-bs-toggle="modal" data-bs-target="#deleteModal"
+                                                data-id="@pet.PetId" data-name="@pet.Name">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirm Archival</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to archive patient <strong id="deleteName"></strong>?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form method="post" asp-page-handler="Delete">
+                    <input type="hidden" name="id" id="deleteId" />
+                    <button type="submit" class="btn btn-danger">Archive</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        var deleteModal = document.getElementById('deleteModal');
+        deleteModal.addEventListener('show.bs.modal', function (event) {
+            var button = event.relatedTarget;
+            var id = button.getAttribute('data-id');
+            var name = button.getAttribute('data-name');
+
+            deleteModal.querySelector('#deleteName').textContent = name;
+            deleteModal.querySelector('#deleteId').value = id;
+        });
+    </script>
+}
