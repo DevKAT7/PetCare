@@ -21,6 +21,7 @@ namespace PetCare.Core.Models
         public Pet Pet { get; set; } = null!;
         public int VetId { get; set; }
         public Vet Vet { get; set; } = null!;
+        public ICollection<Prescription> Prescriptions { get; set; } = new List<Prescription>();
         public ICollection<AppointmentProcedure> AppointmentProcedures { get; set; } = new List<AppointmentProcedure>();
     }
 }

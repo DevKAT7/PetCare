@@ -1,0 +1,340 @@
+﻿@page "{id:int}"
+@model PetCare.WebApp.Pages.Pets.DetailsModel
+@{
+    ViewData["Title"] = "Patient Profile";
+
+    var today = DateTime.Today;
+    var age = today.Year - Model.Pet.DateOfBirth.Year;
+    if (Model.Pet.DateOfBirth > today.AddYears(-age)) age--;
+
+    var upcomingVisits = Model.Pet.Appointments.Where(a => a.Date > DateTime.Now).OrderBy(a => a.Date).ToList();
+    var upcomingVaccines = Model.Pet.Vaccinations.Where(v => v.NextDueDate.HasValue && v.NextDueDate.Value > DateOnly.FromDateTime(DateTime.Now)).OrderBy(v => v.NextDueDate).ToList();
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-1">@Model.Pet.Name</h2>
+            <p class="text-muted mb-0">Patient Profile & Medical History</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a asp-page="./Index" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> Back
+            </a>
+            <a asp-page="./EditPet" asp-route-id="@Model.Pet.PetId" class="btn btn-primary">
+                <i class="bi bi-pencil"></i> Edit
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-3 mb-4">
+            <div class="card shadow-sm border-0 mb-3">
+                <div class="card-body text-center pt-4">
+                    <div class="mb-3 d-flex justify-content-center">
+                        @if (!string.IsNullOrEmpty(Model.Pet.ImageUrl))
+                        {
+                            <img src="@Model.Pet.ImageUrl" class="rounded-circle shadow-sm border p-1 object-fit-cover" style="width: 120px; height: 120px;">
+                        }
+                        else
+                        {
+                            <div class="rounded-circle bg-light text-secondary d-flex align-items-center justify-content-center shadow-sm border" style="width: 120px; height: 120px; font-size: 3rem;">
+                                <i class="bi bi-paw"></i>
+                            </div>
+                        }
+                    </div>
+                    <h4 class="fw-bold mb-0">@Model.Pet.Name</h4>
+                    <span class="text-muted">@Model.Pet.Species, @Model.Pet.Breed</span>
+
+                    <div class="mt-3 d-flex justify-content-center gap-2">
+                        @if (Model.Pet.IsMale)
+                        {
+                            <span class="badge bg-blue-light text-primary border border-primary-subtle"><i class="bi bi-gender-male"></i> Male</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-pink-light text-danger border border-danger-subtle"><i class="bi bi-gender-female"></i> Female</span>
+                        }
+                        <span class="badge bg-light text-dark border">@age Years</span>
+                    </div>
+                </div>
+                <div class="card-footer bg-light py-2 text-center small text-muted">
+                    Date of birth: @Model.Pet.DateOfBirth.ToString("dd MMM yyyy")
+                </div>
+            </div>
+
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white fw-bold py-3 border-bottom">
+                    <i class="bi bi-person-badge me-2 text-primary"></i>Owner
+                </div>
+                <div class="card-body">
+                    <h6 class="fw-bold">@Model.Pet.OwnerFullName</h6>
+                    <ul class="list-unstyled mb-0 small">
+                        <li class="mb-2"><i class="bi bi-telephone me-2 text-muted"></i>@Model.Pet.OwnerPhoneNumber</li>
+                        <li class="mb-2"><i class="bi bi-envelope me-2 text-muted"></i>@Model.Pet.OwnerEmail</li>
+                    </ul>
+                    <hr />
+                    <a asp-page="/Owners/Details" asp-route-id="@Model.Pet.PetOwnerId" class="btn btn-sm btn-outline-secondary w-100">View Owner Profile</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-9">
+
+            @if (upcomingVisits.Any() || upcomingVaccines.Any())
+            {
+                <div class="card shadow-sm border-0 mb-4 border-start border-4 border-warning">
+                    <div class="card-body">
+                        <h5 class="card-title text-warning mb-3"><i class="bi bi-calendar-check me-2"></i>Upcoming Schedule</h5>
+                        <div class="row g-3">
+                            @if (upcomingVisits.Any())
+                            {
+                                <div class="col-md-6">
+                                    <h6 class="text-muted small text-uppercase fw-bold mb-2">Next Appointment</h6>
+                                    @foreach (var visit in upcomingVisits)
+                                    {
+                                        <div class="d-flex align-items-center mb-2">
+                                            <div class="bg-warning bg-opacity-10 text-warning rounded p-2 me-3 text-center" style="min-width: 50px;">
+                                                <div class="fw-bold">@visit.Date.ToString("dd")</div>
+                                                <div class="small">@visit.Date.ToString("MMM")</div>
+                                            </div>
+                                            <div>
+                                                <div class="fw-bold text-dark">@visit.Date.ToShortTimeString()</div>
+                                                <small class="text-muted">Dr. @visit.VetName</small>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            }
+                            @if (upcomingVaccines.Any())
+                            {
+                                <div class="col-md-6">
+                                    <h6 class="text-muted small text-uppercase fw-bold mb-2">Due Vaccinations</h6>
+                                    @foreach (var v in upcomingVaccines)
+                                    {
+                                        <div class="d-flex align-items-center mb-2">
+                                            <i class="bi bi-exclamation-circle-fill text-danger me-2"></i>
+                                            <div>
+                                                <span class="fw-bold">@v.VaccineName</span>
+                                                <span class="text-muted small ms-1">(@v.NextDueDate?.ToString("dd MMM yyyy"))</span>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white p-0 border-bottom">
+                    <ul class="nav nav-tabs card-header-tabs m-0 px-3 pt-2" id="petTabs" role="tablist">
+                        <li class="nav-item">
+                            <button class="nav-link active py-3 text-dark fw-medium" id="visits-tab" data-bs-toggle="tab" data-bs-target="#visits" type="button">
+                                <i class="bi bi-clock-history me-2 text-primary"></i>Visits History
+                            </button>
+                        </li>
+                        <li class="nav-item">
+                            <button class="nav-link py-3 text-dark fw-medium" id="tests-tab" data-bs-toggle="tab" data-bs-target="#tests" type="button">
+                                <i class="bi bi-clipboard-pulse me-2 text-success"></i>Medical Tests
+                            </button>
+                        </li>
+                        <li class="nav-item">
+                            <button class="nav-link py-3 text-dark fw-medium" id="meds-tab" data-bs-toggle="tab" data-bs-target="#meds" type="button">
+                                <i class="bi bi-capsule me-2 text-info"></i>Prescriptions
+                            </button>
+                        </li>
+                        <li class="nav-item">
+                            <button class="nav-link py-3 text-dark fw-medium" id="vax-tab" data-bs-toggle="tab" data-bs-target="#vax" type="button">
+                                <i class="bi bi-eyedropper me-2 text-danger"></i>Vaccinations
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="card-body p-0">
+                    <div class="tab-content" id="petTabsContent">
+
+                        <div class="tab-pane fade show active" id="visits" role="tabpanel">
+                            @if (Model.Pet.Appointments.Any())
+                            {
+                                <div class="table-responsive">
+                                    <table class="table table-hover align-middle mb-0">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th class="ps-4">Date</th>
+                                                <th>Doctor</th>
+                                                <th>Diagnosis / Reason</th>
+                                                <th class="text-end pe-4">Details</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var item in Model.Pet.Appointments)
+                                            {
+                                                <tr>
+                                                    <td class="ps-4">@item.Date.ToString("yyyy-MM-dd HH:mm")</td>
+                                                    <td>@item.VetName</td>
+                                                    <td>
+                                                        @if (!string.IsNullOrEmpty(item.Diagnosis))
+                                                        {
+                                                            <span class="fw-bold">@item.Diagnosis</span>
+                                                        }
+                                                        else
+                                                        {
+                                                            @if (item.Status == "Cancelled")
+                                                            {
+                                                                <span class="badge bg-secondary opacity-50">Cancelled</span>
+                                                            }
+                                                            else
+                                                            {
+                                                                <span class="text-muted">@item.Status</span>
+                                                            }
+                                                        }
+                                                    </td>
+                                                    <td class="text-end pe-4">
+                                                        @if (item.Status != "Cancelled")
+                                                        {
+                                                            <a asp-page="/Appointments/Details" asp-route-id="@item.AppointmentId" class="btn btn-sm btn-outline-secondary">
+                                                                View
+                                                            </a>
+                                                        }
+                                                        else
+                                                        {
+                                                            <span class="text-muted small">—</span>
+                                                        }
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="text-center py-5 text-muted">No visit history found.</div>
+                            }
+                        </div>
+
+                        <div class="tab-pane fade" id="tests" role="tabpanel">
+                            @if (Model.Pet.MedicalTests.Any())
+                            {
+                                <div class="table-responsive">
+                                    <table class="table table-hover align-middle mb-0">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th class="ps-4">Date</th>
+                                                <th>Test Name</th>
+                                                <th>Result</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var item in Model.Pet.MedicalTests)
+                                            {
+                                                <tr>
+                                                    <td class="ps-4">@item.Date.ToString("yyyy-MM-dd")</td>
+                                                    <td class="fw-bold">@item.TestName</td>
+                                                    <td>@item.Result</td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="text-center py-5 text-muted">No medical tests recorded.</div>
+                            }
+                        </div>
+
+                        <div class="tab-pane fade" id="meds" role="tabpanel">
+                            @if (Model.Pet.Prescriptions.Any())
+                            {
+                                <div class="table-responsive">
+                                    <table class="table table-hover align-middle mb-0">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th class="ps-4">Issued Date</th>
+                                                <th>Medication</th>
+                                                <th>Dosage</th>
+                                                <th>Ref</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var item in Model.Pet.Prescriptions)
+                                            {
+                                                <tr>
+                                                    <td class="ps-4">@item.Date.ToString("yyyy-MM-dd")</td>
+                                                    <td class="fw-bold text-primary">@item.MedicationName</td>
+                                                    <td>@item.Dosage</td>
+                                                    <td>
+                                                        <a asp-page="/Appointments/Details" asp-route-id="@item.AppointmentId" class="text-muted small text-decoration-none">
+                                                            <i class="bi bi-link-45deg"></i> Rx #@item.PrescriptionId
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="text-center py-5 text-muted">No medication history.</div>
+                            }
+                        </div>
+
+                        <div class="tab-pane fade" id="vax" role="tabpanel">
+                            @if (Model.Pet.Vaccinations.Any())
+                            {
+                                <div class="table-responsive">
+                                    <table class="table table-hover align-middle mb-0">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th class="ps-4">Vaccine</th>
+                                                <th>Administered</th>
+                                                <th>Next Due</th>
+                                                <th class="text-end pe-4">Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var item in Model.Pet.Vaccinations)
+                                            {
+                                                var isOverdue = item.NextDueDate.HasValue && item.NextDueDate < DateOnly.FromDateTime(DateTime.Now);
+                                                <tr>
+                                                    <td class="ps-4 fw-bold">@item.VaccineName</td>
+                                                    <td>@item.DateAdministered.ToString("yyyy-MM-dd")</td>
+                                                    <td>@(item.NextDueDate?.ToString("yyyy-MM-dd") ?? "-")</td>
+                                                    <td class="text-end pe-4">
+                                                        @if (isOverdue)
+                                                        {
+                                                            <span class="badge bg-danger">Overdue</span>
+                                                        }
+                                                        else if (item.NextDueDate.HasValue && item.NextDueDate > DateOnly.FromDateTime(DateTime.Now))
+                                                        {
+                                                            <span class="badge bg-success">Valid</span>
+                                                        }
+                                                        else
+                                                        {
+                                                            <span class="badge bg-secondary">Archived</span>
+                                                        }
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="text-center py-5 text-muted">No vaccination records found.</div>
+                            }
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

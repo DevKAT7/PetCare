@@ -73,6 +73,7 @@ namespace PetCare.Application.Features.Prescriptions.Commands
                 EndDate = model.EndDate,
                 Instructions = model.Instructions,
                 PacksToDispense = model.PacksToDispense,
+                CreatedDate = DateOnly.FromDateTime(DateTime.Today),
                 AppointmentId = model.AppointmentId,
                 MedicationId = model.MedicationId
             };
