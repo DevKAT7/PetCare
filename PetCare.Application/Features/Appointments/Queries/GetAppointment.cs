@@ -4,6 +4,7 @@ using PetCare.Application.Exceptions;
 using PetCare.Application.Features.Appointments.Dto;
 using PetCare.Application.Features.Appointments.Dtos;
 using PetCare.Application.Interfaces;
+using PetCare.Core.Models;
 
 namespace PetCare.Application.Features.Appointments.Queries
 {
@@ -37,6 +38,10 @@ namespace PetCare.Application.Features.Appointments.Queries
                 throw new NotFoundException("Appointment", request.AppointmentId);
             }
 
+            var invoice = await _context.Invoices
+                .AsNoTracking()
+                .FirstOrDefaultAsync(i => i.AppointmentId == request.AppointmentId, cancellationToken);
+
             return new AppointmentReadModel
             {
                 AppointmentId = appointment.AppointmentId,
@@ -53,6 +58,7 @@ namespace PetCare.Application.Features.Appointments.Queries
                 OwnerName = appointment.Pet.PetOwner.FirstName + " " + appointment.Pet.PetOwner.LastName,
                 VetId = appointment.VetId,
                 VetName = appointment.Vet.FirstName + " " + appointment.Vet.LastName,
+                InvoiceId = invoice?.InvoiceId,
                 Procedures = appointment.AppointmentProcedures.Select(ap => new AppointmentProcedureReadModel
                 {
                     ProcedureId = ap.ProcedureId,

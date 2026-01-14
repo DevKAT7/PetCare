@@ -1,0 +1,131 @@
+﻿@page
+@model PetCare.WebApp.Pages.Invoices.CreateInvoiceModel
+@{
+    ViewData["Title"] = "Create Invoice";
+}
+
+<div class="container mt-4">
+    <h2>Create Invoice</h2>
+    <hr />
+
+    <form method="post">
+        <input type="hidden" asp-for="Input.AppointmentId" />
+        <input type="hidden" asp-for="Input.PetOwnerId" />
+
+        <div class="card mb-4 shadow-sm">
+            <div class="card-body bg-light">
+                <div class="row">
+                    <div class="col-md-6">
+                        <label class="form-label text-muted">Customer</label>
+                        <input type="text" class="form-control fw-bold" value="@Model.OwnerName" readonly />
+                    </div>
+                    <div class="col-md-3">
+                        <label asp-for="Input.InvoiceDate" class="form-label">Issue Date</label>
+                        <input asp-for="Input.InvoiceDate" type="date" class="form-control" />
+                    </div>
+                    <div class="col-md-3">
+                        <label asp-for="Input.DueDate" class="form-label">Due Date</label>
+                        <input asp-for="Input.DueDate" type="date" class="form-control" />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <h4>Invoice Items</h4>
+        <div class="table-responsive">
+            <table class="table table-bordered align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Description</th>
+                        <th style="width: 150px;">Unit Price</th>
+                        <th style="width: 100px;">Qty</th>
+                        <th style="width: 150px;" class="text-end">Line Total</th>
+                        <th style="width: 50px;"></th>
+                    </tr>
+                </thead>
+                <tbody id="invoiceItemsBody">
+                    @for (int i = 0; i < Model.Input.Items.Count; i++)
+                    {
+                        <tr>
+                            <td>
+                                <input asp-for="Input.Items[i].Description" class="form-control" placeholder="Item description" />
+                                <span asp-validation-for="Input.Items[i].Description" class="text-danger small"></span>
+                            </td>
+                            <td>
+                                <input asp-for="Input.Items[i].UnitPrice" class="form-control text-end unit-price" type="number" step="0.01" />
+                            </td>
+                            <td>
+                                <input asp-for="Input.Items[i].Quantity" class="form-control text-center quantity" type="number" min="1" />
+                            </td>
+                            <td class="text-end fw-bold line-total">
+                                0.00
+                            </td>
+                            <td class="text-center">
+                                <button type="button" class="btn btn-sm btn-outline-danger" title="Remove" onclick="removeRow(this)"><i class="bi bi-trash"></i></button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+                <tfoot>
+                    <tr class="table-light">
+                        <td colspan="3" class="text-end fw-bold">TOTAL AMOUNT:</td>
+                        <td class="text-end fw-bold fs-5 text-primary" id="grandTotal">0.00</td>
+                        <td></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+
+        <div class="d-flex justify-content-end gap-2 mt-3">
+            <a asp-page="/Appointments/Details" asp-route-id="@Model.Input.AppointmentId" class="btn btn-secondary">Cancel</a>
+            <button type="submit" class="btn btn-success btn-lg"><i class="bi bi-check-lg me-2"></i>Issue Invoice</button>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        function calculateTotals() {
+            let grandTotal = 0;
+            const rows = document.querySelectorAll('#invoiceItemsBody tr');
+
+            rows.forEach(row => {
+
+                const priceInput = row.querySelector('.unit-price');
+                const qtyInput = row.querySelector('.quantity');
+                const totalCell = row.querySelector('.line-total');
+
+                //pominięcie wierszy, które mogły zostać usunięte
+                if(!priceInput || !qtyInput) return;
+
+                const price = parseFloat(priceInput.value) || 0;
+                const qty = parseInt(qtyInput.value) || 0;
+
+                const lineTotal = price * qty;
+                grandTotal += lineTotal;
+
+                totalCell.textContent = lineTotal.toFixed(2);
+            });
+
+            document.getElementById('grandTotal').textContent = grandTotal.toFixed(2);
+        }
+
+        //podpięcie zdarzeń 'input' do pól, aby przeliczać przy każdej zmianie
+        document.addEventListener('input', function (e) {
+            if (e.target.classList.contains('unit-price') || e.target.classList.contains('quantity')) {
+                calculateTotals();
+            }
+        });
+
+        //prosta wersja - tylko zeruje wartości.
+        function removeRow(btn) {
+            const row = btn.closest('tr');
+            row.querySelector('.quantity').value = 0;
+            row.style.display = 'none';
+            calculateTotals();
+        }
+
+        calculateTotals();
+    </script>
+}
