@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using PetCare.Application.Features.Medications.Dtos;
 using PetCare.Application.Exceptions;
 using PetCare.Core.Models;
-using PetCare.Infrastructure.Data;
+using PetCare.Application.Interfaces;
 
 namespace PetCare.Application.Features.Medications.Commands
 {
@@ -14,9 +14,9 @@ namespace PetCare.Application.Features.Medications.Commands
 
     public class CreateMedicationHandler : IRequestHandler<CreateMedicationCommand, int>
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IApplicationDbContext _context;
 
-        public CreateMedicationHandler(ApplicationDbContext context)
+        public CreateMedicationHandler(IApplicationDbContext context)
         {
             _context = context;
         }
@@ -28,7 +28,7 @@ namespace PetCare.Application.Features.Medications.Commands
             var exists = await _context.Medications.AnyAsync(m => m.Name == model.Name, cancellationToken);
             if (exists)
             {
-                throw new BadRequestException("Medication with same name already exists.");
+                throw new BadRequestException($"Medication '{model.Name}' already exists.");
             }
 
             var entity = new Medication
@@ -37,7 +37,13 @@ namespace PetCare.Application.Features.Medications.Commands
                 Description = model.Description,
                 Manufacturer = model.Manufacturer,
                 Price = model.Price,
-                IsActive = model.IsActive
+                IsActive = model.IsActive,
+
+                StockItem = new StockItem
+                {
+                   CurrentStock = 0,
+                   ReorderLevel = 10
+                }
             };
 
             _context.Medications.Add(entity);

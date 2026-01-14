@@ -32,7 +32,7 @@ namespace PetCare.WebApp.Pages.Admin.Vets
         {
             var query = new GetAllVetSpecializationsQuery();
             var result = await _mediator.Send(query);
-
+            
             ViewData["Specializations"] = new SelectList(result, "VetSpecializationId", "Name");
         }
 
@@ -71,7 +71,7 @@ namespace PetCare.WebApp.Pages.Admin.Vets
                     ModelState.AddModelError(string.Empty, error);
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 ModelState.AddModelError(string.Empty, "An unexpected error occurred while creating the vet.");
             }

@@ -9,30 +9,35 @@ namespace PetCare.Application.Features.PetOwners.Validators
         {
             When(x => !string.IsNullOrEmpty(x.Email), () =>
             {
-                RuleFor(x => x.Email).EmailAddress().WithMessage("Niepoprawny format adresu email.");
+                RuleFor(x => x.Email)
+                    .EmailAddress().WithMessage("Invalid email address format.");
             });
 
             When(x => !string.IsNullOrEmpty(x.PhoneNumber), () =>
             {
                 RuleFor(x => x.PhoneNumber)
-                    .Matches("^[0-9+() -]*$").WithMessage("Niepoprawny format numeru telefonu.")
-                    .MaximumLength(20).WithMessage("Numer telefonu nie może być dłuższy niż 20 znaków.");
+                    .Matches("^[0-9+() -]*$").WithMessage("Invalid phone number format.")
+                    .MaximumLength(20).WithMessage("Phone number cannot be longer than 20 characters.");
             });
 
             When(x => !string.IsNullOrEmpty(x.FirstName), () =>
             {
-                RuleFor(x => x.FirstName).MaximumLength(100).WithMessage("Imię nie może być dłuższe niż 100 znaków.");
+                RuleFor(x => x.FirstName)
+                    .MaximumLength(100).WithMessage("First name cannot be longer than 100 characters.");
             });
 
             When(x => !string.IsNullOrEmpty(x.LastName), () =>
             {
-                RuleFor(x => x.LastName).MaximumLength(100).WithMessage("Nazwisko nie może być dłuższe niż 100 znaków.");
+                RuleFor(x => x.LastName)
+                    .MaximumLength(100).WithMessage("Last name cannot be longer than 100 characters.");
             });
 
             When(x => !string.IsNullOrEmpty(x.Address), () =>
             {
-                RuleFor(x => x.Address).MaximumLength(500).WithMessage("Adres nie może być dłuższy niż 500 znaków.");
+                RuleFor(x => x.Address)
+                    .MaximumLength(500).WithMessage("Address cannot be longer than 500 characters.");
             });
         }
+
     }
 }

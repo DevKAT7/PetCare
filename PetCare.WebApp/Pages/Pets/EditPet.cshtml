@@ -1,0 +1,98 @@
+﻿@page
+@model PetCare.WebApp.Pages.Pets.EditPetModel
+@{
+    ViewData["Title"] = "Edit Patient";
+}
+
+<div class="container mt-4" style="max-width: 700px;">
+
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-primary text-white py-3 d-flex justify-content-between align-items-center">
+            <h4 class="mb-0"><i class="bi bi-pencil-square me-2"></i>Edit Patient</h4>
+            <span class="badge bg-white text-primary">ID: @Model.Id</span>
+        </div>
+        <div class="card-body p-4">
+            <form method="post">
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger mb-3"></div>
+
+                <input type="hidden" asp-for="Input.PetOwnerId" />
+
+                <div class="mb-4">
+                    <label class="form-label text-muted small text-uppercase fw-bold">Owner</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light border-end-0"><i class="bi bi-person-fill text-secondary"></i></span>
+                        <input type="text" class="form-control bg-light border-start-0 text-dark fw-bold" value="@Model.OwnerName" readonly />
+                        <a asp-page="/Owners/Details" asp-route-id="@Model.Input.PetOwnerId" class="btn btn-outline-secondary" title="View Owner">
+                            <i class="bi bi-box-arrow-up-right"></i>
+                        </a>
+                    </div>
+                    <div class="form-text">Owner cannot be changed here.</div>
+                </div>
+
+                <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                        <label asp-for="Input.Name" class="form-label fw-bold">Pet Name <span class="text-danger">*</span></label>
+                        <input asp-for="Input.Name" class="form-control" />
+                        <span asp-validation-for="Input.Name" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="Input.Species" class="form-label fw-bold">Species <span class="text-danger">*</span></label>
+                        <input asp-for="Input.Species" class="form-control" list="speciesList" />
+                        <datalist id="speciesList">
+                            @foreach (var s in Model.SpeciesSuggestions)
+                            {
+                                <option value="@s"></option>
+                            }
+                        </datalist>
+                        <span asp-validation-for="Input.Species" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                        <label asp-for="Input.Breed" class="form-label">Breed</label>
+                        <input asp-for="Input.Breed" class="form-control" />
+                        <span asp-validation-for="Input.Breed" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="Input.DateOfBirth" class="form-label fw-bold">Date of Birth</label>
+                        <input asp-for="Input.DateOfBirth" type="date" class="form-control" />
+                        <span asp-validation-for="Input.DateOfBirth" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold d-block">Sex</label>
+                    <div class="btn-group" role="group">
+                        <input type="radio" class="btn-check" asp-for="Input.IsMale" value="true" id="sexMale" autocomplete="off">
+                        <label class="btn btn-outline-primary" for="sexMale"><i class="bi bi-gender-male"></i> Male</label>
+
+                        <input type="radio" class="btn-check" asp-for="Input.IsMale" value="false" id="sexFemale" autocomplete="off">
+                        <label class="btn btn-outline-danger" for="sexFemale"><i class="bi bi-gender-female"></i> Female</label>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label asp-for="Input.ImageUrl" class="form-label">Photo URL</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light"><i class="bi bi-link-45deg"></i></span>
+                        <input asp-for="Input.ImageUrl" class="form-control" />
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between pt-3 border-top">
+                    <a asp-page="./Index" class="btn btn-secondary">Cancel</a>
+                    <button type="submit" class="btn btn-primary px-4 fw-bold">
+                        <i class="bi bi-save me-2"></i>Save Changes
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

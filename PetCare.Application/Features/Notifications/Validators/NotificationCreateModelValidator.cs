@@ -8,11 +8,11 @@ namespace PetCare.Application.Features.Notifications.Validators
         public NotificationCreateModelValidator()
         {
             RuleFor(x => x.Message)
-                .NotEmpty().WithMessage("Wiadomość jest wymagana.")
-                .MaximumLength(500).WithMessage("Wiadomość może mieć maksymalnie 500 znaków.");
+                .NotEmpty().WithMessage("Message is required")
+                .MaximumLength(500).WithMessage("The message can have a maximum of 500 characters.");
 
             RuleFor(x => x.UserId)
-                .NotEmpty().WithMessage("Id użytkownika jest wymagane.");
+                .NotEmpty().WithMessage("User is required");
         }
     }
 }

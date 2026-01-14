@@ -2,7 +2,6 @@ using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.OpenApi;
 using PetCare.Api.Extensions;
-using PetCare.Api.Middleware;
 using PetCare.Application.Extensions;
 using PetCare.Infrastructure.Data;
 using PetCare.Infrastructure.Extensions;

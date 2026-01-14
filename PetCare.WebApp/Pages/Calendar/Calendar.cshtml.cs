@@ -33,9 +33,9 @@ namespace PetCare.WebApp.Pages
 
         public async Task OnGetAsync()
         {
-            // Calculate Date Range (Monday to Friday)
+            //Calculate Date Range (Monday to Friday)
             var anchorDate = CurrentDate ?? DateTime.Today;
-            // Calculate offset to get to Monday
+            //Calculate offset to get to Monday
             int diff = (7 + (anchorDate.DayOfWeek - DayOfWeek.Monday)) % 7;
             var monday = anchorDate.AddDays(-1 * diff).Date;
 
@@ -56,7 +56,7 @@ namespace PetCare.WebApp.Pages
             var vets = await _mediator.Send(vetQuery);
             VetOptions = new SelectList(vets, "VetId", "FullName");
 
-            // fetch from Monday 00:00 to Friday 23:59
+            //fetch from Monday 00:00 to Friday 23:59
             var appQuery = new GetAllAppointmentsQuery(
                 vetId: SelectedVetId,
                 from: WeekDays.First(),

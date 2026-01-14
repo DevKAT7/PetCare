@@ -2,17 +2,16 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using PetCare.Application.Exceptions;
 using PetCare.Application.Features.Vaccinations.Dtos;
-using PetCare.Core.Models;
-using PetCare.Infrastructure.Data;
+using PetCare.Application.Interfaces;
 
 namespace PetCare.Application.Features.Vaccinations.Commands
 {
     public class UpdateVaccinationCommand : IRequest<int>
     {
         public int Id { get; }
-        public VaccinationCreateModel Vaccination { get; set; }
+        public VaccinationUpdateModel Vaccination { get; set; }
 
-        public UpdateVaccinationCommand(int id, VaccinationCreateModel model)
+        public UpdateVaccinationCommand(int id, VaccinationUpdateModel model)
         {
             Id = id;
             Vaccination = model;
@@ -21,16 +20,16 @@ namespace PetCare.Application.Features.Vaccinations.Commands
 
     public class UpdateVaccinationHandler : IRequestHandler<UpdateVaccinationCommand, int>
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IApplicationDbContext _context;
 
-        public UpdateVaccinationHandler(ApplicationDbContext context)
+        public UpdateVaccinationHandler(IApplicationDbContext context)
         {
             _context = context;
         }
 
         public async Task<int> Handle(UpdateVaccinationCommand request, CancellationToken cancellationToken)
         {
-            var vaccination = await _context.Set<Vaccination>()
+            var vaccination = await _context.Vaccinations
                 .FirstOrDefaultAsync(v => v.VaccinationId == request.Id, cancellationToken);
 
             if (vaccination == null)
@@ -41,10 +40,7 @@ namespace PetCare.Application.Features.Vaccinations.Commands
             var model = request.Vaccination;
 
             vaccination.VaccineName = model.VaccineName;
-            vaccination.VaccinationDate = model.VaccinationDate;
             vaccination.NextDueDate = model.NextDueDate;
-            vaccination.PetId = model.PetId;
-            vaccination.AppointmentId = model.AppointmentId;
 
             await _context.SaveChangesAsync(cancellationToken);
 

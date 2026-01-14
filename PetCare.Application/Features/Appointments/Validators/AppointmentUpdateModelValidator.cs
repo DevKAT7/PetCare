@@ -1,5 +1,5 @@
 using FluentValidation;
-using PetCare.Application.Features.Appointments.Dto;
+using PetCare.Application.Features.Appointments.Dtos;
 
 namespace PetCare.Application.Features.Appointments.Validators
 {
@@ -8,27 +8,26 @@ namespace PetCare.Application.Features.Appointments.Validators
         public AppointmentUpdateModelValidator()
         {
             RuleFor(x => x.AppointmentDateTime)
-                .NotEmpty().WithMessage("Data i godzina wizyty są wymagane.")
-                .Must(dt => dt > DateTime.Now.AddMinutes(-1)).WithMessage("Data wizyty musi być w przyszłości.");
+                .NotEmpty().WithMessage("Appointment date and time are required.");
 
             RuleFor(x => x.ReasonForVisit)
-                .NotEmpty().WithMessage("Powód wizyty jest wymagany.")
-                .MaximumLength(200).WithMessage("Powód wizyty nie może przekraczać 200 znaków.");
+                .NotEmpty().WithMessage("Reason for visit is required.")
+                .MaximumLength(200).WithMessage("Reason for visit cannot exceed 200 characters.");
 
             RuleFor(x => x.Description)
-                .MaximumLength(500).WithMessage("Opis nie może przekraczać 500 znaków.");
+                .MaximumLength(500).WithMessage("Description cannot exceed 500 characters.");
 
             RuleFor(x => x.Diagnosis)
-                .MaximumLength(2000).WithMessage("Diagnoza nie może przekraczać 2000 znaków.");
+                .MaximumLength(2000).WithMessage("Diagnosis cannot exceed 2000 characters.");
 
             RuleFor(x => x.Notes)
-                .MaximumLength(2000).WithMessage("Notatki nie mogą przekraczać 2000 znaków.");
+                .MaximumLength(2000).WithMessage("Notes cannot exceed 2000 characters.");
 
             RuleFor(x => x.PetId)
-                .GreaterThan(0).WithMessage("PetId jest wymagany.");
+                .GreaterThan(0).WithMessage("Pet is required.");
 
             RuleFor(x => x.VetId)
-                .GreaterThan(0).WithMessage("VetId jest wymagany.");
+                .GreaterThan(0).WithMessage("Vet is required.");
         }
     }
 }

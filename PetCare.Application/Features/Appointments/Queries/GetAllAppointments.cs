@@ -1,8 +1,8 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using PetCare.Application.Features.Appointments.Dto;
+using PetCare.Application.Interfaces;
 using PetCare.Core.Enums;
-using PetCare.Infrastructure.Data;
 
 namespace PetCare.Application.Features.Appointments.Queries
 {
@@ -13,8 +13,14 @@ namespace PetCare.Application.Features.Appointments.Queries
         public DateTime? From { get; }
         public DateTime? To { get; }
         public AppointmentStatus? Status { get; }
+        public string? PetName { get; }
+        public string? OwnerName { get; }
 
-        public GetAllAppointmentsQuery(int? petOwnerId = null, int? vetId = null, DateTime? from = null, DateTime? to = null, AppointmentStatus? status = null)
+        public string? SortColumn { get; }
+        public string? SortDirection { get; }
+
+        public GetAllAppointmentsQuery(int? petOwnerId = null, int? vetId = null, DateTime? from = null,
+            DateTime? to = null, AppointmentStatus? status = null)
         {
             PetOwnerId = petOwnerId;
             VetId = vetId;
@@ -22,13 +28,24 @@ namespace PetCare.Application.Features.Appointments.Queries
             To = to;
             Status = status;
         }
+
+        public GetAllAppointmentsQuery(string? petName = null, string? ownerName = null,int? vetId = null,
+            AppointmentStatus? status = null, string? sortColumn = "Date", string? sortDirection = "desc")
+        {
+            PetName = petName;
+            OwnerName = ownerName;
+            VetId = vetId;
+            Status = status;
+            SortColumn = sortColumn;
+            SortDirection = sortDirection;
+        }
     }
 
     public class GetAllAppointmentsHandler : IRequestHandler<GetAllAppointmentsQuery, List<AppointmentReadModel>>
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IApplicationDbContext _context;
 
-        public GetAllAppointmentsHandler(ApplicationDbContext context)
+        public GetAllAppointmentsHandler(IApplicationDbContext context)
         {
             _context = context;
         }
@@ -37,8 +54,20 @@ namespace PetCare.Application.Features.Appointments.Queries
         {
             var query = _context.Appointments
                 .Include(a => a.Pet)
+                    .ThenInclude(p => p.PetOwner)
                 .Include(a => a.Vet)
                 .AsQueryable();
+
+            if (!string.IsNullOrEmpty(request.PetName))
+            {
+                query = query.Where(a => a.Pet.Name.Contains(request.PetName));
+            }
+
+            if (!string.IsNullOrEmpty(request.OwnerName))
+            {
+                query = query.Where(a => a.Pet.PetOwner.LastName.Contains(request.OwnerName)
+                                      || a.Pet.PetOwner.FirstName.Contains(request.OwnerName));
+            }
 
             if (request.PetOwnerId.HasValue)
             {
@@ -65,6 +94,17 @@ namespace PetCare.Application.Features.Appointments.Queries
                 query = query.Where(a => a.Status == request.Status.Value);
             }
 
+            bool isAsc = request.SortDirection?.ToLower() == "asc";
+
+            query = request.SortColumn switch
+            {
+                "Patient" => isAsc ? query.OrderBy(x => x.Pet.Name) : query.OrderByDescending(x => x.Pet.Name),
+                "Owner" => isAsc ? query.OrderBy(x => x.Pet.PetOwner.LastName) : query.OrderByDescending(x => x.Pet.PetOwner.LastName),
+                "Vet" => isAsc ? query.OrderBy(x => x.Vet.LastName) : query.OrderByDescending(x => x.Vet.LastName),
+                "Status" => isAsc ? query.OrderBy(x => x.Status) : query.OrderByDescending(x => x.Status),
+                "Date" or _ => isAsc ? query.OrderBy(x => x.AppointmentDateTime) : query.OrderByDescending(x => x.AppointmentDateTime)
+            };
+
             var list = await query.Select(a => new AppointmentReadModel
             {
                 AppointmentId = a.AppointmentId,
@@ -76,6 +116,7 @@ namespace PetCare.Application.Features.Appointments.Queries
                 Notes = a.Notes,
                 PetId = a.PetId,
                 PetName = a.Pet.Name,
+                OwnerName = a.Pet.PetOwner.FirstName + " " + a.Pet.PetOwner.LastName,
                 VetId = a.VetId,
                 VetName = a.Vet.FirstName + " " + a.Vet.LastName
             }).ToListAsync(cancellationToken);

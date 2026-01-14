@@ -1,7 +1,7 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using PetCare.Application.Exceptions;
-using PetCare.Infrastructure.Data;
+using PetCare.Application.Interfaces;
 
 namespace PetCare.Application.Features.VetSchedules.Commands
 {
@@ -13,9 +13,9 @@ namespace PetCare.Application.Features.VetSchedules.Commands
 
     public class DeleteScheduleExceptionHandler : IRequestHandler<DeleteScheduleExceptionCommand, int>
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IApplicationDbContext _context;
 
-        public DeleteScheduleExceptionHandler(ApplicationDbContext context)
+        public DeleteScheduleExceptionHandler(IApplicationDbContext context)
         {
             _context = context;
         }

@@ -1,10 +1,11 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using PetCare.Application.Interfaces;
 using PetCare.Core.Models;
 
 namespace PetCare.Infrastructure.Data
 {
-    public class ApplicationDbContext : IdentityDbContext<User>
+    public class ApplicationDbContext : IdentityDbContext<User>, IApplicationDbContext
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
@@ -50,7 +51,7 @@ namespace PetCare.Infrastructure.Data
                 e.HasMany(vs => vs.Procedures)
                     .WithOne(p => p.VetSpecialization)
                     .HasForeignKey(p => p.VetSpecializationId)
-                    .OnDelete(DeleteBehavior.Cascade);
+                    .OnDelete(DeleteBehavior.Restrict);
             });
 
             builder.Entity<VetSpecializationLink>(e =>
@@ -122,7 +123,7 @@ namespace PetCare.Infrastructure.Data
                     .HasForeignKey(t => t.AppointmentId)
                     .OnDelete(DeleteBehavior.Restrict);
 
-                e.HasMany<Prescription>()
+                e.HasMany(a => a.Prescriptions)
                     .WithOne(p => p.Appointment)
                     .HasForeignKey(p => p.AppointmentId)
                     .OnDelete(DeleteBehavior.Restrict);
@@ -180,6 +181,11 @@ namespace PetCare.Infrastructure.Data
                     .WithOne(t => t.Pet)
                     .HasForeignKey(t => t.PetId)
                     .OnDelete(DeleteBehavior.Cascade);
+
+                e.HasMany(p => p.Appointments)
+                    .WithOne(a => a.Pet)
+                    .HasForeignKey(a => a.PetId)
+                    .OnDelete(DeleteBehavior.Restrict);
             });
 
 

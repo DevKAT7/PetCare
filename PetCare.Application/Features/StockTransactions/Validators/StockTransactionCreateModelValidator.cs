@@ -8,11 +8,11 @@ namespace PetCare.Application.Features.StockTransactions.Validators
         public StockTransactionCreateModelValidator()
         {
             RuleFor(x => x.Reason)
-                .NotEmpty().WithMessage("Powód transakcji jest wymagany.")
-                .MaximumLength(100).WithMessage("Powód może mieć maksymalnie 100 znaków.");
+                .NotEmpty().WithMessage("Transaction reason is required.")
+                .MaximumLength(100).WithMessage("Transaction reason can have a maximum of 100 characters.");
 
             RuleFor(x => x.MedicationId)
-                .GreaterThan(0).WithMessage("Id leku jest wymagane.");
+                .GreaterThan(0).WithMessage("Medication is required.");
         }
     }
 }

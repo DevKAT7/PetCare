@@ -1,7 +1,7 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using PetCare.Application.Features.Prescriptions.Dtos;
-using PetCare.Infrastructure.Data;
+using PetCare.Application.Interfaces;
 
 namespace PetCare.Application.Features.Prescriptions.Queries
 {
@@ -12,9 +12,9 @@ namespace PetCare.Application.Features.Prescriptions.Queries
 
     public class GetPrescriptionsByAppointmentIdHandler : IRequestHandler<GetPrescriptionsByAppointmentIdQuery, List<PrescriptionReadModel>>
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IApplicationDbContext _context;
 
-        public GetPrescriptionsByAppointmentIdHandler(ApplicationDbContext context)
+        public GetPrescriptionsByAppointmentIdHandler(IApplicationDbContext context)
         {
             _context = context;
         }
@@ -22,6 +22,7 @@ namespace PetCare.Application.Features.Prescriptions.Queries
         public async Task<List<PrescriptionReadModel>> Handle(GetPrescriptionsByAppointmentIdQuery request, CancellationToken cancellationToken)
         {
             var items = await _context.Prescriptions
+                .Include(p => p.Medication)
                 .Where(p => p.AppointmentId == request.AppointmentId)
                 .ToListAsync(cancellationToken);
 
@@ -35,7 +36,8 @@ namespace PetCare.Application.Features.Prescriptions.Queries
                 Instructions = entity.Instructions,
                 PacksToDispense = entity.PacksToDispense,
                 AppointmentId = entity.AppointmentId,
-                MedicationId = entity.MedicationId
+                MedicationId = entity.MedicationId,
+                MedicationName = entity.Medication?.Name ?? "Unknown Drug"
             }).ToList();
         }
     }

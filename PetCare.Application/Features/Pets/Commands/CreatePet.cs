@@ -1,7 +1,7 @@
 using MediatR;
 using PetCare.Application.Features.Pets.Dto;
 using PetCare.Core.Models;
-using PetCare.Infrastructure.Data;
+using PetCare.Application.Interfaces;
 
 namespace PetCare.Application.Features.Pets.Commands
 {
@@ -12,9 +12,9 @@ namespace PetCare.Application.Features.Pets.Commands
 
     public class CreatePetHandler : IRequestHandler<CreatePetCommand, int>
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IApplicationDbContext _context;
 
-        public CreatePetHandler(ApplicationDbContext context)
+        public CreatePetHandler(IApplicationDbContext context)
         {
             _context = context;
         }

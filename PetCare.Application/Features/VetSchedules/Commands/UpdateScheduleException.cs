@@ -2,7 +2,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using PetCare.Application.Features.VetSchedules.Dto;
 using PetCare.Application.Exceptions;
-using PetCare.Infrastructure.Data;
+using PetCare.Application.Interfaces;
 
 namespace PetCare.Application.Features.VetSchedules.Commands
 {
@@ -20,9 +20,9 @@ namespace PetCare.Application.Features.VetSchedules.Commands
 
     public class UpdateScheduleExceptionHandler : IRequestHandler<UpdateScheduleExceptionCommand, int>
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IApplicationDbContext _context;
 
-        public UpdateScheduleExceptionHandler(ApplicationDbContext context)
+        public UpdateScheduleExceptionHandler(IApplicationDbContext context)
         {
             _context = context;
         }

@@ -2,7 +2,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using PetCare.Application.Features.Invoices.Dto;
 using PetCare.Application.Exceptions;
-using PetCare.Infrastructure.Data;
+using PetCare.Application.Interfaces;
 
 namespace PetCare.Application.Features.Invoices.Queries
 {
@@ -14,9 +14,9 @@ namespace PetCare.Application.Features.Invoices.Queries
 
     public class GetInvoiceHandler : IRequestHandler<GetInvoiceQuery, InvoiceReadModel>
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IApplicationDbContext _context;
 
-        public GetInvoiceHandler(ApplicationDbContext context)
+        public GetInvoiceHandler(IApplicationDbContext context)
         {
             _context = context;
         }

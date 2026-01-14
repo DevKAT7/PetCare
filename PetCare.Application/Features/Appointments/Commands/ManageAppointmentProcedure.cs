@@ -2,8 +2,8 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using PetCare.Application.Exceptions;
 using PetCare.Application.Features.Appointments.Dtos;
+using PetCare.Application.Interfaces;
 using PetCare.Core.Models;
-using PetCare.Infrastructure.Data;
 
 namespace PetCare.Application.Features.Appointments.Commands
 {
@@ -31,9 +31,9 @@ namespace PetCare.Application.Features.Appointments.Commands
         IRequestHandler<UpdateProcedureInAppointmentCommand, int>,
         IRequestHandler<RemoveProcedureFromAppointmentCommand, int>
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IApplicationDbContext _context;
 
-        public ManageAppointmentProcedureHandler(ApplicationDbContext context)
+        public ManageAppointmentProcedureHandler(IApplicationDbContext context)
         {
             _context = context;
         }
@@ -51,7 +51,8 @@ namespace PetCare.Application.Features.Appointments.Commands
 
             //FindAsync jest uzywane dla kluczy i jest szybsze niz FirstOrDefaultAsync, najpierw sprawdza lokalna
             //pamiec kontekstu wiec jesli encja byla juz zaladowana to nie robi zapytania do bazy
-            var procedure = await _context.Procedures.FindAsync(new object[] { request.Model.ProcedureId }, cancellationToken);
+            var procedure = await _context.Procedures
+                .FirstOrDefaultAsync(p => p.ProcedureId == request.Model.ProcedureId, cancellationToken);
 
             if (procedure == null)
             {
@@ -91,7 +92,7 @@ namespace PetCare.Application.Features.Appointments.Commands
                 throw new NotFoundException("AppointmentProcedure", new { request.AppointmentId, request.ProcedureId });
             }
 
-            var procedure = await _context.Procedures.FindAsync(new object[] { request.ProcedureId }, cancellationToken);
+            var procedure = await _context.Procedures.FirstOrDefaultAsync(p => p.ProcedureId == request.ProcedureId, cancellationToken);
 
             if (procedure == null)
             {

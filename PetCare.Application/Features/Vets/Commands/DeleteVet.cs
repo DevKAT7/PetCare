@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using PetCare.Application.Exceptions;
 using PetCare.Core.Models;
-using PetCare.Infrastructure.Data;
+using PetCare.Application.Interfaces;
 
 namespace PetCare.Application.Features.Vets.Commands
 {
@@ -18,10 +18,10 @@ namespace PetCare.Application.Features.Vets.Commands
 
     public class DeleteVetHandler : IRequestHandler<DeleteVetCommand, int>
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IApplicationDbContext _context;
         private readonly UserManager<User> _userManager;
 
-        public DeleteVetHandler(ApplicationDbContext context, UserManager<User> userManager)
+        public DeleteVetHandler(IApplicationDbContext context, UserManager<User> userManager)
         {
             _context = context;
             _userManager = userManager;

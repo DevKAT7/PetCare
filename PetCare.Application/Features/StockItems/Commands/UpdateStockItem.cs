@@ -2,7 +2,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using PetCare.Application.Exceptions;
 using PetCare.Application.Features.StockItems.Dtos;
-using PetCare.Infrastructure.Data;
+using PetCare.Application.Interfaces;
 
 namespace PetCare.Application.Features.StockItems.Commands
 {
@@ -20,9 +20,9 @@ namespace PetCare.Application.Features.StockItems.Commands
 
     public class UpdateStockItemHandler : IRequestHandler<UpdateStockItemCommand, int>
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IApplicationDbContext _context;
 
-        public UpdateStockItemHandler(ApplicationDbContext context)
+        public UpdateStockItemHandler(IApplicationDbContext context)
         {
             _context = context;
         }

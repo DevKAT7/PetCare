@@ -1,0 +1,95 @@
+﻿@page
+@model PetCare.WebApp.Pages.Pets.CreatePetModel
+@{
+    ViewData["Title"] = "Add New Patient";
+}
+
+<div class="container mt-4" style="max-width: 700px;">
+
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-primary text-white py-3">
+            <h4 class="mb-0"><i class="bi bi-plus-circle me-2"></i>Add New Patient</h4>
+        </div>
+        <div class="card-body p-4">
+            <form method="post">
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger mb-3"></div>
+
+                <div class="mb-4">
+                    <label asp-for="Input.PetOwnerId" class="form-label fw-bold">Owner <span class="text-danger">*</span></label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light"><i class="bi bi-person"></i></span>
+                        <select asp-for="Input.PetOwnerId" asp-items="Model.OwnerOptions" class="form-select">
+                            <option value="">-- Select Owner --</option>
+                        </select>
+                    </div>
+                    <span asp-validation-for="Input.PetOwnerId" class="text-danger"></span>
+                    <div class="form-text">Cannot find the owner? <a asp-page="/Owners/Create" target="_blank">Register new owner</a> first.</div>
+                </div>
+
+                <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                        <label asp-for="Input.Name" class="form-label fw-bold">Pet Name <span class="text-danger">*</span></label>
+                        <input asp-for="Input.Name" class="form-control" placeholder="e.g. Buddy" />
+                        <span asp-validation-for="Input.Name" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="Input.Species" class="form-label fw-bold">Species <span class="text-danger">*</span></label>
+                        <input asp-for="Input.Species" class="form-control" list="speciesList" placeholder="Type or select..." />
+                        <datalist id="speciesList">
+                            @foreach (var s in Model.SpeciesSuggestions)
+                            {
+                                <option value="@s"></option>
+                            }
+                        </datalist>
+                        <span asp-validation-for="Input.Species" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                        <label asp-for="Input.Breed" class="form-label">Breed</label>
+                        <input asp-for="Input.Breed" class="form-control" placeholder="e.g. Golden Retriever" />
+                        <span asp-validation-for="Input.Breed" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="Input.DateOfBirth" class="form-label fw-bold">Date of Birth</label>
+                        <input asp-for="Input.DateOfBirth" type="date" class="form-control" />
+                        <span asp-validation-for="Input.DateOfBirth" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold d-block">Sex</label>
+                    <div class="btn-group" role="group">
+                        <input type="radio" class="btn-check" asp-for="Input.IsMale" value="true" id="sexMale" autocomplete="off" checked>
+                        <label class="btn btn-outline-primary" for="sexMale"><i class="bi bi-gender-male"></i> Male</label>
+
+                        <input type="radio" class="btn-check" asp-for="Input.IsMale" value="false" id="sexFemale" autocomplete="off">
+                        <label class="btn btn-outline-danger" for="sexFemale"><i class="bi bi-gender-female"></i> Female</label>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label asp-for="Input.ImageUrl" class="form-label">Photo URL</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light"><i class="bi bi-link-45deg"></i></span>
+                        <input asp-for="Input.ImageUrl" class="form-control" placeholder="https://..." />
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between pt-3 border-top">
+                    <a asp-page="./Index" class="btn btn-secondary">Cancel</a>
+                    <button type="submit" class="btn btn-primary px-4 fw-bold">
+                        <i class="bi bi-check-lg me-2"></i>Create Patient
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

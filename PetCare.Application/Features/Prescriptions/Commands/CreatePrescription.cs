@@ -2,8 +2,8 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using PetCare.Application.Exceptions;
 using PetCare.Application.Features.Prescriptions.Dtos;
+using PetCare.Application.Interfaces;
 using PetCare.Core.Models;
-using PetCare.Infrastructure.Data;
 
 namespace PetCare.Application.Features.Prescriptions.Commands
 {
@@ -14,9 +14,9 @@ namespace PetCare.Application.Features.Prescriptions.Commands
 
     public class CreatePrescriptionHandler : IRequestHandler<CreatePrescriptionCommand, int>
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IApplicationDbContext _context;
 
-        public CreatePrescriptionHandler(ApplicationDbContext context)
+        public CreatePrescriptionHandler(IApplicationDbContext context)
         {
             _context = context;
         }
@@ -32,12 +32,38 @@ namespace PetCare.Application.Features.Prescriptions.Commands
                 throw new NotFoundException("Appointment not found.");
             }
 
-            var medicationExists = await _context.Medications.AnyAsync(m => m.MedicationId == model.MedicationId, cancellationToken);
+            var stockItem = await _context.StockItems
+                .Include(s => s.Medication)
+                .FirstOrDefaultAsync(s => s.MedicationId == model.MedicationId, cancellationToken);
 
-            if (!medicationExists)
+            if (stockItem == null)
             {
-                throw new NotFoundException("Medication not found.");
+                var medExists = await _context.Medications.AnyAsync(m => m.MedicationId == model.MedicationId, cancellationToken);
+                if (!medExists)
+                {
+                    throw new NotFoundException("Medication not found.");
+                }
+
+                throw new InvalidOperationException($"No stock record for medication. Cannot dispense.");
             }
+
+            if (stockItem.CurrentStock < model.PacksToDispense)
+            {
+                throw new InvalidOperationException($"Not enough stock for '{stockItem.Medication.Name}'. " +
+                    $"Available: {stockItem.CurrentStock}, Requested: {model.PacksToDispense}");
+            }
+
+            stockItem.CurrentStock -= model.PacksToDispense;
+
+            var transaction = new StockTransaction
+            {
+                MedicationId = model.MedicationId,
+                QuantityChange = -model.PacksToDispense,
+                Reason = $"Prescription for Appointment #{model.AppointmentId}",
+                Timestamp = DateTime.Now
+            };
+
+            _context.StockTransactions.Add(transaction);
 
             var prescription = new Prescription
             {
@@ -47,6 +73,7 @@ namespace PetCare.Application.Features.Prescriptions.Commands
                 EndDate = model.EndDate,
                 Instructions = model.Instructions,
                 PacksToDispense = model.PacksToDispense,
+                CreatedDate = DateOnly.FromDateTime(DateTime.Today),
                 AppointmentId = model.AppointmentId,
                 MedicationId = model.MedicationId
             };

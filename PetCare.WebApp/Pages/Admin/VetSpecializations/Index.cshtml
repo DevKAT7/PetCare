@@ -1,0 +1,246 @@
+﻿@page
+@model PetCare.WebApp.Pages.Admin.VetSpecializations.IndexModel
+@{
+    ViewData["Title"] = "Vet Specializations";
+}
+
+<style>
+    [data-bs-toggle="collapse"][aria-expanded="true"] .bi-chevron-down {
+        transform: rotate(180deg);
+        transition: transform 0.3s;
+    }
+
+    [data-bs-toggle="collapse"][aria-expanded="false"] .bi-chevron-down {
+        transition: transform 0.3s;
+    }
+</style>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>Specializations Dictionary</h2>
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createModal">
+        <i class="bi bi-plus-lg"></i> Add New
+    </button>
+</div>
+
+<partial name="_StatusMessage" model='TempData["SuccessMessage"]' />
+
+<div class="card shadow-sm">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover table-striped align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th class="ps-4">Name</th>
+                        <th>Linked Procedures</th>
+                        <th class="text-end pe-4">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Specializations)
+                    {
+                        <tr class="align-middle">
+                            <td class="ps-4 fw-bold">@item.Name</td>
+                            <td>
+                                @if (item.Procedures.Any())
+                                {
+                                    <button class="btn btn-sm btn-outline-secondary border-0 d-flex align-items-center gap-2"
+                                            type="button"
+                                            data-bs-toggle="collapse"
+                                            data-bs-target="#collapseProc-@item.VetSpecializationId"
+                                            aria-expanded="false">
+                                        <span class="badge bg-primary rounded-pill">@item.Procedures.Count</span>
+                                        <span>Show procedures</span>
+                                        <i class="bi bi-chevron-down small"></i>
+                                    </button>
+                                }
+                                else
+                                {
+                                    <span class="text-muted small ms-2">— No procedures —</span>
+                                }
+                            </td>
+                            <td class="text-end pe-4">
+                                <div class="d-flex gap-1 justify-content-end">
+                                    <button type="button" class="btn btn-sm btn-outline-primary"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#editModal"
+                                            data-id="@item.VetSpecializationId"
+                                            data-name="@item.Name"
+                                            title="Edit">
+                                        <i class="bi bi-pencil"></i>
+                                    </button>
+
+                                    <button type="button" class="btn btn-sm btn-outline-danger"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#deleteModal"
+                                            data-id="@item.VetSpecializationId"
+                                            data-name="@item.Name"
+                                            title="Delete">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+
+                        @if (item.Procedures.Any())
+                        {
+                            <tr>
+                                <td colspan="3" class="p-0 border-0">
+                                    <div class="collapse bg-light border-bottom shadow-inset" id="collapseProc-@item.VetSpecializationId">
+                                        <div class="p-3 ps-5">
+                                            <h6 class="text-uppercase text-muted small fw-bold mb-2">Linked Procedures:</h6>
+                                            <div class="d-flex flex-wrap gap-2">
+                                                @foreach (var proc in item.Procedures)
+                                                {
+                                                    <div class="badge bg-white text-dark border d-flex align-items-center p-2 shadow-sm">
+                                                        <i class="bi bi-bandaid me-2 text-primary"></i>
+                                                        <span class="me-2">@proc.Name</span>
+                                                        <span class="border-start ps-2 text-muted small">@proc.Price.ToString("C")</span>
+                                                    </div>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="createModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="post" asp-page-handler="Create">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add New Specialization</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label asp-for="Input.Name" class="form-label">Name</label>
+                        <input asp-for="Input.Name" class="form-control" required />
+                        <span asp-validation-for="Input.Name" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="editModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="post" asp-page-handler="Edit">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Specialization</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" asp-for="SelectedId" id="editId" />
+
+                    <div class="mb-3">
+                        <label asp-for="Input.Name" class="form-label">Name</label>
+                        <input asp-for="Input.Name" class="form-control" id="editName" required />
+                        <span asp-validation-for="Input.Name" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="post" asp-page-handler="Delete">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirm Deletion</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3 alert alert-danger p-2"></div>
+                    <input type="hidden" asp-for="SelectedId" id="deleteId" />
+                    <p>Are you sure you want to delete specialization <strong id="deleteNamePlaceholder"></strong>?</p>
+                    <p class="text-danger small mb-0"><i class="bi bi-exclamation-triangle"></i> This might affect vets linked to this specialization.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+
+        var editModalElement = document.getElementById('editModal');
+        var editModal = new bootstrap.Modal(editModalElement);
+
+        editModalElement.addEventListener('show.bs.modal', function (event) {
+            var button = event.relatedTarget;
+            //czytamy atrybuty tylko jeśli modal otwarto kliknięciem (button istnieje).
+            //jeśli modal otwiera się automatycznie z powodu błędu, button będzie null,
+            //a pola input są już wypełnione przez ASP.NET Core (z ModelState).
+            if (button) {
+                var id = button.getAttribute('data-id');
+                var name = button.getAttribute('data-name');
+
+                editModalElement.querySelector('#editId').value = id;
+                editModalElement.querySelector('#editName').value = name;
+
+                var validationSpans = editModalElement.querySelectorAll('.text-danger');
+                validationSpans.forEach(el => el.textContent = '');
+                var inputs = editModalElement.querySelectorAll('.input-validation-error');
+                inputs.forEach(el => el.classList.remove('input-validation-error'));
+            }
+        });
+
+        var deleteModalElement = document.getElementById('deleteModal');
+        deleteModalElement.addEventListener('show.bs.modal', function (event) {
+            var button = event.relatedTarget;
+            if (button) {
+                var id = button.getAttribute('data-id');
+                var name = button.getAttribute('data-name');
+                deleteModalElement.querySelector('#deleteId').value = id;
+                deleteModalElement.querySelector('#deleteNamePlaceholder').textContent = name;
+            }
+        });
+
+        @if (ViewData["ShowCreateModal"] != null && (bool)ViewData["ShowCreateModal"])
+        {
+                <text>
+                    var createModal = new bootstrap.Modal(document.getElementById('createModal'));
+                    createModal.show();
+                </text>
+        }
+
+        @if (ViewData["ShowEditModal"] != null && (bool)ViewData["ShowEditModal"])
+        {
+                <text>
+                    editModal.show();
+                </text>
+        }
+
+        @if (ViewData["ShowDeleteModal"] != null && (bool)ViewData["ShowDeleteModal"])
+        {
+                <text>
+                    var deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+                    deleteModal.show();
+                </text>
+        }
+    </script>
+}

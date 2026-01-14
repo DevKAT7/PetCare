@@ -2,17 +2,17 @@
 using Microsoft.EntityFrameworkCore;
 using PetCare.Application.Features.VetSchedules.Commands;
 using PetCare.Application.Features.VetSchedules.Dto;
-using PetCare.Infrastructure.Data;
+using PetCare.Application.Interfaces;
 
 namespace PetCare.Application.Features.VetSchedules.Validators
 {
     public class UpdateVetScheduleCommandValidator : AbstractValidator<UpdateVetScheduleCommand>
     {
-            private readonly ApplicationDbContext _context;
+            private readonly IApplicationDbContext _context;
 
         public UpdateVetScheduleCommandValidator(
             IValidator<VetScheduleCreateModel> scheduleValidator,
-            ApplicationDbContext context)
+            IApplicationDbContext context)
         {
             _context = context;
 

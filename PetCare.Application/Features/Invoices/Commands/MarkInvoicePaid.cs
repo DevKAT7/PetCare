@@ -1,8 +1,7 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using PetCare.Application.Exceptions;
-using PetCare.Core.Models;
-using PetCare.Infrastructure.Data;
+using PetCare.Application.Interfaces;
 
 namespace PetCare.Application.Features.Invoices.Commands
 {
@@ -20,9 +19,9 @@ namespace PetCare.Application.Features.Invoices.Commands
 
     public class MarkInvoicePaidHandler : IRequestHandler<MarkInvoicePaidCommand, int>
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IApplicationDbContext _context;
 
-        public MarkInvoicePaidHandler(ApplicationDbContext context)
+        public MarkInvoicePaidHandler(IApplicationDbContext context)
         {
             _context = context;
         }

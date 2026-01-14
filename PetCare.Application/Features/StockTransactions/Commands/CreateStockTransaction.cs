@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using PetCare.Application.Exceptions;
 using PetCare.Application.Features.StockTransactions.Dtos;
 using PetCare.Core.Models;
-using PetCare.Infrastructure.Data;
+using PetCare.Application.Interfaces;
 
 namespace PetCare.Application.Features.StockTransactions.Commands
 {
@@ -14,9 +14,9 @@ namespace PetCare.Application.Features.StockTransactions.Commands
 
     public class CreateStockTransactionHandler : IRequestHandler<CreateStockTransactionCommand, int>
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IApplicationDbContext _context;
 
-        public CreateStockTransactionHandler(ApplicationDbContext context)
+        public CreateStockTransactionHandler(IApplicationDbContext context)
         {
             _context = context;
         }
@@ -49,8 +49,8 @@ namespace PetCare.Application.Features.StockTransactions.Commands
 
             if (stockItem.CurrentStock < 0)
             {
-                throw new BadRequestException($"Niewystarczaj¹ca iloœæ towaru w magazynie. " +
-                    $"Obecny stan: {stockItem.CurrentStock - model.QuantityChange}, Próba odjêcia: {Math.Abs(model.QuantityChange)}");
+                throw new BadRequestException($"Insufficient storage quantity. " +
+                    $"Current stock: {stockItem.CurrentStock - model.QuantityChange}, Attempted deduction: {Math.Abs(model.QuantityChange)}");
             }
 
             var transaction = new StockTransaction

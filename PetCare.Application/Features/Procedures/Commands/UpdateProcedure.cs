@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using PetCare.Application.Exceptions;
 using PetCare.Application.Features.Procedures.Dtos;
-using PetCare.Infrastructure.Data;
+using PetCare.Application.Interfaces;
 
 namespace PetCare.Application.Features.Procedures.Commands
 {
@@ -20,9 +20,9 @@ namespace PetCare.Application.Features.Procedures.Commands
 
     public class UpdateProcedureHandler : IRequestHandler<UpdateProcedureCommand, int>
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IApplicationDbContext _context;
 
-        public UpdateProcedureHandler(ApplicationDbContext context)
+        public UpdateProcedureHandler(IApplicationDbContext context)
         {
             _context = context;
         }

@@ -1,0 +1,338 @@
+﻿@page "{id:int}"
+@model PetCare.WebApp.Pages.Appointments.EditAppointmentModel
+@{
+    ViewData["Title"] = "Visit Details";
+
+    var backLink = "./Index";
+    var backText = "Back to List";
+    if (Model.Source == "calendar")
+    {
+        backLink = "/Calendar/Calendar";
+        backText = "Back to Calendar";
+    }
+}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-10 col-lg-8">
+
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h2>Visit Details</h2>
+                <a href="@Url.Page(backLink)" class="btn btn-outline-secondary btn-sm">@backText</a>
+            </div>
+
+            <form method="post">
+                <input type="hidden" asp-for="Source" />
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                <input type="hidden" asp-for="UpdateModel.PetId" />
+                <input type="hidden" asp-for="UpdateModel.VetId" />
+                <input type="hidden" asp-for="UpdateModel.AppointmentDateTime" />
+
+                <div class="card shadow-sm mb-4 bg-light border-0">
+                    <div class="card-body">
+                        <h5 class="card-title text-primary mb-3"><i class="bi bi-info-circle me-2"></i>Appointment Info</h5>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label text-muted small text-uppercase fw-bold">Date & Time</label>
+                                <p class="fs-5 fw-medium mb-0">@Model.UpdateModel.AppointmentDateTime.ToString("dd.MM.yyyy HH:mm")</p>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label text-muted small text-uppercase fw-bold">Vet</label>
+                                <p class="fs-5 mb-0">@Model.VetName</p>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label text-muted small text-uppercase fw-bold">Patient</label>
+                                <p class="fs-5 mb-0">@Model.PetName <small class="text-muted">(@Model.OwnerName)</small></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card shadow-sm border-0">
+                    <div class="card-header bg-white py-3">
+                        <h5 class="mb-0 text-dark"><i class="bi bi-clipboard-pulse me-2"></i>Medical Record</h5>
+                    </div>
+                    <div class="card-body p-4">
+
+                        <div class="mb-4">
+                            <label asp-for="UpdateModel.Status" class="form-label fw-bold">Visit Status</label>
+                            <select asp-for="UpdateModel.Status" asp-items="Model.StatusOptions" class="form-select w-auto">
+                            </select>
+                            <span asp-validation-for="UpdateModel.Status" class="text-danger"></span>
+                        </div>
+
+                        <hr class="my-4" />
+
+                        <div class="mb-3">
+                            <label asp-for="UpdateModel.ReasonForVisit" class="form-label fw-bold">Reason for Visit</label>
+                            <input asp-for="UpdateModel.ReasonForVisit" class="form-control" />
+                            <span asp-validation-for="UpdateModel.ReasonForVisit" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="UpdateModel.Diagnosis" class="form-label fw-bold">Diagnosis</label>
+                            <textarea asp-for="UpdateModel.Diagnosis" class="form-control" rows="3" placeholder="Enter clinical diagnosis..."></textarea>
+                            <span asp-validation-for="UpdateModel.Diagnosis" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="UpdateModel.Notes" class="form-label fw-bold">Doctor's Notes / Treatment</label>
+                            <textarea asp-for="UpdateModel.Notes" class="form-control" rows="5" placeholder="Prescriptions, treatment details, next steps..."></textarea>
+                            <span asp-validation-for="UpdateModel.Notes" class="text-danger"></span>
+                        </div>
+
+                        <div class="card shadow-sm border-0 mb-4">
+                            <div class="card-header bg-white py-3">
+                                <h5 class="mb-0 text-dark"><i class="bi bi-bandaid me-2"></i>Medical Procedures</h5>
+                            </div>
+                            <div class="card-body p-4">
+                                <div class="table-responsive mb-3">
+                                    <table class="table table-hover align-middle" id="proceduresTable">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>Procedure Name</th>
+                                                <th class="text-center" style="width: 100px;">Qty</th>
+                                                <th class="text-end" style="width: 120px;">Price</th>
+                                                <th class="text-end" style="width: 120px;">Total</th>
+                                                <th style="width: 50px;"></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="proceduresTableBody">
+                                            @for (int i = 0; i < Model.UpdateModel.Procedures.Count; i++)
+                                            {
+                                                var proc = Model.UpdateModel.Procedures[i];
+                                                <tr class="procedure-row">
+                                                    <td>
+                                                        <span class="proc-name-text">@proc.ProcedureName</span>
+                                                        <input type="hidden" name="UpdateModel.Procedures[@i].ProcedureId" value="@proc.ProcedureId" />
+                                                        <input type="hidden" name="UpdateModel.Procedures[@i].ProcedureName" value="@proc.ProcedureName" />
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <span class="proc-qty-text">@proc.Quantity</span>
+                                                        <input type="hidden" name="UpdateModel.Procedures[@i].Quantity" value="@proc.Quantity" />
+                                                    </td>
+                                                    <td class="text-end">
+                                                        <span class="proc-price-text">@proc.FinalPrice.ToString("C")</span>
+                                                        <input type="hidden" name="UpdateModel.Procedures[@i].FinalPrice" value="@proc.FinalPrice" />
+                                                    </td>
+                                                    <td class="text-end fw-bold">
+                                                        <span class="proc-total-text">@proc.TotalPrice.ToString("C")</span>
+                                                    </td>
+                                                    <td class="text-end">
+                                                        <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeProcedureRow(this)">
+                                                            <i class="bi bi-trash"></i>
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                        <tfoot>
+                                            <tr class="table-active fw-bold">
+                                                <td colspan="3" class="text-end">Total Cost:</td>
+                                                <td class="text-end" id="grandTotal">@Model.UpdateModel.Procedures.Sum(x => x.TotalPrice).ToString("C")</td>
+                                                <td></td>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+
+                                <hr class="my-3" />
+
+                                <h6 class="fw-bold mb-3 text-secondary">Add New Procedure</h6>
+                                <div class="row g-2 align-items-end bg-light p-3 rounded border">
+                                    <div class="col-md-5">
+                                        <label class="form-label small fw-bold text-muted">Select Procedure</label>
+                                        <select id="js-proc-id" class="form-select form-select-sm" asp-items="Model.ProcedureOptions">
+                                            <option value="">-- Select Procedure --</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label small fw-bold text-muted">Qty</label>
+                                        <input type="number" id="js-proc-qty" class="form-control form-control-sm" value="1" min="1" />
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label small fw-bold text-muted">Custom Price (Optional)</label>
+                                        <input type="number" id="js-proc-price" class="form-control form-control-sm" placeholder="Default price" step="0.01" />
+                                    </div>
+                                    <div class="col-md-2">
+                                        <button type="button" class="btn btn-sm btn-success w-100" onclick="addProcedureToTable()">
+                                            <i class="bi bi-plus-lg"></i> Add
+                                        </button>
+                                    </div>
+                                </div>
+                                <div id="js-proc-error" class="text-danger small mt-1" style="display:none;">Please select a procedure.</div>
+                            </div>
+                        </div>
+
+                        <div class="row mt-4 pt-3 border-top">
+                            <div class="col-6">
+                                @if (Model.UpdateModel.Status != PetCare.Core.Enums.AppointmentStatus.Cancelled 
+                                    && Model.UpdateModel.Status != PetCare.Core.Enums.AppointmentStatus.Completed)
+                                {
+                                    <button type="button"
+                                            class="btn btn-outline-danger"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#cancelConfirmationModal">
+                                        <i class="bi bi-x-circle"></i> Cancel Appointment
+                                    </button>
+                                }
+                                else if (Model.UpdateModel.Status == PetCare.Core.Enums.AppointmentStatus.Cancelled)
+                                {
+                                    <span class="badge bg-danger p-2">This appointment is Cancelled</span>
+                                }
+                            </div>
+
+                            <div class="col-6 d-flex justify-content-end gap-2">
+                                <a href="@Url.Page(backLink)" class="btn btn-light">Back</a>
+
+                                @if (Model.UpdateModel.Status != PetCare.Core.Enums.AppointmentStatus.Cancelled)
+                                {
+                                    <button type="submit" class="btn btn-primary px-4" formnovalidate>
+                                        <i class="bi bi-save"></i> Save Details
+                                    </button>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal fade" id="cancelConfirmationModal" tabindex="-1" aria-labelledby="cancelModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header bg-danger text-white">
+                                <h5 class="modal-title" id="cancelModalLabel">
+                                    <i class="bi bi-exclamation-triangle-fill me-2"></i>Confirm Cancellation
+                                </h5>
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p class="mb-2 fs-5">Are you sure you want to cancel this appointment?</p>
+                                <p class="text-muted small mb-0">This action will change the status to <strong>Cancelled</strong>. Use this only if the patient won't attend.</p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No, Keep it</button>
+
+                                <button type="submit"
+                                        asp-page-handler="Cancel"
+                                        asp-route-id="@Model.Id"
+                                        asp-route-source="@Model.Source"
+                                        class="btn btn-danger">
+                                    Yes, Cancel Appointment
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        function addProcedureToTable() {
+            const select = document.getElementById('js-proc-id');
+            const qtyInput = document.getElementById('js-proc-qty');
+            const priceInput = document.getElementById('js-proc-price');
+            const errorDiv = document.getElementById('js-proc-error');
+
+            if (!select.value) {
+                errorDiv.style.display = 'block';
+                return;
+            }
+            errorDiv.style.display = 'none';
+
+            const procId = select.value;
+            const procNameFull = select.options[select.selectedIndex].text;
+            const qty = parseInt(qtyInput.value) || 1;
+            
+            //cene brana z ostatniego nawiasu gdyby w nazwie procedury również był nawias
+            let price = parseFloat(priceInput.value);
+            if (isNaN(price)) {
+
+                const lastOpen = procNameFull.lastIndexOf('(');
+                const lastClose = procNameFull.lastIndexOf(')');
+                let priceText = null;
+                if (lastOpen !== -1 && lastClose > lastOpen) {
+                    priceText = procNameFull.substring(lastOpen + 1, lastClose);
+                } else {
+
+                    const priceMatch = procNameFull.match(/\(([^)]+)\)/);
+                    priceText = priceMatch ? priceMatch[1] : null;
+                }
+                price = priceText ? parseFloat(priceText.replace(/[^\d.,]/g, '').replace(',', '.')) : 0;
+            }
+
+            const procName = procNameFull.split(' (')[0];
+            const total = (qty * price);
+            const tableBody = document.getElementById('proceduresTableBody');
+            const index = tableBody.querySelectorAll('tr').length;
+
+            const newRow = `
+                <tr class="procedure-row">
+                    <td>
+                        <span class="proc-name-text">${procName}</span>
+                        <input type="hidden" name="UpdateModel.Procedures[${index}].ProcedureId" value="${procId}" />
+                        <input type="hidden" name="UpdateModel.Procedures[${index}].ProcedureName" value="${procName}" />
+                    </td>
+                    <td class="text-center">
+                        <span class="proc-qty-text">${qty}</span>
+                        <input type="hidden" name="UpdateModel.Procedures[${index}].Quantity" value="${qty}" />
+                    </td>
+                    <td class="text-end">
+                        <span class="proc-price-text">${formatCurrency(price)}</span>
+                        <input type="hidden" name="UpdateModel.Procedures[${index}].FinalPrice" value="${price.toFixed(2).replace('.',',')}" />
+                    </td>
+                    <td class="text-end fw-bold">
+                        <span class="proc-total-text">${formatCurrency(total)}</span>
+                    </td>
+                    <td class="text-end">
+                        <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeProcedureRow(this)">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </td>
+                </tr>`;
+
+            tableBody.insertAdjacentHTML('beforeend', newRow);
+            updateGrandTotal();
+            
+            select.value = "";
+            qtyInput.value = 1;
+            priceInput.value = "";
+        }
+
+        function removeProcedureRow(button) {
+            button.closest('tr').remove();
+            reindexTable();
+            updateGrandTotal();
+        }
+
+        function reindexTable() {
+            const rows = document.querySelectorAll('#proceduresTableBody tr');
+            rows.forEach((row, index) => {
+                const inputs = row.querySelectorAll('input');
+                inputs.forEach(input => {
+                    input.name = input.name.replace(/\[\d+\]/, `[${index}]`);
+                });
+            });
+        }
+
+        function updateGrandTotal() {
+            let sum = 0;
+            document.querySelectorAll('#proceduresTableBody tr').forEach(row => {
+                const qty = parseInt(row.querySelector('input[name*="Quantity"]').value);
+                const price = parseFloat(row.querySelector('input[name*="FinalPrice"]').value.replace(',', '.'));
+                sum += (qty * price);
+            });
+            document.getElementById('grandTotal').innerText = formatCurrency(sum);
+        }
+
+        function formatCurrency(value) {
+            return new Intl.NumberFormat('pl-PL', { style: 'currency', currency: 'PLN' }).format(value);
+        }
+    </script>
+}

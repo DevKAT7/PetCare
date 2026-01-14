@@ -1,7 +1,7 @@
 using MediatR;
 using PetCare.Application.Features.Notifications.Dtos;
 using PetCare.Core.Models;
-using PetCare.Infrastructure.Data;
+using PetCare.Application.Interfaces;
 
 namespace PetCare.Application.Features.Notifications.Commands
 {
@@ -12,9 +12,9 @@ namespace PetCare.Application.Features.Notifications.Commands
 
     public class CreateNotificationHandler : IRequestHandler<CreateNotificationCommand, int>
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IApplicationDbContext _context;
 
-        public CreateNotificationHandler(ApplicationDbContext context)
+        public CreateNotificationHandler(IApplicationDbContext context)
         {
             _context = context;
         }

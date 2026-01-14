@@ -23,5 +23,7 @@ namespace PetCare.Core.Models
             = new HashSet<Vaccination>();
         public ICollection<MedicalTest> MedicalTests { get; set; }
             = new HashSet<MedicalTest>();
+        public ICollection<Appointment> Appointments { get; set; }
+            = new HashSet<Appointment>();
     }
 }

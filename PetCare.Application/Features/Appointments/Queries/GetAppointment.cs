@@ -1,8 +1,9 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using PetCare.Application.Features.Appointments.Dto;
 using PetCare.Application.Exceptions;
-using PetCare.Infrastructure.Data;
+using PetCare.Application.Features.Appointments.Dto;
+using PetCare.Application.Features.Appointments.Dtos;
+using PetCare.Application.Interfaces;
 
 namespace PetCare.Application.Features.Appointments.Queries
 {
@@ -14,9 +15,9 @@ namespace PetCare.Application.Features.Appointments.Queries
 
     public class GetAppointmentHandler : IRequestHandler<GetAppointmentQuery, AppointmentReadModel>
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IApplicationDbContext _context;
 
-        public GetAppointmentHandler(ApplicationDbContext context)
+        public GetAppointmentHandler(IApplicationDbContext context)
         {
             _context = context;
         }
@@ -25,7 +26,10 @@ namespace PetCare.Application.Features.Appointments.Queries
         {
             var appointment = await _context.Appointments
                 .Include(a => a.Pet)
+                    .ThenInclude(a => a.PetOwner)
                 .Include(a => a.Vet)
+                .Include(a => a.AppointmentProcedures)
+                    .ThenInclude(ap => ap.Procedure)
                 .FirstOrDefaultAsync(a => a.AppointmentId == request.AppointmentId, cancellationToken);
 
             if (appointment == null)
@@ -44,8 +48,19 @@ namespace PetCare.Application.Features.Appointments.Queries
                 Notes = appointment.Notes,
                 PetId = appointment.PetId,
                 PetName = appointment.Pet.Name,
+                PetSpecies = appointment.Pet.Species,
+                PetImageUrl = appointment.Pet.ImageUrl,
+                OwnerName = appointment.Pet.PetOwner.FirstName + " " + appointment.Pet.PetOwner.LastName,
                 VetId = appointment.VetId,
-                VetName = appointment.Vet.FirstName + " " + appointment.Vet.LastName
+                VetName = appointment.Vet.FirstName + " " + appointment.Vet.LastName,
+                Procedures = appointment.AppointmentProcedures.Select(ap => new AppointmentProcedureReadModel
+                {
+                    ProcedureId = ap.ProcedureId,
+                    ProcedureName = ap.Procedure.Name,
+                    Quantity = ap.Quantity,
+                    FinalPrice = ap.FinalPrice,
+                    TotalPrice = ap.FinalPrice * ap.Quantity
+                }).ToList()
             };
         }
     }

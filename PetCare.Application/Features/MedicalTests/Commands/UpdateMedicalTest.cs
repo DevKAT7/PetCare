@@ -1,17 +1,17 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using PetCare.Application.Features.MedicalTests.Dto;
+using PetCare.Application.Features.MedicalTests.Dtos;
 using PetCare.Application.Exceptions;
-using PetCare.Infrastructure.Data;
+using PetCare.Application.Interfaces;
 
 namespace PetCare.Application.Features.MedicalTests.Commands
 {
     public class UpdateMedicalTestCommand : IRequest<int>
     {
         public int Id { get; }
-        public MedicalTestCreateModel MedicalTest { get; set; }
+        public MedicalTestUpdateModel MedicalTest { get; set; }
 
-        public UpdateMedicalTestCommand(int id, MedicalTestCreateModel model)
+        public UpdateMedicalTestCommand(int id, MedicalTestUpdateModel model)
         {
             Id = id;
             MedicalTest = model;
@@ -20,9 +20,9 @@ namespace PetCare.Application.Features.MedicalTests.Commands
 
     public class UpdateMedicalTestHandler : IRequestHandler<UpdateMedicalTestCommand, int>
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IApplicationDbContext _context;
 
-        public UpdateMedicalTestHandler(ApplicationDbContext context)
+        public UpdateMedicalTestHandler(IApplicationDbContext context)
         {
             _context = context;
         }
@@ -41,10 +41,7 @@ namespace PetCare.Application.Features.MedicalTests.Commands
 
             medicalTest.TestName = model.TestName;
             medicalTest.Result = model.Result;
-            medicalTest.TestDate = model.TestDate;
             medicalTest.AttachmentUrl = model.AttachmentUrl;
-            medicalTest.PetId = model.PetId;
-            medicalTest.AppointmentId = model.AppointmentId;
 
             await _context.SaveChangesAsync(cancellationToken);
 

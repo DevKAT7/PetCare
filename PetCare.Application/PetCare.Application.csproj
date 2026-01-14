@@ -13,15 +13,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\PetCare.Infrastructure\PetCare.Infrastructure.csproj" />
+    <Folder Include="Features\PetOwners\Commands\" />
+    <Folder Include="Features\PetOwners\Dtos\" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Features\PetOwners\Commands\" />
-    <Folder Include="Features\PetOwners\Dtos\" />
-    <Folder Include="Features\PetOwners\Queries\" />
-    <Folder Include="Features\Procedures\Validators\" />
-    <Folder Include="Features\VetSpecializations\Validators\" />
+    <ProjectReference Include="..\PetCare.Core\PetCare.Core.csproj" />
   </ItemGroup>
 
 </Project>

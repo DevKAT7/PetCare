@@ -2,8 +2,10 @@ using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using PetCare.Application.Extensions;
+using PetCare.Application.Interfaces;
 using PetCare.Infrastructure.Data;
 using PetCare.Infrastructure.Extensions;
+using PetCare.Infrastructure.Services;
 
 namespace PetCare.WebApp
 {
@@ -17,8 +19,11 @@ namespace PetCare.WebApp
             builder.Services.AddApplicationLayer();
             builder.Services.AddInfrastructureLayer(builder.Configuration);
 
-            builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+            builder.Services.AddScoped<IApplicationDbContext>(provider => provider.GetRequiredService<ApplicationDbContext>());
 
+            builder.Services.AddScoped<IDocumentGenerator, DocumentGenerator>();
+
+            builder.Services.AddDatabaseDeveloperPageExceptionFilter();
             builder.Services.AddRazorPages();
 
             builder.Services.AddFluentValidationAutoValidation();

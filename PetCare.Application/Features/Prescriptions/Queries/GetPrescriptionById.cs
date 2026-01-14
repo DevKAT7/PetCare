@@ -2,7 +2,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using PetCare.Application.Exceptions;
 using PetCare.Application.Features.Prescriptions.Dtos;
-using PetCare.Infrastructure.Data;
+using PetCare.Application.Interfaces;
 
 namespace PetCare.Application.Features.Prescriptions.Queries
 {
@@ -13,9 +13,9 @@ namespace PetCare.Application.Features.Prescriptions.Queries
 
     public class GetPrescriptionHandler : IRequestHandler<GetPrescriptionQuery, PrescriptionReadModel>
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IApplicationDbContext _context;
 
-        public GetPrescriptionHandler(ApplicationDbContext context)
+        public GetPrescriptionHandler(IApplicationDbContext context)
         {
             _context = context;
         }
@@ -23,6 +23,12 @@ namespace PetCare.Application.Features.Prescriptions.Queries
         public async Task<PrescriptionReadModel> Handle(GetPrescriptionQuery request, CancellationToken cancellationToken)
         {
             var entity = await _context.Prescriptions
+                .Include(p => p.Medication)
+                .Include(p => p.Appointment)
+                    .ThenInclude(a => a.Vet)
+                 .Include(p => p.Appointment)
+                    .ThenInclude(a => a.Pet)
+                        .ThenInclude(pet => pet.PetOwner)
                 .FirstOrDefaultAsync(p => p.PrescriptionId == request.Id, cancellationToken);
 
             if (entity == null)
@@ -40,7 +46,12 @@ namespace PetCare.Application.Features.Prescriptions.Queries
                 Instructions = entity.Instructions,
                 PacksToDispense = entity.PacksToDispense,
                 AppointmentId = entity.AppointmentId,
-                MedicationId = entity.MedicationId
+                MedicationId = entity.MedicationId,
+                CreatedBy = $"{entity.Appointment.Vet.FirstName} {entity.Appointment.Vet.LastName}",
+                CreatedDate = entity.Appointment.AppointmentDateTime,
+                MedicationName = entity.Medication.Name,
+                PetName = entity.Appointment.Pet.Name,
+                OwnerName = $"{entity.Appointment.Pet.PetOwner.FirstName} {entity.Appointment.Pet.PetOwner.LastName}"
             };
         }
     }

@@ -1,0 +1,44 @@
+﻿@page
+@model PetCare.WebApp.Pages.Vaccinations.CreateVaccinationModel
+@{
+    ViewData["Title"] = "Add Vaccination";
+}
+
+<div class="container mt-4" style="max-width: 600px;">
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Add Vaccination</h4>
+        </div>
+        <div class="card-body">
+            <form method="post">
+                <input type="hidden" asp-for="Input.AppointmentId" />
+                <input type="hidden" asp-for="Input.PetId" />
+
+                <div class="mb-3">
+                    <label asp-for="Input.VaccineName" class="form-label fw-bold">Vaccine Name</label>
+                    <input asp-for="Input.VaccineName" class="form-control" placeholder="e.g. Rabies, DHPP" autofocus />
+                    <span asp-validation-for="Input.VaccineName" class="text-danger"></span>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label asp-for="Input.VaccinationDate" class="form-label">Administered Date</label>
+                        <input asp-for="Input.VaccinationDate" type="date" class="form-control" />
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="Input.NextDueDate" class="form-label">Next Due Date (Optional)</label>
+                        <input asp-for="Input.NextDueDate" type="date" class="form-control" />
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between mt-4">
+                    <a asp-page="/Appointments/Details" asp-route-id="@Model.Input.AppointmentId" class="btn btn-secondary">Cancel</a>
+                    <button type="submit" class="btn btn-primary">Save Vaccination</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

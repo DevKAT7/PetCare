@@ -41,7 +41,7 @@ namespace PetCare.Api.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody] VaccinationCreateModel request)
+        public async Task<IActionResult> Update(int id, [FromBody] VaccinationUpdateModel request)
         {
             var command = new UpdateVaccinationCommand(id, request);
             var result = await _mediator.Send(command);

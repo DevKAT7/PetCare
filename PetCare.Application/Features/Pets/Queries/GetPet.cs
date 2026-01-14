@@ -2,7 +2,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using PetCare.Application.Features.Pets.Dto;
 using PetCare.Application.Exceptions;
-using PetCare.Infrastructure.Data;
+using PetCare.Application.Interfaces;
 
 namespace PetCare.Application.Features.Pets.Queries
 {
@@ -14,9 +14,9 @@ namespace PetCare.Application.Features.Pets.Queries
 
     public class GetPetHandler : IRequestHandler<GetPetQuery, PetReadModel>
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IApplicationDbContext _context;
 
-        public GetPetHandler(ApplicationDbContext context)
+        public GetPetHandler(IApplicationDbContext context)
         {
             _context = context;
         }

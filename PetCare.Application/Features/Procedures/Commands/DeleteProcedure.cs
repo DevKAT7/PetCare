@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
 using PetCare.Application.Exceptions;
-using PetCare.Infrastructure.Data;
+using PetCare.Application.Interfaces;
 
 namespace PetCare.Application.Features.Procedures.Commands
 {
@@ -13,9 +13,9 @@ namespace PetCare.Application.Features.Procedures.Commands
 
     public class DeleteProcedureHandler : IRequestHandler<DeleteProcedureCommand, int>
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IApplicationDbContext _context;
 
-        public DeleteProcedureHandler(ApplicationDbContext context)
+        public DeleteProcedureHandler(IApplicationDbContext context)
         {
             _context = context;
         }
@@ -30,7 +30,24 @@ namespace PetCare.Application.Features.Procedures.Commands
                 throw new NotFoundException("Procedure", request.ProcedureId);
             }
 
-            _context.Procedures.Remove(procedure);
+            if (!procedure.IsActive)
+            {
+                throw new Exception("This procedure is already archived/inactive.");
+            }
+
+            bool isUsedInAppointments = await _context.AppointmentProcedures
+            .AnyAsync(ap => ap.ProcedureId == request.ProcedureId, cancellationToken);
+
+            if (isUsedInAppointments)
+            {
+                procedure.IsActive = false;
+
+                procedure.Name += " (Archived)"; 
+            }
+            else
+            {
+                _context.Procedures.Remove(procedure);
+            }
             await _context.SaveChangesAsync(cancellationToken);
 
             return procedure.ProcedureId;

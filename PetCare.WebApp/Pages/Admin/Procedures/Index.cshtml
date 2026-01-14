@@ -1,0 +1,365 @@
+﻿@page
+@model PetCare.WebApp.Pages.Admin.Procedures.IndexModel
+@{
+    ViewData["Title"] = "Procedures";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>Medical Procedures</h2>
+    @if (User.IsInRole("Admin"))
+    {
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createModal">
+            <i class="bi bi-plus-lg"></i> Add Procedure
+        </button>
+    }
+</div>
+
+<partial name="_StatusMessage" model='TempData["SuccessMessage"]' />
+
+<div class="card shadow-sm mb-4">
+    <div class="card-body bg-light">
+        <form method="get" class="row g-3">
+            <input type="hidden" asp-for="SortColumn" />
+            <input type="hidden" asp-for="SortDirection" />
+
+            <div class="col-md-4">
+                <input type="text" asp-for="SearchTerm" class="form-control" placeholder="Search procedure name...">
+            </div>
+
+            <div class="col-md-3">
+                <select asp-for="FilterSpecializationId" asp-items="Model.SpecializationFilterOptions" class="form-select">
+                    <option value="">-- All Specializations --</option>
+                </select>
+            </div>
+
+            <div class="col-md-3">
+                <select asp-for="FilterStatus" class="form-select">
+                    <option value="all">Status: All</option>
+                    <option value="active">Active Only</option>
+                    <option value="inactive">Inactive (Archived)</option>
+                </select>
+            </div>
+
+            <div class="col-md-2 d-flex gap-2">
+                <button type="submit"
+                        class="btn btn-secondary btn-sm flex-grow-1 d-flex align-items-center justify-content-center"
+                        title="Apply filters">
+                    <i class="bi bi-funnel me-2"></i> Filter
+                </button>
+
+                <a asp-page="./Index"
+                   class="btn btn-outline-secondary btn-sm flex-grow-1 d-flex align-items-center justify-content-center"
+                   title="Clear filters">
+                    Clear
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover table-striped align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th class="ps-4">
+                            <a asp-page="./Index"
+                               asp-route-sortColumn="Name"
+                               asp-route-sortDirection="@Model.GetNextSort("Name")"
+                               asp-route-searchTerm="@Model.SearchTerm"
+                               asp-route-filterSpecializationId="@Model.FilterSpecializationId"
+                               asp-route-filterStatus="@Model.FilterStatus"
+                               class="text-decoration-none text-dark d-flex align-items-center">
+                                Name & Description <i class="bi fs-5 ms-1 @Model.GetSortIcon("Name")"></i>
+                            </a>
+                        </th>
+
+                        <th>
+                            <a asp-page="./Index"
+                               asp-route-sortColumn="Specialization"
+                               asp-route-sortDirection="@Model.GetNextSort("Specialization")"
+                               asp-route-searchTerm="@Model.SearchTerm"
+                               asp-route-filterSpecializationId="@Model.FilterSpecializationId"
+                               asp-route-filterStatus="@Model.FilterStatus"
+                               class="text-decoration-none text-dark d-flex align-items-center">
+                                Specialization <i class="bi fs-5 ms-1 @Model.GetSortIcon("Specialization")"></i>
+                            </a>
+                        </th>
+
+                        <th>
+                            <a asp-page="./Index"
+                               asp-route-sortColumn="Price"
+                               asp-route-sortDirection="@Model.GetNextSort("Price")"
+                               asp-route-searchTerm="@Model.SearchTerm"
+                               asp-route-filterSpecializationId="@Model.FilterSpecializationId"
+                               asp-route-filterStatus="@Model.FilterStatus"
+                               class="text-decoration-none text-dark d-flex align-items-center">
+                                Price <i class="bi fs-5 ms-1 @Model.GetSortIcon("Price")"></i>
+                            </a>
+                        </th>
+
+                        <th>
+                            <a asp-page="./Index"
+                               asp-route-sortColumn="Status"
+                               asp-route-sortDirection="@Model.GetNextSort("Status")"
+                               asp-route-searchTerm="@Model.SearchTerm"
+                               asp-route-filterSpecializationId="@Model.FilterSpecializationId"
+                               asp-route-filterStatus="@Model.FilterStatus"
+                               class="text-decoration-none text-dark d-flex align-items-center">
+                                Status <i class="bi fs-5 ms-1 @Model.GetSortIcon("Status")"></i>
+                            </a>
+                        </th>
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <th class="text-end pe-4">Actions</th>
+                        }
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Procedures)
+                    {
+                        <tr>
+                            <td class="ps-4">
+                                <div class="fw-bold">@item.Name</div>
+                                <small class="text-muted text-truncate d-inline-block" style="max-width: 250px;">
+                                    @item.Description
+                                </small>
+                            </td>
+                            <td>
+                                <span class="badge bg-info text-dark">@item.VetSpecializationName</span>
+                            </td>
+                            <td class="font-monospace fw-bold">
+                                @item.Price.ToString("C")
+                            </td>
+                            <td>
+                                @if (item.IsActive)
+                                {
+                                    <span class="badge bg-success"><i class="bi bi-check-circle me-1"></i>Active</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary"><i class="bi bi-pause-circle me-1"></i>Inactive</span>
+                                }
+                            </td>
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <td class="text-end pe-4">
+                                    <button type="button" class="btn btn-sm btn-outline-primary me-1"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#editModal"
+                                            data-id="@item.ProcedureId"
+                                            data-name="@item.Name"
+                                            data-desc="@item.Description"
+                                            data-price="@item.Price.ToString(System.Globalization.CultureInfo.InvariantCulture)"
+                                            data-active="@item.IsActive.ToString().ToLower()"
+                                            data-spec="@item.VetSpecializationId">
+                                        <i class="bi bi-pencil"></i>
+                                    </button>
+
+                                    <button type="button" class="btn btn-sm btn-outline-danger"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#deleteModal"
+                                            data-id="@item.ProcedureId"
+                                            data-name="@item.Name">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </td>
+                            }
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="createModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="post" asp-page-handler="Create">
+                <div class="modal-header">
+                    <h5 class="modal-title">New Procedure</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="Input.VetSpecializationId" class="form-label">Specialization</label>
+                        <select asp-for="Input.VetSpecializationId" asp-items="Model.SpecializationOptions" class="form-select" required>
+                            <option value="">-- Select Specialization --</option>
+                        </select>
+                        <span asp-validation-for="Input.VetSpecializationId" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Input.Name" class="form-label">Name</label>
+                        <input asp-for="Input.Name" class="form-control" required />
+                        <span asp-validation-for="Input.Name" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Input.Price" class="form-label">Price</label>
+                        <div class="input-group">
+                            <span class="input-group-text">$</span>
+                            <input asp-for="Input.Price" class="form-control" type="number" step="0.01" required />
+                        </div>
+                        <span asp-validation-for="Input.Price" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Input.Description" class="form-label">Description</label>
+                        <textarea asp-for="Input.Description" class="form-control" rows="2"></textarea>
+                        <span asp-validation-for="Input.Description" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-check form-switch">
+                        <input asp-for="Input.IsActive" class="form-check-input" type="checkbox" checked />
+                        <label class="form-check-label" asp-for="Input.IsActive">Is Active?</label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="editModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="post" asp-page-handler="Edit">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Procedure</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                    <input type="hidden" asp-for="SelectedId" id="editId" />
+
+                    <div class="mb-3">
+                        <label asp-for="Input.VetSpecializationId" class="form-label">Specialization</label>
+                        <select asp-for="Input.VetSpecializationId" asp-items="Model.SpecializationOptions" class="form-select" id="editSpec" required>
+                            <option value="">-- Select Specialization --</option>
+                        </select>
+                        <span asp-validation-for="Input.VetSpecializationId" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Input.Name" class="form-label">Name</label>
+                        <input asp-for="Input.Name" class="form-control" id="editName" required />
+                        <span asp-validation-for="Input.Name" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Input.Price" class="form-label">Price</label>
+                        <div class="input-group">
+                            <span class="input-group-text">$</span>
+                            <input asp-for="Input.Price" class="form-control" id="editPrice" type="number" step="0.01" required />
+                        </div>
+                        <span asp-validation-for="Input.Price" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Input.Description" class="form-label">Description</label>
+                        <textarea asp-for="Input.Description" class="form-control" id="editDesc" rows="2"></textarea>
+                        <span asp-validation-for="Input.Description" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-check form-switch">
+                        <input asp-for="Input.IsActive" class="form-check-input" id="editActive" type="checkbox" />
+                        <label class="form-check-label" asp-for="Input.IsActive">Is Active?</label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="post" asp-page-handler="Delete">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirm Deletion</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3 alert alert-danger p-2"></div>
+                    <input type="hidden" asp-for="SelectedId" id="deleteId" />
+
+                    <p>
+                        Are you sure you want to delete procedure
+                        <strong id="deleteNamePlaceholder">@ViewData["DeleteName"]</strong>?
+                    </p>
+                    <p class="text-danger small mb-0"><i class="bi bi-exclamation-triangle"></i> This might affect past appointments/invoices.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+
+        var editModalEl = document.getElementById('editModal');
+        editModalEl.addEventListener('show.bs.modal', function (event) {
+            var button = event.relatedTarget;
+            if (button) {
+
+                var id = button.getAttribute('data-id');
+                var name = button.getAttribute('data-name');
+                var desc = button.getAttribute('data-desc');
+                var price = button.getAttribute('data-price');
+                var active = button.getAttribute('data-active') === 'true';
+                var spec = button.getAttribute('data-spec');
+
+                editModalEl.querySelector('#editId').value = id;
+                editModalEl.querySelector('#editName').value = name;
+                editModalEl.querySelector('#editDesc').value = desc;
+                editModalEl.querySelector('#editPrice').value = price;
+                editModalEl.querySelector('#editSpec').value = spec;
+                editModalEl.querySelector('#editActive').checked = active;
+
+                editModalEl.querySelectorAll('.text-danger').forEach(el => el.textContent = '');
+                editModalEl.querySelectorAll('.input-validation-error').forEach(el => el.classList.remove('input-validation-error'));
+            }
+        });
+
+        var deleteModalEl = document.getElementById('deleteModal');
+        deleteModalEl.addEventListener('show.bs.modal', function (event) {
+            var button = event.relatedTarget;
+            if (button) {
+                var id = button.getAttribute('data-id');
+                var name = button.getAttribute('data-name');
+                deleteModalEl.querySelector('#deleteId').value = id;
+                deleteModalEl.querySelector('#deleteNamePlaceholder').textContent = name;
+            }
+        });
+
+        @if (ViewData["ShowCreateModal"] != null && (bool)ViewData["ShowCreateModal"])
+        {
+                    <text> new bootstrap.Modal(document.getElementById('createModal')).show(); </text>
+        }
+        @if (ViewData["ShowEditModal"] != null && (bool)ViewData["ShowEditModal"])
+        {
+                    <text> new bootstrap.Modal(document.getElementById('editModal')).show(); </text>
+        }
+        @if (ViewData["ShowDeleteModal"] != null && (bool)ViewData["ShowDeleteModal"])
+        {
+                    <text> new bootstrap.Modal(document.getElementById('deleteModal')).show(); </text>
+        }
+    </script>
+}

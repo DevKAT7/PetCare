@@ -1,3 +1,5 @@
+using PetCare.Application.Features.Appointments.Dtos;
+using PetCare.Application.Features.Prescriptions.Dtos;
 using PetCare.Core.Enums;
 
 namespace PetCare.Application.Features.Appointments.Dto
@@ -9,11 +11,15 @@ namespace PetCare.Application.Features.Appointments.Dto
         public string? Description { get; set; }
         public AppointmentStatus Status { get; set; }
         public string ReasonForVisit { get; set; } = string.Empty;
-        public string Diagnosis { get; set; } = string.Empty;
+        public string? Diagnosis { get; set; }
         public string? Notes { get; set; }
         public int PetId { get; set; }
         public string PetName { get; set; } = string.Empty;
+        public string PetSpecies { get; set; } = string.Empty;
+        public string? PetImageUrl { get; set; } = string.Empty;
+        public string OwnerName { get; set; } = string.Empty;
         public int VetId { get; set; }
         public string VetName { get; set; } = string.Empty;
+        public List<AppointmentProcedureReadModel> Procedures { get; set; } = new();
     }
 }

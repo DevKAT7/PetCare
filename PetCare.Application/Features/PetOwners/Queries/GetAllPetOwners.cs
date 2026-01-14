@@ -1,7 +1,7 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using PetCare.Application.Features.PetOwners.Dto;
-using PetCare.Infrastructure.Data;
+using PetCare.Application.Interfaces;
 
 namespace PetCare.Application.Features.PetOwners.Queries
 {
@@ -11,9 +11,9 @@ namespace PetCare.Application.Features.PetOwners.Queries
 
     public class GetAllPetOwnersHandler : IRequestHandler<GetAllPetOwnersQuery, List<PetOwnerReadModel>>
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IApplicationDbContext _context;
 
-        public GetAllPetOwnersHandler(ApplicationDbContext context)
+        public GetAllPetOwnersHandler(IApplicationDbContext context)
         {
             _context = context;
         }

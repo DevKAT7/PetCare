@@ -1,0 +1,45 @@
+﻿@page
+@model PetCare.WebApp.Pages.MedicalTests.CreateMedicalTestModel
+@{
+    ViewData["Title"] = "Order Medical Test";
+}
+
+<div class="container mt-4" style="max-width: 600px;">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Order Medical Test</h4>
+        </div>
+        <div class="card-body">
+            <form method="post">
+                <input type="hidden" asp-for="Input.AppointmentId" />
+                <input type="hidden" asp-for="Input.PetId" />
+
+                <div class="mb-3">
+                    <label asp-for="Input.TestName" class="form-label">Test Name</label>
+                    <input asp-for="Input.TestName" class="form-control" placeholder="e.g. Blood Count, X-Ray" autofocus />
+                    <span asp-validation-for="Input.TestName" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Input.TestDate" class="form-label">Date</label>
+                    <input asp-for="Input.TestDate" type="date" class="form-control" />
+                    <span asp-validation-for="Input.TestDate" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Input.AttachmentUrl" class="form-label">Attachment URL (Optional)</label>
+                    <input asp-for="Input.AttachmentUrl" class="form-control" placeholder="Link to file..." />
+                </div>
+
+                <div class="d-flex justify-content-between">
+                    <a asp-page="/Appointments/Details" asp-route-id="@Model.Input.AppointmentId" class="btn btn-secondary">Cancel</a>
+                    <button type="submit" class="btn btn-primary">Save Test</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

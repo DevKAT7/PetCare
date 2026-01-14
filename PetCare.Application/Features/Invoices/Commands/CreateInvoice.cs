@@ -1,7 +1,7 @@
 using MediatR;
 using PetCare.Application.Features.Invoices.Dto;
 using PetCare.Core.Models;
-using PetCare.Infrastructure.Data;
+using PetCare.Application.Interfaces;
 
 namespace PetCare.Application.Features.Invoices.Commands
 {
@@ -12,9 +12,9 @@ namespace PetCare.Application.Features.Invoices.Commands
 
     public class CreateInvoiceHandler : IRequestHandler<CreateInvoiceCommand, int>
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IApplicationDbContext _context;
 
-        public CreateInvoiceHandler(ApplicationDbContext context)
+        public CreateInvoiceHandler(IApplicationDbContext context)
         {
             _context = context;
         }

@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using PetCare.Application.Features.VetSchedules.Dto;
 using PetCare.Application.Exceptions;
 using PetCare.Core.Models;
-using PetCare.Infrastructure.Data;
+using PetCare.Application.Interfaces;
 
 namespace PetCare.Application.Features.VetSchedules.Commands
 {
@@ -14,9 +14,9 @@ namespace PetCare.Application.Features.VetSchedules.Commands
 
     public class CreateVetScheduleHandler : IRequestHandler<CreateVetScheduleCommand, int>
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IApplicationDbContext _context;
 
-        public CreateVetScheduleHandler(ApplicationDbContext context)
+        public CreateVetScheduleHandler(IApplicationDbContext context)
         {
             _context = context;
         }

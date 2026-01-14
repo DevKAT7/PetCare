@@ -1,0 +1,72 @@
+﻿@page
+@model PetCare.WebApp.Pages.Vaccinations.EditVaccinationModel
+@{
+    ViewData["Title"] = "Edit Vaccination";
+}
+
+<div class="container mt-4" style="max-width: 600px;">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3>Edit Vaccination</h3>
+        <a asp-page="/Appointments/Details" asp-route-id="@Model.AppointmentId" class="btn btn-outline-secondary btn-sm">
+            <i class="bi bi-arrow-left"></i> Back to Visit
+        </a>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+            <form method="post" asp-page-handler="Edit">
+                <input type="hidden" asp-for="VaccinationId" />
+                <input type="hidden" asp-for="AppointmentId" />
+
+                <div class="mb-3">
+                    <label class="form-label text-muted small text-uppercase fw-bold">Administered Date</label>
+                    <input type="text" class="form-control bg-light" value="@Model.AdministeredDate.ToString("yyyy-MM-dd")" readonly />
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Input.VaccineName" class="form-label fw-bold">Vaccine Name</label>
+                    <input asp-for="Input.VaccineName" class="form-control" />
+                    <span asp-validation-for="Input.VaccineName" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Input.NextDueDate" class="form-label">Next Due Date</label>
+                    <input asp-for="Input.NextDueDate" type="date" class="form-control" />
+                    <div class="form-text">Update if the schedule has changed.</div>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top">
+                    <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                        <i class="bi bi-trash"></i> Delete
+                    </button>
+                    <button type="submit" class="btn btn-primary px-4">
+                        <i class="bi bi-check-lg me-2"></i>Save Changes
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header"><h5 class="modal-title">Confirm Deletion</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+            <div class="modal-body">
+                <p>Delete vaccination record <strong>@Model.Input.VaccineName</strong>?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form method="post" asp-page-handler="Delete">
+                    <input type="hidden" asp-for="VaccinationId" />
+                    <input type="hidden" asp-for="AppointmentId" />
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,0 +1,199 @@
+﻿@page
+@model PetCare.WebApp.Pages.Appointments.IndexModel
+@using PetCare.Application.Features.Appointments.Dto
+@using PetCare.Core.Enums
+@{
+    ViewData["Title"] = "Appointments List";
+
+    string GetNextSort(string column)
+    {
+        if (Model.SortColumn == column)
+        {
+            return Model.SortDirection == "asc" ? "desc" : "asc";
+        }
+        return "asc";
+    }
+
+    string GetSortIcon(string column)
+    {
+        if (Model.SortColumn != column) return "bi-arrow-down-up text-muted opacity-25";
+        return Model.SortDirection == "asc" ? "bi-arrow-up-short" : "bi-arrow-down-short";
+    }
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>Appointments</h2>
+    <a asp-page="CreateAppointment" class="btn btn-primary">
+        <i class="bi bi-plus-lg"></i> Book Appointment
+    </a>
+</div>
+
+<div class="card shadow-sm mb-4">
+    <div class="card-body bg-light">
+        <form method="get" class="row g-3">
+            <input type="hidden" asp-for="SortColumn" />
+            <input type="hidden" asp-for="SortDirection" />
+
+            <div class="col-md-3">
+                <input type="text" asp-for="SearchPet" class="form-control" placeholder="Pet Name...">
+            </div>
+            <div class="col-md-3">
+                <input type="text" asp-for="SearchOwner" class="form-control" placeholder="Owner Name...">
+            </div>
+            <div class="col-md-2">
+                <select asp-for="SearchVetId" asp-items="Model.VetOptions" class="form-select">
+                    <option value="">-- Any Vet --</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <select asp-for="SearchStatus" asp-items="Model.StatusOptions" class="form-select">
+                    <option value="">-- Any Status --</option>
+                </select>
+            </div>
+            <div class="col-md-2 d-flex gap-2">
+                <button type="submit"
+                        class="btn btn-secondary btn-sm flex-grow-1 d-flex align-items-center justify-content-center"
+                        title="Apply filters">
+                    <i class="bi bi-funnel me-2"></i> Filter
+                </button>
+
+                <a asp-page="./Index"
+                   class="btn btn-outline-secondary btn-sm flex-grow-1 d-flex align-items-center justify-content-center"
+                   title="Clear filters">
+                    Clear
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th scope="col" class="ps-4">
+                            <a asp-page="./Index"
+                               asp-route-sortColumn="Date"
+                               asp-route-sortDirection="@GetNextSort("Date")"
+                               asp-route-searchPet="@Model.SearchPet"
+                               asp-route-searchOwner="@Model.SearchOwner"
+                               asp-route-searchVetId="@Model.SearchVetId"
+                               asp-route-searchStatus="@Model.SearchStatus"
+                               class="text-decoration-none text-dark">
+                                Date & Time <i class="bi @GetSortIcon("Date")"></i>
+                            </a>
+                        </th>
+                        <th scope="col">
+                            <a asp-page="./Index"
+                               asp-route-sortColumn="Patient"
+                               asp-route-sortDirection="@GetNextSort("Patient")"
+                               asp-route-searchPet="@Model.SearchPet"
+                               asp-route-searchOwner="@Model.SearchOwner"
+                               asp-route-searchVetId="@Model.SearchVetId"
+                               asp-route-searchStatus="@Model.SearchStatus"
+                               class="text-decoration-none text-dark">
+                                Patient <i class="bi @GetSortIcon("Patient")"></i>
+                            </a>
+                        </th>
+                        <th scope="col">
+                            <a asp-page="./Index"
+                               asp-route-sortColumn="Owner"
+                               asp-route-sortDirection="@GetNextSort("Owner")"
+                               asp-route-searchPet="@Model.SearchPet"
+                               asp-route-searchOwner="@Model.SearchOwner"
+                               asp-route-searchVetId="@Model.SearchVetId"
+                               asp-route-searchStatus="@Model.SearchStatus"
+                               class="text-decoration-none text-dark">
+                                Owner <i class="bi @GetSortIcon("Owner")"></i>
+                            </a>
+                        </th>
+                        <th scope="col">
+                            <a asp-page="./Index"
+                               asp-route-sortColumn="Vet"
+                               asp-route-sortDirection="@GetNextSort("Vet")"
+                               asp-route-searchPet="@Model.SearchPet"
+                               asp-route-searchOwner="@Model.SearchOwner"
+                               asp-route-searchVetId="@Model.SearchVetId"
+                               asp-route-searchStatus="@Model.SearchStatus"
+                               class="text-decoration-none text-dark">
+                                Veterinarian <i class="bi @GetSortIcon("Vet")"></i>
+                            </a>
+                        </th>
+                        <th scope="col">Reason</th>
+                        <th scope="col">
+                            <a asp-page="./Index"
+                               asp-route-sortColumn="Status"
+                               asp-route-sortDirection="@GetNextSort("Status")"
+                               asp-route-searchPet="@Model.SearchPet"
+                               asp-route-searchOwner="@Model.SearchOwner"
+                               asp-route-searchVetId="@Model.SearchVetId"
+                               asp-route-searchStatus="@Model.SearchStatus"
+                               class="text-decoration-none text-dark">
+                                Status <i class="bi @GetSortIcon("Status")"></i>
+                            </a>
+                        </th>
+                        <th scope="col" class="text-end pe-4">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!Model.Appointments.Any())
+                    {
+                        <tr>
+                            <td colspan="7" class="text-center py-4 text-muted">
+                                No appointments found.
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        @foreach (var item in Model.Appointments)
+                        {
+                            <tr>
+                                <td class="ps-4">
+                                    <div class="fw-bold">@item.AppointmentDateTime.ToString("dd.MM.yyyy")</div>
+                                    <small class="text-muted">@item.AppointmentDateTime.ToString("HH:mm")</small>
+                                </td>
+                                <td><span class="fw-medium">@item.PetName</span></td>
+                                <td>@item.OwnerName</td>
+                                <td>Dr. @item.VetName</td>
+                                <td><span class="text-truncate d-inline-block" style="max-width: 150px;">@item.ReasonForVisit</span></td>
+                                <td>
+                                    @switch (item.Status)
+                                    {
+                                        case AppointmentStatus.Scheduled:
+                                            <span class="badge bg-primary text-light">Scheduled</span>
+                                            break;
+                                        case AppointmentStatus.Confirmed:
+                                            <span class="badge bg-success">Confirmed</span>
+                                            break;
+                                        case AppointmentStatus.Completed:
+                                            <span class="badge bg-secondary">Completed</span>
+                                            break;
+                                        case AppointmentStatus.Cancelled:
+                                            <span class="badge bg-danger">Cancelled</span>
+                                            break;
+                                        case AppointmentStatus.NoShow:
+                                            <span class="badge bg-dark">No Show</span>
+                                            break;
+                                        default:
+                                            <span class="badge bg-light text-dark">@item.Status</span>
+                                            break;
+                                    }
+                                </td>
+                                <td class="text-end pe-4">
+                                    <div class="d-flex gap-1 justify-content-end">
+                                        <a asp-page="Details" asp-route-id="@item.AppointmentId" class="btn btn-sm btn-outline-secondary"><i class="bi bi-eye"></i></a>
+                                        <a asp-page="EditAppointment" asp-route-id="@item.AppointmentId" asp-route-source="index" 
+                                        class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil"></i></a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

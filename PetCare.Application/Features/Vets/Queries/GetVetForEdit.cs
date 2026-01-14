@@ -2,7 +2,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using PetCare.Application.Exceptions;
 using PetCare.Application.Features.Vets.Dto;
-using PetCare.Infrastructure.Data;
+using PetCare.Application.Interfaces;
 
 namespace PetCare.Application.Features.Vets.Queries
 {
@@ -13,9 +13,9 @@ namespace PetCare.Application.Features.Vets.Queries
 
     public class GetVetForEditHandler : IRequestHandler<GetVetForEditQuery, VetUpdateModel>
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IApplicationDbContext _context;
 
-        public GetVetForEditHandler(ApplicationDbContext context)
+        public GetVetForEditHandler(IApplicationDbContext context)
         {
             _context = context;
         }
@@ -23,10 +23,11 @@ namespace PetCare.Application.Features.Vets.Queries
         public async Task<VetUpdateModel> Handle(GetVetForEditQuery request, CancellationToken cancellationToken)
         {
             var vet = await _context.Vets
+                .Include(v => v.User)
                 .Where(v => v.VetId == request.VetId && v.IsActive)
                 .Select(v => new VetUpdateModel
                 {
-                    Email = v.User.Email,
+                    Email = v.User.Email!,
                     PhoneNumber = v.User.PhoneNumber ?? string.Empty,
                     FirstName = v.FirstName ?? string.Empty,
                     LastName = v.LastName ?? string.Empty,

@@ -1,5 +1,5 @@
 using FluentValidation;
-using PetCare.Application.Features.MedicalTests.Dto;
+using PetCare.Application.Features.MedicalTests.Dtos;
 
 namespace PetCare.Application.Features.MedicalTests.Validators
 {
@@ -8,21 +8,20 @@ namespace PetCare.Application.Features.MedicalTests.Validators
         public MedicalTestCreateModelValidator()
         {
             RuleFor(x => x.TestName)
-                .NotEmpty().WithMessage("Nazwa badania jest wymagana.")
-                .MaximumLength(200).WithMessage("Nazwa badania może mieć maksymalnie 200 znaków.");
+                .NotEmpty().WithMessage("Test name is required.")
+                .MaximumLength(200).WithMessage("Test name can have a maximum of 200 characters.");
 
             RuleFor(x => x.Result)
-                .NotEmpty().WithMessage("Wynik jest wymagany.")
-                .MaximumLength(2000).WithMessage("Wynik może mieć maksymalnie 2000 znaków.");
+                .MaximumLength(2000).WithMessage("Result can have a maximum of 2000 characters.");
 
             RuleFor(x => x.TestDate)
-                .NotEmpty().WithMessage("Data badania jest wymagana.");
+                .NotEmpty().WithMessage("Test date is required.");
 
             RuleFor(x => x.PetId)
-                .GreaterThan(0).WithMessage("PetId jest wymagane.");
+                .GreaterThan(0).WithMessage("Pet is required.");
 
             RuleFor(x => x.AppointmentId)
-                .GreaterThan(0).WithMessage("AppointmentId jest wymagane.");
+                .GreaterThan(0).WithMessage("Appointment is required.");
         }
     }
 }

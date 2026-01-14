@@ -1,34 +1,85 @@
 ﻿@page
 @model PetCare.WebApp.Pages.Admin.Vets.IndexModel
 @{
-    ViewData["Title"] = "Veterinarians List";
+    ViewData["Title"] = "Vets List";
+
+    string GetNextSort(string column)
+    {
+        if (Model.SortColumn == column)
+        {
+            return Model.SortDirection == "asc" ? "desc" : "asc";
+        }
+        return "asc";
+    }
+
+    string GetSortIcon(string column)
+    {
+        if (Model.SortColumn != column) return "text-muted opacity-25";
+        return Model.SortDirection == "asc" ? "bi-arrow-up-short" : "bi-arrow-down-short";
+    }
 }
 
 <div class="d-flex justify-content-between align-items-center mb-3">
-    <h2>Veterinarians</h2>
+    <h2>Vets</h2>
     <a asp-page="CreateVet" class="btn btn-primary">
         <i class="bi bi-plus-lg"></i> Add New Vet
     </a>
 </div>
 
-@if (TempData["SuccessMessage"] != null)
-{
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-        @TempData["SuccessMessage"]
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+<partial name="_StatusMessage" model='TempData["SuccessMessage"]' />
+
+<div class="card shadow-sm mb-4">
+    <div class="card-body bg-light">
+        <form method="get" class="row g-3">
+            <input type="hidden" asp-for="SortColumn" />
+            <input type="hidden" asp-for="SortDirection" />
+
+            <div class="col-md-4">
+                <input type="text" asp-for="SearchTerm" class="form-control" placeholder="Search by Name or PESEL...">
+            </div>
+
+            <div class="col-md-3">
+                <select asp-for="SelectedSpecializationId" asp-items="@Model.SpecializationOptions" class="form-select">
+                    <option value="">-- All Specializations --</option>
+                </select>
+            </div>
+
+            <div class="col-md-2 d-flex gap-2">
+                <button type="submit"
+                        class="btn btn-secondary btn-sm flex-grow-1 d-flex align-items-center justify-content-center"
+                        title="Apply filters">
+                    <i class="bi bi-funnel me-2"></i> Filter
+                </button>
+                <a asp-page="./Index" 
+                   class="btn btn-outline-secondary btn-sm flex-grow-1 d-flex align-items-center justify-content-center"
+                   title="Clear filters">
+                    Clear
+                </a>
+            </div>
+        </form>
     </div>
-}
+</div>
 
 <div class="card shadow-sm">
     <div class="card-body p-0">
         <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0">
+            <table class="table table-hover table-striped align-middle mb-0">
                 <thead class="table-light">
                     <tr>
-                        <th scope="col" class="ps-4">Veterinarian</th>
+                        <th scope="col" class="ps-4">
+                            <a asp-page="./Index"
+                               asp-route-sortColumn="LastName"
+                               asp-route-sortDirection="@GetNextSort("LastName")"
+                               asp-route-searchTerm="@Model.SearchTerm"
+                               asp-route-selectedSpecializationId="@Model.SelectedSpecializationId"
+                               class="text-decoration-none text-dark d-flex align-items-center">
+                                Vet <i class="bi fs-5 ms-1 @GetSortIcon("LastName")"></i>
+                            </a>
+                        </th>
+                        <th scope="col">Pesel</th>
+                        <th scope="col">Email</th>
                         <th scope="col">Contact</th>
                         <th scope="col">Specializations</th>
-                        <th scope="col">Experience</th>
                         <th scope="col" class="text-end pe-4">Actions</th>
                     </tr>
                 </thead>
@@ -36,8 +87,8 @@
                     @if (!Model.Vets.Any())
                     {
                         <tr>
-                            <td colspan="5" class="text-center py-4 text-muted">
-                                No veterinarians found. Click "Add New Vet" to create one.
+                            <td colspan="6" class="text-center py-4 text-muted">
+                                No vets found. Click "Add New Vet" to create one.
                             </td>
                         </tr>
                     }
@@ -56,9 +107,12 @@
                                         }
                                         else
                                         {
+                                            var firstInitial = !string.IsNullOrEmpty(vet.FirstName) ? vet.FirstName[0].ToString() : string.Empty;
+                                            var lastInitial = !string.IsNullOrEmpty(vet.LastName) ? vet.LastName[0].ToString() : string.Empty;
+
                                             <div class="rounded-circle me-3 bg-secondary text-white d-flex align-items-center justify-content-center"
                                                  style="width: 48px; height: 48px; font-size: 1.2rem;">
-                                                @vet.FirstName[0]@vet.LastName[0]
+                                                @firstInitial@lastInitial
                                             </div>
                                         }
                                         <div>
@@ -68,31 +122,47 @@
                                     </div>
                                 </td>
                                 <td>
+                                        <div>@vet.Pesel</div>
+                                </td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(vet.Email))
+                                    {
+                                        <div><i class="bi bi-envelope"></i> @vet.Email</div>
+                                    }
+                                </td>
+                                <td>
                                     @if (!string.IsNullOrEmpty(vet.PhoneNumber))
                                     {
                                         <div><i class="bi bi-telephone me-1"></i> @vet.PhoneNumber</div>
                                     }
                                 </td>
                                 <td>
-                                    @foreach (var spec in vet.Specializations)
+                                    @if (vet.Specializations != null && vet.Specializations.Any())
                                     {
-                                        <span class="badge bg-info text-dark me-1">@spec</span>
+                                        @foreach (var spec in vet.Specializations)
+                                        {
+                                            <span class="badge bg-info text-dark me-1">@spec</span>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">—</span>
                                     }
                                 </td>
-                                <td>
-                                    @vet.YearsOfExperience years
-                                </td>
                                 <td class="text-end pe-4">
-                                    <div class="btn-group">
+                                    <div class="d-flex gap-1 justify-content-end">
                                         <a asp-page="/ManageSchedule"
                                            asp-route-vetId="@vet.VetId"
-                                           class="btn btn-primary btn-sm btn-rounded text-white">
-                                            <i class="bi bi-calendar-week"></i> Schedule
+                                           class="btn btn-primary btn-sm text-white d-flex align-items-center">
+                                            <i class="bi bi-calendar-week me-2"></i> Schedule
                                         </a>
-                                        <a asp-page="EditVet" asp-route-id="@vet.VetId" class="btn btn-sm btn-outline-secondary" title="Edit">
+                                        <a asp-page="Details" asp-route-id="@vet.VetId" 
+                                            class="btn btn-sm btn-outline-secondary d-flex align-items-center justify-content-center"><i class="bi bi-eye"></i></a>
+                                        <a asp-page="EditVet" asp-route-id="@vet.VetId" 
+                                            class="btn btn-sm btn-outline-primary d-flex align-items-center justify-content-center" title="Edit">
                                             <i class="bi bi-pencil"></i>
                                         </a>
-                                        <button type="button" class="btn btn-sm btn-outline-danger"
+                                        <button type="button" class="btn btn-sm btn-outline-danger d-flex align-items-center justify-content-center"
                                                 data-bs-toggle="modal"
                                                 data-bs-target="#deleteModal"
                                                 data-vet-id="@vet.VetId"
@@ -135,20 +205,16 @@
 @section Scripts {
     <script>
         var deleteModal = document.getElementById('deleteModal');
-        deleteModal.addEventListener('show.bs.modal', function (event) {
-            // Przycisk, który otworzył modal
+        deleteModal.addEventListener('show.bs.modal', function (event) 
+        {
             var button = event.relatedTarget;
 
-            // Pobierz dane z atrybutów data-* przycisku
             var vetId = button.getAttribute('data-vet-id');
             var vetName = button.getAttribute('data-vet-name');
 
-            // Znajdź elementy wewnątrz modala
-            // Upewnij się, że te ID pasują do HTML powyżej!
             var modalNamePlaceholder = deleteModal.querySelector('#deleteVetName');
             var modalIdInput = deleteModal.querySelector('#deleteVetId');
 
-            // Przypisz wartości
             modalNamePlaceholder.textContent = vetName;
             modalIdInput.value = vetId;
         });
