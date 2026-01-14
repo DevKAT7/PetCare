@@ -113,6 +113,9 @@ body {
     margin-bottom: 20px;
 }
 
+.card-header {
+    background-color: var(--petcare-primary)
+}
 .btn-primary {
     background-color: var(--petcare-primary);
     border-color: var(--petcare-primary);
