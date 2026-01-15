@@ -1,11 +1,13 @@
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using PetCare.Application.Extensions;
 using PetCare.Application.Interfaces;
 using PetCare.Infrastructure.Data;
 using PetCare.Infrastructure.Extensions;
 using PetCare.Infrastructure.Services;
+using System.Globalization;
 
 namespace PetCare.WebApp
 {
@@ -28,6 +30,10 @@ namespace PetCare.WebApp
 
             builder.Services.AddFluentValidationAutoValidation();
             builder.Services.AddFluentValidationClientsideAdapters();
+
+            var cultureInfo = new CultureInfo("en-US");
+            CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
+            CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
 
             var app = builder.Build();
 

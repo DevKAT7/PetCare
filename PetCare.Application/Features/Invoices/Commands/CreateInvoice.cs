@@ -39,7 +39,7 @@ namespace PetCare.Application.Features.Invoices.Commands
                 IsPaid = false
             };
 
-            foreach (var it in model.Items)
+            foreach (var it in model.Items.Where(x => x.Quantity > 0))
             {
                 var item = new InvoiceItem
                 {

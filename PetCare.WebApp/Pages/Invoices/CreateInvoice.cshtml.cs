@@ -37,6 +37,34 @@ namespace PetCare.WebApp.Pages.Invoices
 
         public async Task<IActionResult> OnPostAsync()
         {
+            for (int i = 0; i < Input.Items.Count; i++)
+            {
+                var item = Input.Items[i];
+
+                //dajê tutaj dodatkow¹ walidacjê, aby pomin¹æ weryfikacjê usuniêtych wierszy
+                //musia³am usunaæ walidacjê po stronie klienta, poniewa¿ nie dzia³a³a poprawnie z dynamicznie dodawanymi/usuwanymi wierszami
+                bool isDeletedRow = item.Description == "DELETED" && item.Quantity == 0;
+
+                if (!isDeletedRow)
+                {
+
+                    if (string.IsNullOrWhiteSpace(item.Description))
+                    {
+                        ModelState.AddModelError($"Input.Items[{i}].Description", "Description is required.");
+                    }
+
+                    if (item.Quantity <= 0)
+                    {
+                        ModelState.AddModelError($"Input.Items[{i}].Quantity", "Quantity must be at least 1.");
+                    }
+
+                    if (item.UnitPrice < 0)
+                    {
+                        ModelState.AddModelError($"Input.Items[{i}].UnitPrice", "Price cannot be negative.");
+                    }
+                }
+            }
+
             if (!ModelState.IsValid)
             {
                 await ReloadViewData();
