@@ -23,11 +23,9 @@
 
             @if (!Model.Invoice.IsPaid)
             {
-                <form method="post" asp-page-handler="MarkAsPaid" asp-route-id="@Model.Invoice.InvoiceId" onsubmit="return confirm('Confirm payment received?');">
-                    <button type="submit" class="btn btn-success">
-                        <i class="bi bi-check-circle me-2"></i>Mark as Paid
-                    </button>
-                </form>
+                <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#confirmPaymentModal">
+                    <i class="bi bi-check-circle me-2"></i>Mark as Paid
+                </button>
             }
         </div>
     </div>
@@ -137,6 +135,33 @@
     </div>
 </div>
 
+<div class="modal fade" id="confirmPaymentModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title fw-bold"><i class="bi bi-cash-coin me-2"></i>Confirm Payment</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center py-4">
+                <p class="fs-5 mb-1">Are you sure you want to mark this invoice as <strong>PAID</strong>?</p>
+                <p class="text-muted small">This action will record the payment date as today.</p>
+                <div class="display-6 fw-bold text-success mt-3">
+                    @Model.Invoice.TotalAmount.ToString("C")
+                </div>
+            </div>
+            <div class="modal-footer bg-light d-flex justify-content-center">
+                <button type="button" class="btn btn-outline-secondary px-4" data-bs-dismiss="modal">Cancel</button>
+                
+                <form method="post" asp-page-handler="MarkAsPaid" asp-route-id="@Model.Invoice.InvoiceId">
+                    <button type="submit" class="btn btn-success px-4 fw-bold">
+                        Confirm & Mark Paid
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 @section Scripts {
     <style>
         @@media print {
@@ -158,6 +183,10 @@
             }
 
             .d-print-none {
+                display: none !important;
+            }
+
+            .modal {
                 display: none !important;
             }
         }
