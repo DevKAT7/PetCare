@@ -17,6 +17,7 @@ namespace PetCare.Core.Models
         public bool IsActive { get; set; } = true;
         [Url]
         public string? ImageUrl { get; set; }
+        public DateTime CreatedDate { get; set; }
         public int PetOwnerId { get; set; }
         public PetOwner PetOwner { get; set; } = null!;
         public ICollection<Vaccination> Vaccinations { get; set; }

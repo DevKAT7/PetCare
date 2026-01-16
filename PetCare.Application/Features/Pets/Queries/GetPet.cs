@@ -41,6 +41,7 @@ namespace PetCare.Application.Features.Pets.Queries
                 DateOfBirth = pet.DateOfBirth.ToDateTime(TimeOnly.MinValue),
                 IsMale = pet.IsMale,
                 ImageUrl = pet.ImageUrl,
+                CreatedDate = pet.CreatedDate,
                 PetOwnerId = pet.PetOwnerId,
                 PetOwnerName = $"{pet.PetOwner.FirstName} {pet.PetOwner.LastName}"
             };

@@ -31,6 +31,7 @@ namespace PetCare.Application.Features.Pets.Commands
                 DateOfBirth = DateOnly.FromDateTime(model.DateOfBirth),
                 IsMale = model.IsMale,
                 ImageUrl = model.ImageUrl,
+                CreatedDate = DateTime.UtcNow,
                 PetOwnerId = model.PetOwnerId,
                 IsActive = true
             };

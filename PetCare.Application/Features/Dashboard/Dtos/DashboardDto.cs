@@ -11,8 +11,8 @@ namespace PetCare.Application.Features.Dashboard.Dtos
 
         public List<DashboardAppointmentDto> UpcomingAppointments { get; set; } = new();
         public List<DashboardOverdueInvoiceDto> OverdueInvoices { get; set; } = new();
-
-        public List<DashboardLowStockDto> LowStockItems { get; set; } = new();
+        public List<DashboardOverdueInvoiceDto> CurrentUnpaidInvoices { get; set; } = new();
+        public List<DashboardLowStockDto> LowStockMedications { get; set; } = new();
     }
 
     public class DashboardAppointmentDto
@@ -36,7 +36,7 @@ namespace PetCare.Application.Features.Dashboard.Dtos
 
     public class DashboardLowStockDto
     {
-        public string ItemName { get; set; } = string.Empty;
+        public string MedicationName { get; set; } = string.Empty;
         public int Quantity { get; set; }
     }
 }

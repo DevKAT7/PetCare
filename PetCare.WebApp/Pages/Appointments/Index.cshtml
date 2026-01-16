@@ -163,19 +163,19 @@
                                     @switch (item.Status)
                                     {
                                         case AppointmentStatus.Scheduled:
-                                            <span class="badge bg-primary text-light">Scheduled</span>
+                                            <span class="badge badge-scheduled px-3">Scheduled</span>
                                             break;
                                         case AppointmentStatus.Confirmed:
-                                            <span class="badge bg-success">Confirmed</span>
+                                            <span class="badge bg-warning bg-opacity-10 text-warning border border-warning px-3">Confirmed</span>
                                             break;
                                         case AppointmentStatus.Completed:
-                                            <span class="badge bg-secondary">Completed</span>
+                                            <span class="badge bg-success bg-opacity-10 text-success border border-success px-3">Completed</span>
                                             break;
                                         case AppointmentStatus.Cancelled:
-                                            <span class="badge bg-danger">Cancelled</span>
+                                            <span class="badge bg-danger bg-opacity-10 text-danger border border-danger px-3">Cancelled</span>
                                             break;
                                         case AppointmentStatus.NoShow:
-                                            <span class="badge bg-dark">No Show</span>
+                                            <span class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary px-3">No Show</span>
                                             break;
                                         default:
                                             <span class="badge bg-light text-dark">@item.Status</span>
