@@ -38,6 +38,7 @@ namespace PetCare.Application.Features.VetSchedules.Queries
                 StartTime = exception.StartTime,
                 EndTime = exception.EndTime,
                 Reason = exception.Reason,
+                Status = exception.Status,
                 VetId = exception.VetId
             };
         }

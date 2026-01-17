@@ -9,6 +9,7 @@ using PetCare.Core.Enums;
 
 namespace PetCare.Infrastructure.Services
 {
+    //to jest dla powiadomień które nie wywołują się bezpośrednio z akcji użytkownika
     public class NotificationBackgroundService : BackgroundService
     {
         private readonly IServiceProvider _serviceProvider;

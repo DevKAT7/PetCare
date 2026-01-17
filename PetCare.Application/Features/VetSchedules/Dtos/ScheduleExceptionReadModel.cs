@@ -1,3 +1,5 @@
+using PetCare.Core.Enums;
+
 namespace PetCare.Application.Features.VetSchedules.Dto
 {
     public class ScheduleExceptionReadModel
@@ -8,6 +10,7 @@ namespace PetCare.Application.Features.VetSchedules.Dto
         public TimeOnly? StartTime { get; set; }
         public TimeOnly? EndTime { get; set; }
         public string? Reason { get; set; }
+        public ScheduleExceptionStatus Status { get; set; }
         public int VetId { get; set; }
     }
 }
