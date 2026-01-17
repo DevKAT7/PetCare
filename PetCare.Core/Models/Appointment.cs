@@ -17,6 +17,7 @@ namespace PetCare.Core.Models
         public string? Diagnosis { get; set; } = string.Empty;
         [MaxLength(2000)]
         public string? Notes { get; set; }
+        public bool IsReminderSent { get; set; } = false;
         public int PetId { get; set; }
         public Pet Pet { get; set; } = null!;
         public int VetId { get; set; }

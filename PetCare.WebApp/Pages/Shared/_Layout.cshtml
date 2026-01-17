@@ -109,7 +109,14 @@
                 <h4 class="m-0 text-muted">@ViewData["Title"]</h4>
 
                 <div class="user-area">
-                    <partial name="_LoginPartial" />
+                    <ul class="navbar-nav d-flex flex-row align-items-center gap-3">
+
+                        <vc:notification-bar />
+
+                        <li class="d-none d-md-block border-end mx-2" style="height: 24px;"></li>
+
+                        <partial name="_LoginPartial" />
+                    </ul>
                 </div>
             </nav>
 
