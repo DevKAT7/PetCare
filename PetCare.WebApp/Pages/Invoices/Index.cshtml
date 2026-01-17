@@ -1,0 +1,168 @@
+@page
+@model PetCare.WebApp.Pages.Invoices.IndexModel
+@{
+    ViewData["Title"] = "Invoices List";
+
+    string GetNextSort(string column)
+    {
+        if (Model.SortColumn == column)
+            return Model.SortDirection == "asc" ? "desc" : "asc";
+        return "asc";
+    }
+
+    string GetSortIcon(string column)
+    {
+        if (Model.SortColumn != column) return "bi-arrow-down-up text-muted opacity-25";
+        return Model.SortDirection == "asc" ? "bi-arrow-up-short" : "bi-arrow-down-short";
+    }
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>Invoices</h2>
+</div>
+
+<partial name="_StatusMessage" model='TempData["SuccessMessage"]' />
+
+<div class="card shadow-sm mb-4">
+    <div class="card-body bg-light">
+        <form method="get" class="row g-3">
+            <input type="hidden" asp-for="SortColumn" />
+            <input type="hidden" asp-for="SortDirection" />
+
+            <div class="col-md-4">
+                <input type="text" asp-for="SearchTerm" class="form-control" placeholder="Search by number or owner...">
+            </div>
+
+            <div class="col-md-2">
+                <select asp-for="FilterStatus" asp-items="Model.StatusOptions" class="form-select">
+                    <option value="">Status: All</option>
+                </select>
+            </div>
+
+            <div class="col-md-2 d-flex gap-2">
+                <button type="submit"
+                        class="btn btn-secondary btn-sm flex-grow-1 d-flex align-items-center justify-content-center"
+                        title="Apply filters">
+                    <i class="bi bi-funnel me-2"></i> Filter
+                </button>
+                <a asp-page="./Index"
+                   class="btn btn-outline-secondary btn-sm flex-grow-1 d-flex align-items-center justify-content-center"
+                   title="Clear filters">
+                    Clear
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover table-striped align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th scope="col" class="ps-4">
+                            <a asp-page="./Index"
+                               asp-route-sortColumn="InvoiceNumber"
+                               asp-route-sortDirection="@GetNextSort("InvoiceNumber")"
+                               asp-route-searchTerm="@Model.SearchTerm"
+                               asp-route-filterStatus="@Model.FilterStatus"
+                               class="text-decoration-none text-dark d-flex align-items-center">
+                                Number <i class="bi fs-5 ms-1 @GetSortIcon("InvoiceNumber")"></i>
+                            </a>
+                        </th>
+                        <th scope="col">
+                            <a asp-page="./Index"
+                               asp-route-sortColumn="InvoiceDate"
+                               asp-route-sortDirection="@GetNextSort("InvoiceDate")"
+                               asp-route-searchTerm="@Model.SearchTerm"
+                               asp-route-filterStatus="@Model.FilterStatus"
+                               class="text-decoration-none text-dark d-flex align-items-center">
+                                Invoice Date <i class="bi fs-5 ms-1 @GetSortIcon("InvoiceDate")"></i>
+                            </a>
+                        </th>
+                        <th scope="col">
+                            <a asp-page="./Index"
+                               asp-route-sortColumn="PetOwnerName"
+                               asp-route-sortDirection="@GetNextSort("PetOwnerName")"
+                               asp-route-searchTerm="@Model.SearchTerm"
+                               asp-route-filterStatus="@Model.FilterStatus"
+                               class="text-decoration-none text-dark d-flex align-items-center">
+                                Owner <i class="bi fs-5 ms-1 @GetSortIcon("PetOwnerName")"></i>
+                            </a>
+                        </th>
+                        <th scope="col">
+                            Status
+                        </th>
+                        <th scope="col">
+                            <a asp-page="./Index"
+                               asp-route-sortColumn="TotalAmount"
+                               asp-route-sortDirection="@GetNextSort("TotalAmount")"
+                               asp-route-searchTerm="@Model.SearchTerm"
+                               asp-route-filterStatus="@Model.FilterStatus"
+                               class="text-decoration-none text-dark d-flex align-items-center">
+                                Amount <i class="bi fs-5 ms-1 @GetSortIcon("TotalAmount")"></i>
+                            </a>
+                        </th>
+                        <th scope="col" class="text-end pe-4">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!Model.Invoices.Any())
+                    {
+                        <tr>
+                            <td colspan="6" class="text-center py-5 text-muted">
+                                <i class="bi bi-search display-6 opacity-25 mb-3 d-block"></i>
+                                No invoices found matching your criteria.
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        @foreach (var invoice in Model.Invoices)
+                        {
+                            <tr>
+                                <td class="ps-4">
+                                    <div class="fw-bold text-primary">@invoice.InvoiceNumber</div>
+                                </td>
+                                <td>
+                                    @invoice.InvoiceDate.ToShortDateString()
+                                </td>
+                                <td>
+                                    <a asp-page="/PetOwners/Details" asp-route-id="@invoice.PetOwnerId" class="text-decoration-none text-dark fw-medium">
+                                        @invoice.PetOwnerName
+                                    </a>
+                                </td>
+                                <td>
+                                    @if (invoice.IsPaid)
+                                    {
+                                        <span class="badge bg-success-light text-success border border-success-subtle"><i class="bi bi-check-circle"></i> Paid</span>
+                                    }
+                                    else if (invoice.DueDate < DateTime.Today)
+                                    {
+                                        <span class="badge bg-danger-light text-danger border border-danger-subtle"><i class="bi bi-x-circle"></i> Overdue</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-warning-light text-warning border border-warning-subtle"><i class="bi bi-clock"></i> Unpaid</span>
+                                    }
+                                </td>
+                                <td>
+                                    <div class="fw-bold">@invoice.TotalAmount.ToString("C")</div>
+                                    <small class="text-muted">Due: @invoice.DueDate.ToShortDateString()</small>
+                                </td>
+                                <td class="text-end pe-4">
+                                    <div class="d-flex gap-1 justify-content-end">
+                                        <a asp-page="Details" asp-route-id="@invoice.InvoiceId" class="btn btn-sm btn-outline-secondary" title="View Details">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
