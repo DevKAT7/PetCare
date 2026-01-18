@@ -124,6 +124,13 @@ namespace PetCare.WebApp.Areas.Identity.Pages.Account
                 {
                     var user = await _userManager.FindByEmailAsync(Input.Email);
 
+                    if (user.RequirePasswordChange)
+                    {
+                        _logger.LogInformation("User must change password.");
+
+                        return RedirectToPage("./Manage/ChangePassword");
+                    }
+
                     if (user != null && !user.IsActive)
                     {
                         await _signInManager.SignOutAsync();
