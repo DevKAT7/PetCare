@@ -21,18 +21,6 @@ namespace PetCare.Application.Features.Invoices.Validators
 
             RuleFor(x => x.Items)
                 .NotNull().WithMessage("Items cannot be null.");
-
-            RuleForEach(x => x.Items).ChildRules(items =>
-            {
-                items.RuleFor(i => i.Description)
-                    .NotEmpty().WithMessage("Item description is required.");
-
-                items.RuleFor(i => i.UnitPrice)
-                    .GreaterThanOrEqualTo(0).WithMessage("Unit price cannot be negative.");
-
-                items.RuleFor(i => i.Quantity)
-                    .GreaterThan(0).WithMessage("Quantity must be greater than 0.");
-            });
         }
     }
 }

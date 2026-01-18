@@ -1,4 +1,5 @@
 ﻿@page "{vetId:int}"
+@using PetCare.Core.Enums
 @model PetCare.WebApp.Pages.ManageScheduleModel
 @{
     ViewData["Title"] = "Manage Schedule";
@@ -52,26 +53,26 @@
                                     </td>
                                     @if (User.IsInRole("Admin"))
                                     {
-                                    <td>
-                                        <button type="button"
-                                                class="btn btn-sm btn-outline-primary me-1"
-                                                data-bs-toggle="modal"
-                                                data-bs-target="#editScheduleModal"
-                                                data-id="@item.VetScheduleId"
-                                                data-day="@item.DayOfWeek.ToString()"
-                                                data-start="@item.StartTime.ToString("HH:mm")"
-                                                data-end="@item.EndTime.ToString("HH:mm")">
-                                            <i class="bi bi-pencil"></i>
-                                        </button>
+                                        <td>
+                                            <button type="button"
+                                                    class="btn btn-sm btn-outline-primary me-1"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#editScheduleModal"
+                                                    data-id="@item.VetScheduleId"
+                                                    data-day="@item.DayOfWeek.ToString()"
+                                                    data-start="@item.StartTime.ToString("HH:mm")"
+                                                    data-end="@item.EndTime.ToString("HH:mm")">
+                                                <i class="bi bi-pencil"></i>
+                                            </button>
 
-                                        <button type="button"
-                                                class="btn btn-sm btn-outline-danger"
-                                                data-bs-toggle="modal"
-                                                data-bs-target="#deleteScheduleModal"
-                                                data-schedule-id="@item.VetScheduleId">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                    </td>
+                                            <button type="button"
+                                                    class="btn btn-sm btn-outline-danger"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#deleteScheduleModal"
+                                                    data-schedule-id="@item.VetScheduleId">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </td>
                                     }
                                 </tr>
                             }
@@ -97,7 +98,12 @@
                                 <th>Date</th>
                                 <th>Duration</th>
                                 <th>Reason</th>
+                                <th>Status</th>
                                 <th>Actions</th>
+                                @if (User.IsInRole("Admin"))
+                                {
+                                    <th>Decision</th>
+                                }
                             </tr>
                         </thead>
                         <tbody>
@@ -107,7 +113,7 @@
                             }
                             @foreach (var ex in Model.Exceptions.OrderBy(e => e.ExceptionDate))
                             {
-                                <tr>
+                                <tr class="@(ex.Status == ScheduleExceptionStatus.Rejected ? "opacity-50" : "")">
                                     <td>@ex.ExceptionDate.ToString("dd.MM.yyyy")</td>
                                     <td>
                                         @if (ex.IsFullDayAbsence)
@@ -121,29 +127,83 @@
                                             </span>
                                         }
                                     </td>
-                                    <td><small>@ex.Reason</small></td>
                                     <td>
-                                        <button type="button"
-                                                class="btn btn-sm btn-outline-primary me-1"
-                                                data-bs-toggle="modal"
-                                                data-bs-target="#editExceptionModal"
-                                                data-id="@ex.ScheduleExceptionId"
-                                                data-date="@ex.ExceptionDate.ToString("yyyy-MM-dd")"
-                                                data-isfullday="@ex.IsFullDayAbsence.ToString().ToLower()"
-                                                data-start="@ex.StartTime?.ToString("HH:mm")"
-                                                data-end="@ex.EndTime?.ToString("HH:mm")"
-                                                data-reason="@ex.Reason">
-                                            <i class="bi bi-pencil"></i>
-                                        </button>
-
-                                        <button type="button"
-                                                class="btn btn-sm btn-outline-danger"
-                                                data-bs-toggle="modal"
-                                                data-bs-target="#deleteExceptionModal"
-                                                data-exception-id="@ex.ScheduleExceptionId">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
+                                        <small>@ex.Reason</small>
                                     </td>
+                                    <td>
+                                        @if (ex.Status == PetCare.Core.Enums.ScheduleExceptionStatus.Pending)
+                                        {
+                                            <span class="badge bg-warning text-dark"><i class="bi bi-hourglass-split"></i> Pending</span>
+                                        }
+                                        else if (ex.Status == PetCare.Core.Enums.ScheduleExceptionStatus.Approved)
+                                        {
+                                            <span class="badge bg-success"><i class="bi bi-check-lg"></i> Approved</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-danger"><i class="bi bi-x-lg"></i> Rejected</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (User.IsInRole("Admin") || ex.Status == PetCare.Core.Enums.ScheduleExceptionStatus.Pending)
+                                        {
+                                            <button type="button"
+                                                    class="btn btn-sm btn-outline-primary me-1"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#editExceptionModal"
+                                                    data-id="@ex.ScheduleExceptionId"
+                                                    data-date="@ex.ExceptionDate.ToString("yyyy-MM-dd")"
+                                                    data-isfullday="@ex.IsFullDayAbsence.ToString().ToLower()"
+                                                    data-start="@ex.StartTime?.ToString("HH:mm")"
+                                                    data-end="@ex.EndTime?.ToString("HH:mm")"
+                                                    data-reason="@ex.Reason">
+                                                <i class="bi bi-pencil"></i>
+                                            </button>
+
+                                            <button type="button"
+                                                    class="btn btn-sm btn-outline-danger"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#deleteExceptionModal"
+                                                    data-exception-id="@ex.ScheduleExceptionId">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted" title="Locked" data-bs-toggle="tooltip">
+                                                <i class="bi bi-lock-fill"></i>
+                                            </span>
+                                        }
+                                    </td>
+                                    @if (User.IsInRole("Admin"))
+                                    {
+                                        <td>
+                                            @if (ex.Status == PetCare.Core.Enums.ScheduleExceptionStatus.Pending)
+                                            {
+                                                <div class="d-flex gap-2 align-items-center">
+                                                    <form method="post" asp-page-handler="ApproveException" asp-route-exceptionId="@ex.ScheduleExceptionId">
+                                                        <button type="submit" class="btn btn-sm btn-outline-success rounded-circle d-flex align-items-center justify-content-center"
+                                                                style="width: 32px; height: 32px;"
+                                                                title="Approve" data-bs-toggle="tooltip">
+                                                            <i class="bi bi-check-lg"></i>
+                                                        </button>
+                                                    </form>
+
+                                                    <form method="post" asp-page-handler="RejectException" asp-route-exceptionId="@ex.ScheduleExceptionId">
+                                                        <button type="submit" class="btn btn-sm btn-outline-danger rounded-circle d-flex align-items-center justify-content-center"
+                                                                style="width: 32px; height: 32px;"
+                                                                title="Reject" data-bs-toggle="tooltip">
+                                                            <i class="bi bi-x-lg"></i>
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted small">-</span>
+                                            }
+                                        </td>
+                                    }
                                 </tr>
                             }
                         </tbody>
@@ -409,9 +469,9 @@
         });
 
         var editFullDayCheck = document.getElementById('editIsFullDayCheck');
-        if (editFullDayCheck) 
+        if (editFullDayCheck)
         {
-            editFullDayCheck.addEventListener('change', function() 
+            editFullDayCheck.addEventListener('change', function()
             {
                 var timeInputs = document.getElementById('editTimeInputs');
                 timeInputs.style.display = this.checked ? 'none' : 'flex';
@@ -431,7 +491,7 @@
         });
 
         var editScheduleModal = document.getElementById('editScheduleModal');
-        editScheduleModal.addEventListener('show.bs.modal', function (event) 
+        editScheduleModal.addEventListener('show.bs.modal', function (event)
         {
             var button = event.relatedTarget;
 
@@ -447,9 +507,9 @@
         });
 
         var deleteExceptionModal = document.getElementById('deleteExceptionModal');
-        if (deleteExceptionModal) 
+        if (deleteExceptionModal)
         {
-            deleteExceptionModal.addEventListener('show.bs.modal', function (event) 
+            deleteExceptionModal.addEventListener('show.bs.modal', function (event)
             {
                 var button = event.relatedTarget;
                 document.getElementById('deleteExceptionIdInput').value = button.getAttribute('data-exception-id');
@@ -457,9 +517,9 @@
         }
 
         var editExceptionModal = document.getElementById('editExceptionModal');
-        if (editExceptionModal) 
+        if (editExceptionModal)
         {
-            editExceptionModal.addEventListener('show.bs.modal', function (event) 
+            editExceptionModal.addEventListener('show.bs.modal', function (event)
             {
                 var button = event.relatedTarget;
 
@@ -489,25 +549,25 @@
     @if (ViewData["OpenModal"] != null)
     {
         <script>
-            document.addEventListener("DOMContentLoaded", function() 
+            document.addEventListener("DOMContentLoaded", function()
             {
                 var modalId = '@ViewData["OpenModal"]';
                 var myModal = new bootstrap.Modal(document.getElementById(modalId));
                 myModal.show();
 
-                if (modalId === 'addExceptionModal') 
+                if (modalId === 'addExceptionModal')
                 {
                     var checkBox = document.getElementById('isFullDayCheck');
-                    if (checkBox && checkBox.checked) 
+                    if (checkBox && checkBox.checked)
                     {
                         checkBox.dispatchEvent(new Event('change'));
                     }
                 }
 
-                if (modalId === 'editExceptionModal') 
+                if (modalId === 'editExceptionModal')
                 {
                     var checkBox = document.getElementById('editIsFullDayCheck');
-                    if (checkBox && checkBox.checked) 
+                    if (checkBox && checkBox.checked)
                     {
                         checkBox.dispatchEvent(new Event('change'));
                     }

@@ -1,0 +1,194 @@
+﻿@page "{id:int}"
+@model PetCare.WebApp.Pages.Invoices.DetailsModel
+@{
+    ViewData["Title"] = $"Invoice {Model.Invoice.InvoiceNumber}";
+
+    var isOverdue = !Model.Invoice.IsPaid && Model.Invoice.DueDate < DateTime.Today;
+    var statusColor = Model.Invoice.IsPaid ? "success" : (isOverdue ? "danger" : "warning");
+    var statusText = Model.Invoice.IsPaid ? "PAID" : (isOverdue ? "OVERDUE" : "UNPAID");
+}
+
+<div class="container mt-4 mb-5">
+
+    <div class="d-flex justify-content-between align-items-center mb-4 d-print-none">
+        <div>
+            <a asp-page="/Appointments/Details" asp-route-id="@Model.Invoice.AppointmentId" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> Back to Visit
+            </a>
+        </div>
+        <div class="d-flex gap-2">
+            <button onclick="window.print()" class="btn btn-outline-dark">
+                <i class="bi bi-printer me-2"></i>Print / PDF
+            </button>
+
+            @if (!Model.Invoice.IsPaid)
+            {
+                <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#confirmPaymentModal">
+                    <i class="bi bi-check-circle me-2"></i>Mark as Paid
+                </button>
+            }
+        </div>
+    </div>
+
+    <div class="card shadow-lg border-0" style="min-height: 800px;">
+        <div class="card-body p-5">
+
+            <div class="row mb-5 border-bottom pb-4">
+                <div class="col-md-6">
+                    <h2 class="fw-bold text-primary mb-1"><i class="bi bi-paw-fill me-2"></i>PetCare Clinic</h2>
+                    <p class="text-muted small mb-0">Veterinary Services</p>
+                    <address class="small text-muted mt-2">
+                        123 Vet Street, Animal City<br>
+                        Phone: (555) 123-4567<br>
+                        Email: contact@petcare.com
+                    </address>
+                </div>
+                <div class="col-md-6 text-end">
+                    <h1 class="fw-bold mb-1">INVOICE</h1>
+                    <div class="text-muted mb-2">#@Model.Invoice.InvoiceNumber</div>
+
+                    <span class="badge bg-@statusColor fs-6 px-3 py-2 border border-@statusColor text-uppercase">
+                        @statusText
+                    </span>
+                </div>
+            </div>
+
+            <div class="row mb-5">
+                <div class="col-sm-6">
+                    <h6 class="text-uppercase text-muted small fw-bold mb-2">Bill To:</h6>
+                    <h5 class="fw-bold">@Model.Invoice.PetOwnerName</h5>
+                    <a asp-page="/Owners/Details" asp-route-id="@Model.Invoice.PetOwnerId" class="text-decoration-none small d-print-none">
+                        View Client Profile
+                    </a>
+                </div>
+                <div class="col-sm-6 text-end">
+                    <ul class="list-unstyled">
+                        <li class="mb-1">
+                            <span class="text-muted small me-2">Issue Date:</span>
+                            <span class="fw-bold">@Model.Invoice.InvoiceDate.ToString("dd MMM yyyy")</span>
+                        </li>
+                        <li class="mb-1">
+                            <span class="text-muted small me-2">Due Date:</span>
+                            <span class="fw-bold @(isOverdue ? "text-danger" : "")">@Model.Invoice.DueDate.ToString("dd MMM yyyy")</span>
+                        </li>
+                        @if (Model.Invoice.IsPaid && Model.Invoice.PaymentDate.HasValue)
+                        {
+                            <li class="mt-2 text-success">
+                                <span class="small me-2">Paid On:</span>
+                                <span class="fw-bold">@Model.Invoice.PaymentDate.Value.ToString("dd MMM yyyy")</span>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+
+            <div class="table-responsive mb-5">
+                <table class="table table-striped border-top">
+                    <thead class="table-light">
+                        <tr>
+                            <th scope="col" class="py-3">Description</th>
+                            <th scope="col" class="text-center py-3">Quantity</th>
+                            <th scope="col" class="text-end py-3">Unit Price</th>
+                            <th scope="col" class="text-end py-3">Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.Invoice.Items)
+                        {
+                            <tr>
+                                <td class="py-3">@item.Description</td>
+                                <td class="text-center py-3">@item.Quantity</td>
+                                <td class="text-end py-3">@item.UnitPrice.ToString("N2")</td>
+                                <td class="text-end py-3 fw-bold">@((item.UnitPrice * item.Quantity).ToString("N2"))</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="alert alert-light border">
+                        <small class="fw-bold text-muted text-uppercase">Payment Info</small>
+                        <p class="small mb-0 mt-1">
+                            Please include invoice number <strong>@Model.Invoice.InvoiceNumber</strong> on your check or transfer title.
+                        </p>
+                    </div>
+                </div>
+                <div class="col-md-5 offset-md-1">
+                    <table class="table table-borderless">
+                        <tbody>
+                            <tr class="border-top border-dark border-2">
+                                <td class="fs-4 fw-bold ps-0 pt-3">Total</td>
+                                <td class="text-end fs-4 fw-bold text-primary pt-3">@Model.Invoice.TotalAmount.ToString("C")</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="mt-5 pt-5 text-center text-muted small border-top">
+                <p class="mb-0">Thank you for trusting PetCare with your pet's health.</p>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="confirmPaymentModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title fw-bold"><i class="bi bi-cash-coin me-2"></i>Confirm Payment</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center py-4">
+                <p class="fs-5 mb-1">Are you sure you want to mark this invoice as <strong>PAID</strong>?</p>
+                <p class="text-muted small">This action will record the payment date as today.</p>
+                <div class="display-6 fw-bold text-success mt-3">
+                    @Model.Invoice.TotalAmount.ToString("C")
+                </div>
+            </div>
+            <div class="modal-footer bg-light d-flex justify-content-center">
+                <button type="button" class="btn btn-outline-secondary px-4" data-bs-dismiss="modal">Cancel</button>
+                
+                <form method="post" asp-page-handler="MarkAsPaid" asp-route-id="@Model.Invoice.InvoiceId">
+                    <button type="submit" class="btn btn-success px-4 fw-bold">
+                        Confirm & Mark Paid
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <style>
+        @@media print {
+            body * {
+                visibility: hidden;
+            }
+
+            .card, .card * {
+                visibility: visible;
+            }
+
+            .card {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                border: none !important;
+                box-shadow: none !important;
+            }
+
+            .d-print-none {
+                display: none !important;
+            }
+
+            .modal {
+                display: none !important;
+            }
+        }
+    </style>
+}

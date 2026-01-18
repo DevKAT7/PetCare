@@ -373,5 +373,19 @@ namespace PetCare.WebApp.Pages
 
             return false;
         }
+
+        public async Task<IActionResult> OnPostApproveExceptionAsync(int exceptionId)
+        {
+            if (!User.IsInRole("Admin")) return Forbid();
+            await _mediator.Send(new ApproveScheduleExceptionCommand { ExceptionId = exceptionId });
+            return RedirectToPage(new { vetId = VetId });
+        }
+
+        public async Task<IActionResult> OnPostRejectExceptionAsync(int exceptionId)
+        {
+            if (!User.IsInRole("Admin")) return Forbid();
+            await _mediator.Send(new RejectScheduleExceptionCommand { ExceptionId = exceptionId });
+            return RedirectToPage(new { vetId = VetId });
+        }
     }
 }

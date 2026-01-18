@@ -1,9 +1,13 @@
 using MediatR;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using PetCare.Application.Exceptions;
+using PetCare.Application.Features.Notifications.Commands;
+using PetCare.Application.Features.Notifications.Dtos;
 using PetCare.Application.Features.StockTransactions.Dtos;
-using PetCare.Core.Models;
 using PetCare.Application.Interfaces;
+using PetCare.Core.Enums;
+using PetCare.Core.Models;
 
 namespace PetCare.Application.Features.StockTransactions.Commands
 {
@@ -15,10 +19,14 @@ namespace PetCare.Application.Features.StockTransactions.Commands
     public class CreateStockTransactionHandler : IRequestHandler<CreateStockTransactionCommand, int>
     {
         private readonly IApplicationDbContext _context;
+        private readonly UserManager<User> _userManager;
+        private readonly IMediator _mediator;
 
-        public CreateStockTransactionHandler(IApplicationDbContext context)
+        public CreateStockTransactionHandler(IApplicationDbContext context, UserManager<User> userManager, IMediator mediator)
         {
             _context = context;
+            _userManager = userManager;
+            _mediator = mediator;
         }
 
         public async Task<int> Handle(CreateStockTransactionCommand request, CancellationToken cancellationToken)
@@ -59,6 +67,31 @@ namespace PetCare.Application.Features.StockTransactions.Commands
                 Reason = model.Reason,
                 MedicationId = model.MedicationId
             };
+
+            if (stockItem.CurrentStock <= stockItem.ReorderLevel)
+            {
+                var vets = await _userManager.GetUsersInRoleAsync("Employee");
+                var admins = await _userManager.GetUsersInRoleAsync("Admin");
+
+                var recipientIds = vets
+                    .Concat(admins)
+                    .Select(u => u.Id)
+                    .Distinct()
+                    .ToList();
+
+                foreach (var userId in recipientIds)
+                {
+                    await _mediator.Send(new CreateNotificationCommand
+                    {
+                        Notification = new NotificationCreateModel
+                        {
+                            UserId = userId,
+                            Type = NotificationType.LowStock,
+                            Message = $"Attention! Low stock levels for this product: {medication.Name}. Remains: {stockItem.CurrentStock}."
+                        }
+                    }, cancellationToken);
+                }
+            }
 
             _context.StockTransactions.Add(transaction);
 

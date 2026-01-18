@@ -1,0 +1,120 @@
+﻿@using PetCare.Core.Enums
+@model List<PetCare.Core.Models.Notification>
+
+<li class="nav-item dropdown">
+    <a class="nav-link text-dark position-relative" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+        <i class="bi bi-bell fs-5"></i>
+
+        @if (Model.Any())
+        {
+            <span id="notification-badge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.6rem;">
+                @Model.Count
+                <span class="visually-hidden">unread messages</span>
+            </span>
+        }
+    </a>
+
+    <ul class="dropdown-menu dropdown-menu-end shadow border-0" aria-labelledby="navbarDropdown" style="width: 320px; max-height: 400px; overflow-y: auto;">
+        <li><h6 class="dropdown-header text-uppercase small fw-bold">Notifications</h6></li>
+        <li><hr class="dropdown-divider"></li>
+
+        @if (Model.Any())
+        {
+            @foreach (var item in Model)
+            {
+                <li>
+                    <a class="dropdown-item py-2 notification-item" href="#" onclick="markAsRead(@item.NotificationId, this, event)">
+                        <div class="d-flex align-items-start">
+                            <div class="me-3 mt-1 fs-4">
+                                @switch (item.Type)
+                                {
+                                    case NotificationType.LowStock:
+                                        <i class="bi bi-capsule text-warning"></i>
+                                        break;
+                                    case NotificationType.AppointmentReminder:
+                                        <i class="bi bi-calendar-event text-info"></i>
+                                        break;
+                                    case NotificationType.VacationRequest:
+                                        <i class="bi bi-sun text-success"></i>
+                                        break;
+                                    case NotificationType.VacationApproved:
+                                        <i class="bi bi-sun text-success"></i>
+                                        break;
+                                    case NotificationType.VacationRejected:
+                                        <i class="bi bi-sun text-success"></i>
+                                        break;
+                                    case NotificationType.InvoiceReady:
+                                        <i class="bi bi-receipt text-primary"></i>
+                                        break;
+                                    default:
+                                        <i class="bi bi-info-circle text-secondary"></i>
+                                        break;
+                                }
+                            </div>
+                            <div>
+                                <p class="mb-1 small text-dark fw-semibold text-wrap" style="line-height: 1.3;">@item.Message</p>
+                                <small class="text-muted" style="font-size: 0.75rem;">
+                                    <i class="bi bi-clock me-1"></i>@item.CreatedAt.ToString("dd.MM HH:mm")
+                                </small>
+                            </div>
+                        </div>
+                    </a>
+                </li>
+                <li><hr class="dropdown-divider m-0"></li>
+            }
+        }
+        else
+        {
+            <li class="text-center py-4 text-muted small">
+                <i class="bi bi-bell-slash fs-4 d-block mb-2"></i>
+                No new notifications
+            </li>
+        }
+
+        <li><a class="dropdown-item text-center small text-primary fw-bold py-2 mt-1" href="#">Read all</a></li>
+    </ul>
+</li>
+
+<script>
+    function markAsRead(id, element, event) {
+        //zatrzymujemy domyślne zachowanie (np. przekierowanie, jeśli href miałby link)
+        event.preventDefault();
+
+
+        //wyszarzanie klikniętego elementu
+        const itemContainer = element.closest('a');
+        itemContainer.style.opacity = '0.5';
+        itemContainer.style.backgroundColor = '#f8f9fa';
+        itemContainer.style.pointerEvents = 'none';//blokada ponownego kliknięcia
+
+        const badge = document.getElementById('notification-badge');
+
+        if (badge) {
+            let currentCount = parseInt(badge.innerText);
+
+            if (currentCount > 1) {
+                badge.innerText = currentCount - 1;
+            } else {
+                badge.style.display = 'none';
+            }
+        }
+
+        //pobieram token Antiforgery (wymagany w Razor Pages)
+        //szukamy go w dowolnym formularzu na stronie lub tworzymy fallback
+        let tokenElement = document.querySelector('input[name="__RequestVerificationToken"]');
+        let token = tokenElement ? tokenElement.value : '';
+
+        fetch(`/Notifications?handler=MarkRead`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'RequestVerificationToken': token
+            },
+            body: `id=${id}`
+        }).then(response => {
+            if (!response.ok) {
+                console.error("Notification status saving error.");
+            }
+        });
+    }
+</script>

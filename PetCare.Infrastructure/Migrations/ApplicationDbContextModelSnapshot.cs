@@ -174,6 +174,9 @@ namespace PetCare.Infrastructure.Migrations
                         .HasMaxLength(2000)
                         .HasColumnType("nvarchar(2000)");
 
+                    b.Property<bool>("IsReminderSent")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Notes")
                         .HasMaxLength(2000)
                         .HasColumnType("nvarchar(2000)");
@@ -200,7 +203,7 @@ namespace PetCare.Infrastructure.Migrations
 
                     b.HasIndex("VetId");
 
-                    b.ToTable("Appointments", (string)null);
+                    b.ToTable("Appointments");
                 });
 
             modelBuilder.Entity("PetCare.Core.Models.AppointmentProcedure", b =>
@@ -221,7 +224,7 @@ namespace PetCare.Infrastructure.Migrations
 
                     b.HasIndex("ProcedureId");
 
-                    b.ToTable("AppointmentProcedures", (string)null);
+                    b.ToTable("AppointmentProcedures");
                 });
 
             modelBuilder.Entity("PetCare.Core.Models.Invoice", b =>
@@ -268,7 +271,7 @@ namespace PetCare.Infrastructure.Migrations
 
                     b.HasIndex("PetOwnerId");
 
-                    b.ToTable("Invoices", (string)null);
+                    b.ToTable("Invoices");
                 });
 
             modelBuilder.Entity("PetCare.Core.Models.InvoiceItem", b =>
@@ -300,7 +303,7 @@ namespace PetCare.Infrastructure.Migrations
 
                     b.HasIndex("InvoiceId");
 
-                    b.ToTable("InvoiceItems", (string)null);
+                    b.ToTable("InvoiceItems");
                 });
 
             modelBuilder.Entity("PetCare.Core.Models.MedicalTest", b =>
@@ -338,7 +341,7 @@ namespace PetCare.Infrastructure.Migrations
 
                     b.HasIndex("PetId");
 
-                    b.ToTable("MedicalTests", (string)null);
+                    b.ToTable("MedicalTests");
                 });
 
             modelBuilder.Entity("PetCare.Core.Models.Medication", b =>
@@ -375,7 +378,7 @@ namespace PetCare.Infrastructure.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("Medications", (string)null);
+                    b.ToTable("Medications");
                 });
 
             modelBuilder.Entity("PetCare.Core.Models.Notification", b =>
@@ -408,7 +411,7 @@ namespace PetCare.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Notifications", (string)null);
+                    b.ToTable("Notifications");
                 });
 
             modelBuilder.Entity("PetCare.Core.Models.Pet", b =>
@@ -422,6 +425,9 @@ namespace PetCare.Infrastructure.Migrations
                     b.Property<string>("Breed")
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<DateOnly>("DateOfBirth")
                         .HasColumnType("date");
@@ -452,7 +458,7 @@ namespace PetCare.Infrastructure.Migrations
 
                     b.HasIndex("PetOwnerId");
 
-                    b.ToTable("Pets", (string)null);
+                    b.ToTable("Pets");
                 });
 
             modelBuilder.Entity("PetCare.Core.Models.PetOwner", b =>
@@ -495,7 +501,7 @@ namespace PetCare.Infrastructure.Migrations
                     b.HasIndex("UserId")
                         .IsUnique();
 
-                    b.ToTable("PetOwners", (string)null);
+                    b.ToTable("PetOwners");
                 });
 
             modelBuilder.Entity("PetCare.Core.Models.Prescription", b =>
@@ -545,7 +551,7 @@ namespace PetCare.Infrastructure.Migrations
 
                     b.HasIndex("MedicationId");
 
-                    b.ToTable("Prescriptions", (string)null);
+                    b.ToTable("Prescriptions");
                 });
 
             modelBuilder.Entity("PetCare.Core.Models.Procedure", b =>
@@ -577,7 +583,7 @@ namespace PetCare.Infrastructure.Migrations
 
                     b.HasIndex("VetSpecializationId");
 
-                    b.ToTable("Procedures", (string)null);
+                    b.ToTable("Procedures");
                 });
 
             modelBuilder.Entity("PetCare.Core.Models.ScheduleException", b =>
@@ -604,6 +610,9 @@ namespace PetCare.Infrastructure.Migrations
                     b.Property<TimeOnly?>("StartTime")
                         .HasColumnType("time");
 
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
                     b.Property<int>("VetId")
                         .HasColumnType("int");
 
@@ -612,7 +621,7 @@ namespace PetCare.Infrastructure.Migrations
                     b.HasIndex("VetId", "ExceptionDate")
                         .IsUnique();
 
-                    b.ToTable("ScheduleExceptions", (string)null);
+                    b.ToTable("ScheduleExceptions");
                 });
 
             modelBuilder.Entity("PetCare.Core.Models.StockItem", b =>
@@ -637,7 +646,7 @@ namespace PetCare.Infrastructure.Migrations
                     b.HasIndex("MedicationId")
                         .IsUnique();
 
-                    b.ToTable("StockItems", (string)null);
+                    b.ToTable("StockItems");
                 });
 
             modelBuilder.Entity("PetCare.Core.Models.StockTransaction", b =>
@@ -666,7 +675,7 @@ namespace PetCare.Infrastructure.Migrations
 
                     b.HasIndex("MedicationId");
 
-                    b.ToTable("StockTransactions", (string)null);
+                    b.ToTable("StockTransactions");
                 });
 
             modelBuilder.Entity("PetCare.Core.Models.User", b =>
@@ -768,7 +777,7 @@ namespace PetCare.Infrastructure.Migrations
 
                     b.HasIndex("PetId");
 
-                    b.ToTable("Vaccinations", (string)null);
+                    b.ToTable("Vaccinations");
                 });
 
             modelBuilder.Entity("PetCare.Core.Models.Vet", b =>
@@ -837,7 +846,7 @@ namespace PetCare.Infrastructure.Migrations
                     b.HasIndex("UserId")
                         .IsUnique();
 
-                    b.ToTable("Vets", (string)null);
+                    b.ToTable("Vets");
                 });
 
             modelBuilder.Entity("PetCare.Core.Models.VetSchedule", b =>
@@ -866,7 +875,7 @@ namespace PetCare.Infrastructure.Migrations
 
                     b.HasIndex("VetId");
 
-                    b.ToTable("VetSchedules", (string)null);
+                    b.ToTable("VetSchedules");
                 });
 
             modelBuilder.Entity("PetCare.Core.Models.VetSpecialization", b =>
@@ -884,7 +893,7 @@ namespace PetCare.Infrastructure.Migrations
 
                     b.HasKey("VetSpecializationId");
 
-                    b.ToTable("VetSpecializations", (string)null);
+                    b.ToTable("VetSpecializations");
                 });
 
             modelBuilder.Entity("PetCare.Core.Models.VetSpecializationLink", b =>
@@ -899,7 +908,7 @@ namespace PetCare.Infrastructure.Migrations
 
                     b.HasIndex("VetSpecializationId");
 
-                    b.ToTable("VetSpecializationLinks", (string)null);
+                    b.ToTable("VetSpecializationLinks");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -956,7 +965,7 @@ namespace PetCare.Infrastructure.Migrations
             modelBuilder.Entity("PetCare.Core.Models.Appointment", b =>
                 {
                     b.HasOne("PetCare.Core.Models.Pet", "Pet")
-                        .WithMany()
+                        .WithMany("Appointments")
                         .HasForeignKey("PetId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -1076,7 +1085,7 @@ namespace PetCare.Infrastructure.Migrations
             modelBuilder.Entity("PetCare.Core.Models.Prescription", b =>
                 {
                     b.HasOne("PetCare.Core.Models.Appointment", "Appointment")
-                        .WithMany()
+                        .WithMany("Prescriptions")
                         .HasForeignKey("AppointmentId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -1199,6 +1208,8 @@ namespace PetCare.Infrastructure.Migrations
             modelBuilder.Entity("PetCare.Core.Models.Appointment", b =>
                 {
                     b.Navigation("AppointmentProcedures");
+
+                    b.Navigation("Prescriptions");
                 });
 
             modelBuilder.Entity("PetCare.Core.Models.Invoice", b =>
@@ -1217,6 +1228,8 @@ namespace PetCare.Infrastructure.Migrations
 
             modelBuilder.Entity("PetCare.Core.Models.Pet", b =>
                 {
+                    b.Navigation("Appointments");
+
                     b.Navigation("MedicalTests");
 
                     b.Navigation("Vaccinations");

@@ -152,7 +152,7 @@
                                     </div>
                                     <div class="col-md-3">
                                         <label class="form-label small fw-bold text-muted">Custom Price (Optional)</label>
-                                        <input type="number" id="js-proc-price" class="form-control form-control-sm" placeholder="Default price" step="0.01" />
+                                        <input type="number" id="js-proc-price" class="form-control form-control-sm" placeholder="Default price" step="0.01" lang="en-US" />
                                     </div>
                                     <div class="col-md-2">
                                         <button type="button" class="btn btn-sm btn-success w-100" onclick="addProcedureToTable()">
@@ -285,7 +285,7 @@
                     </td>
                     <td class="text-end">
                         <span class="proc-price-text">${formatCurrency(price)}</span>
-                        <input type="hidden" name="UpdateModel.Procedures[${index}].FinalPrice" value="${price.toFixed(2).replace('.',',')}" />
+                        <input type="hidden" name="UpdateModel.Procedures[${index}].FinalPrice" value="${price.toFixed(2)}" />
                     </td>
                     <td class="text-end fw-bold">
                         <span class="proc-total-text">${formatCurrency(total)}</span>
@@ -332,7 +332,7 @@
         }
 
         function formatCurrency(value) {
-            return new Intl.NumberFormat('pl-PL', { style: 'currency', currency: 'PLN' }).format(value);
+            return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value);
         }
     </script>
 }

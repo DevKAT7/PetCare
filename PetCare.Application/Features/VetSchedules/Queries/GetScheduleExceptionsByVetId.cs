@@ -33,6 +33,7 @@ namespace PetCare.Application.Features.VetSchedules.Queries
                 StartTime = entity.StartTime,
                 EndTime = entity.EndTime,
                 Reason = entity.Reason,
+                Status = entity.Status,
                 VetId = entity.VetId
             }).ToList();
         }

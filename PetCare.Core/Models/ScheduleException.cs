@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using PetCare.Core.Enums;
+using System.ComponentModel.DataAnnotations;
 
 namespace PetCare.Core.Models
 {
@@ -12,6 +13,7 @@ namespace PetCare.Core.Models
         public TimeOnly? EndTime { get; set; }
         [MaxLength(200)]
         public string? Reason { get; set; }
+        public ScheduleExceptionStatus Status { get; set; } = ScheduleExceptionStatus.Pending;
         public int VetId { get; set; }
         public Vet Vet { get; set; } = null!;
     }

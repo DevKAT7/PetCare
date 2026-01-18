@@ -70,6 +70,7 @@ namespace PetCare.Application.Features.Pets.Queries
                 DateOfBirth = p.DateOfBirth.ToDateTime(TimeOnly.MinValue),
                 IsMale = p.IsMale,
                 ImageUrl = p.ImageUrl,
+                CreatedDate = p.CreatedDate,
                 PetOwnerId = p.PetOwnerId,
                 PetOwnerName = p.PetOwner.FirstName + " " + p.PetOwner.LastName
             }).ToListAsync(cancellationToken);

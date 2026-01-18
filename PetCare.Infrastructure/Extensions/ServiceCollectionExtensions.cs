@@ -27,6 +27,8 @@ namespace PetCare.Infrastructure.Extensions
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddDefaultTokenProviders();
 
+            services.AddHostedService<Services.NotificationBackgroundService>();
+
             return services;
         }
     }
