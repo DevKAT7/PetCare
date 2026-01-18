@@ -1,8 +1,10 @@
 using MediatR;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using PetCare.Application.Features.VetSchedules.Dto;
 using PetCare.Application.Exceptions;
+using PetCare.Application.Features.VetSchedules.Dto;
 using PetCare.Application.Interfaces;
+using PetCare.Core.Enums;
 
 namespace PetCare.Application.Features.VetSchedules.Commands
 {
@@ -21,10 +23,12 @@ namespace PetCare.Application.Features.VetSchedules.Commands
     public class UpdateScheduleExceptionHandler : IRequestHandler<UpdateScheduleExceptionCommand, int>
     {
         private readonly IApplicationDbContext _context;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public UpdateScheduleExceptionHandler(IApplicationDbContext context)
+        public UpdateScheduleExceptionHandler(IApplicationDbContext context, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public async Task<int> Handle(UpdateScheduleExceptionCommand request, CancellationToken cancellationToken)
@@ -35,6 +39,14 @@ namespace PetCare.Application.Features.VetSchedules.Commands
             if (exception == null)
             {
                 throw new NotFoundException("ScheduleException", request.Id);
+            }
+
+            var user = _httpContextAccessor.HttpContext?.User;
+            bool isAdmin = user != null && user.IsInRole("Admin");
+
+            if (exception.Status != ScheduleExceptionStatus.Pending && !isAdmin)
+            {
+                throw new ValidationException("Status", "Only Admins can modify processed requests.");
             }
 
             var model = request.Exception;

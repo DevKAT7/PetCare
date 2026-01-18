@@ -145,26 +145,35 @@
                                         }
                                     </td>
                                     <td>
-                                        <button type="button"
-                                                class="btn btn-sm btn-outline-primary me-1"
-                                                data-bs-toggle="modal"
-                                                data-bs-target="#editExceptionModal"
-                                                data-id="@ex.ScheduleExceptionId"
-                                                data-date="@ex.ExceptionDate.ToString("yyyy-MM-dd")"
-                                                data-isfullday="@ex.IsFullDayAbsence.ToString().ToLower()"
-                                                data-start="@ex.StartTime?.ToString("HH:mm")"
-                                                data-end="@ex.EndTime?.ToString("HH:mm")"
-                                                data-reason="@ex.Reason">
-                                            <i class="bi bi-pencil"></i>
-                                        </button>
+                                        @if (User.IsInRole("Admin") || ex.Status == PetCare.Core.Enums.ScheduleExceptionStatus.Pending)
+                                        {
+                                            <button type="button"
+                                                    class="btn btn-sm btn-outline-primary me-1"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#editExceptionModal"
+                                                    data-id="@ex.ScheduleExceptionId"
+                                                    data-date="@ex.ExceptionDate.ToString("yyyy-MM-dd")"
+                                                    data-isfullday="@ex.IsFullDayAbsence.ToString().ToLower()"
+                                                    data-start="@ex.StartTime?.ToString("HH:mm")"
+                                                    data-end="@ex.EndTime?.ToString("HH:mm")"
+                                                    data-reason="@ex.Reason">
+                                                <i class="bi bi-pencil"></i>
+                                            </button>
 
-                                        <button type="button"
-                                                class="btn btn-sm btn-outline-danger"
-                                                data-bs-toggle="modal"
-                                                data-bs-target="#deleteExceptionModal"
-                                                data-exception-id="@ex.ScheduleExceptionId">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
+                                            <button type="button"
+                                                    class="btn btn-sm btn-outline-danger"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#deleteExceptionModal"
+                                                    data-exception-id="@ex.ScheduleExceptionId">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted" title="Locked" data-bs-toggle="tooltip">
+                                                <i class="bi bi-lock-fill"></i>
+                                            </span>
+                                        }
                                     </td>
                                     @if (User.IsInRole("Admin"))
                                     {
