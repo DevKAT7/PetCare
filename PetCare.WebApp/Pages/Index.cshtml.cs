@@ -1,10 +1,12 @@
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using PetCare.Application.Features.Dashboard.Dtos;
 using PetCare.Application.Features.Dashboard.Queries;
 
 namespace PetCare.WebApp.Pages
 {
+    [Authorize(Roles = "Admin,Employee")]
     public class IndexModel : PageModel
     {
         private readonly IMediator _mediator;

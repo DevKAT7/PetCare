@@ -1,4 +1,5 @@
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using PetCare.Application.Features.Vaccinations.Commands;
@@ -8,6 +9,7 @@ using ValidationException = PetCare.Application.Exceptions.ValidationException;
 
 namespace PetCare.WebApp.Pages.Vaccinations
 {
+    [Authorize(Roles = "Admin,Employee")]
     public class EditVaccinationModel : PageModel
     {
         private readonly IMediator _mediator;
