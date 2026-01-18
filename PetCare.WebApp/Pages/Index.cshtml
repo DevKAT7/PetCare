@@ -124,7 +124,10 @@
                                     }
                                 </td>
                                 <td class="text-end pe-3">
-                                    <a asp-page="/Appointments/Details" asp-route-id="@visit.AppointmentId" class="btn btn-sm btn-light border">Details</a>
+                                    @if (visit.Status != AppointmentStatus.Cancelled)
+                                    {
+                                        <a asp-page="/Appointments/Details" asp-route-id="@visit.AppointmentId" class="btn btn-sm btn-light border">Details</a>
+                                    }                                  
                                 </td>
                             </tr>
                         }
