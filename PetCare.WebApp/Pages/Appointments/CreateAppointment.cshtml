@@ -4,73 +4,89 @@
     ViewData["Title"] = "Book Appointment";
 }
 
-<div class="container mt-4">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="d-flex justify-content-between align-items-center">
-                <h2>Book Appointment</h2>
-                <a asp-page="./Index" class="btn btn-outline-secondary btn-sm">Back to List</a>
-            </div>
-            <hr />
+<div class="container mt-4" style="max-width: 700px;">
 
+    <div class="card shadow-sm border-0">
+        <div class="card-header text-white py-3">
+            <h4 class="mb-0"><i class="bi bi-calendar-plus me-2"></i>Book Appointment</h4>
+        </div>
+        <div class="card-body p-4">
             <form method="post" id="appointmentForm">
-                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger mb-3"></div>
 
                 <input type="hidden" asp-for="NewAppointment.AppointmentDateTime" id="FinalDateTime" />
 
-                <h4>1. Select Veterinarian & Date</h4>
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label asp-for="NewAppointment.VetId" class="form-label fw-bold">Veterinarian</label>
-                        <select asp-for="NewAppointment.VetId" asp-items="Model.VetOptions" class="form-select" id="VetSelector">
-                            <option value="">-- Select Veterinarian --</option>
-                        </select>
-                        <span asp-validation-for="NewAppointment.VetId" class="text-danger"></span>
+                <h6 class="text-muted text-uppercase small fw-bold mb-3 border-bottom pb-2">
+                    <i class="bi bi-clock me-1"></i> Schedule
+                </h6>
+
+                <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                        <label asp-for="NewAppointment.VetId" class="form-label fw-bold">Veterinarian <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i class="bi bi-person-badge"></i></span>
+                            <select asp-for="NewAppointment.VetId" asp-items="Model.VetOptions" class="form-select" id="VetSelector">
+                                <option value="">-- Select Veterinarian --</option>
+                            </select>
+                        </div>
+                        <span asp-validation-for="NewAppointment.VetId" class="text-danger small"></span>
                     </div>
 
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label fw-bold">Date</label>
-                        <input type="date" class="form-control" id="DateSelector" min="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Date <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i class="bi bi-calendar-event"></i></span>
+                            <input type="date" class="form-control" id="DateSelector" min="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                        </div>
                     </div>
                 </div>
 
-                <div id="TimeSlotSection" class="mb-4" style="display:none;">
-                    <label class="form-label fw-bold mb-2">Available Time Slots</label>
+                <div id="TimeSlotSection" class="mb-4 p-3 bg-light rounded-3 border border-dashed" style="display:none;">
+                    <label class="form-label fw-bold mb-2 d-block text-primary">Available Time Slots</label>
+
                     <div id="SlotsContainer" class="d-flex flex-wrap gap-2">
-                        <span class="text-muted fst-italic">Select a vet and date to see available times.</span>
+                        <span class="text-muted fst-italic small">Select a vet and date to see available times.</span>
                     </div>
-                    <div class="mt-2 text-success fw-bold" id="SelectedTimeDisplay" style="display:none;">
-                        Selected: <span id="TimeValue"></span>
+
+                    <div class="mt-2 text-success fw-bold small" id="SelectedTimeDisplay" style="display:none;">
+                        <i class="bi bi-check-circle-fill me-1"></i> Selected: <span id="TimeValue"></span>
                     </div>
-                    <span asp-validation-for="NewAppointment.AppointmentDateTime" class="text-danger"></span>
+                    <span asp-validation-for="NewAppointment.AppointmentDateTime" class="text-danger small"></span>
                 </div>
 
-                <hr class="my-4" />
-
-                <h4>2. Patient & Details</h4>
-                <div class="mb-3">
-                    <label asp-for="NewAppointment.PetId" class="form-label fw-bold">Patient (Pet)</label>
-                    <select asp-for="NewAppointment.PetId" asp-items="Model.PetOptions" class="form-select">
-                        <option value="">-- Select Pet --</option>
-                    </select>
-                    <span asp-validation-for="NewAppointment.PetId" class="text-danger"></span>
-                </div>
+                <h6 class="text-muted text-uppercase small fw-bold mb-3 mt-4 border-bottom pb-2">
+                    <i class="bi bi-info-circle me-1"></i> Appointment Details
+                </h6>
 
                 <div class="mb-3">
-                    <label asp-for="NewAppointment.ReasonForVisit" class="form-label">Reason for Visit</label>
-                    <input asp-for="NewAppointment.ReasonForVisit" class="form-control" placeholder="e.g. Annual Vaccination" />
-                    <span asp-validation-for="NewAppointment.ReasonForVisit" class="text-danger"></span>
+                    <label asp-for="NewAppointment.PetId" class="form-label fw-bold">Patient (Pet) <span class="text-danger">*</span></label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light"><i class="bi bi-paw"></i></span>
+                        <select asp-for="NewAppointment.PetId" asp-items="Model.PetOptions" class="form-select">
+                            <option value="">-- Select Pet --</option>
+                        </select>
+                    </div>
+                    <span asp-validation-for="NewAppointment.PetId" class="text-danger small"></span>
                 </div>
 
                 <div class="mb-3">
-                    <label asp-for="NewAppointment.Description" class="form-label">Description (Optional)</label>
-                    <textarea asp-for="NewAppointment.Description" class="form-control" rows="3"></textarea>
+                    <label asp-for="NewAppointment.ReasonForVisit" class="form-label fw-bold">Reason for Visit <span class="text-danger">*</span></label>
+                    <input asp-for="NewAppointment.ReasonForVisit" class="form-control" placeholder="e.g. Annual Vaccination, Checkup..." />
+                    <span asp-validation-for="NewAppointment.ReasonForVisit" class="text-danger small"></span>
                 </div>
 
-                <div class="d-grid gap-2 mt-4 mb-5">
-                    <button type="submit" class="btn btn-primary btn-lg">Confirm Booking</button>
-                    <a asp-page="./Index" class="btn btn-light text-muted">Cancel</a>
+                <div class="mb-4">
+                    <label asp-for="NewAppointment.Description" class="form-label">Description / Notes <span class="text-muted fw-normal">(Optional)</span></label>
+                    <textarea asp-for="NewAppointment.Description" class="form-control" rows="3" placeholder="Additional details..."></textarea>
                 </div>
+
+                <div class="d-flex justify-content-between pt-3 border-top">
+                    <a asp-page="./Index" class="btn btn-secondary">Cancel</a>
+                    <button type="submit" class="btn btn-primary px-4 fw-bold">
+                        <i class="bi bi-check-lg me-2"></i>Confirm Booking
+                    </button>
+                </div>
+
             </form>
         </div>
     </div>
@@ -82,7 +98,7 @@
     }
 
     <script>
-        document.addEventListener('DOMContentLoaded', function () 
+        document.addEventListener('DOMContentLoaded', function ()
         {
             const vetSelect = document.getElementById('VetSelector');
             const dateSelect = document.getElementById('DateSelector');
@@ -92,7 +108,7 @@
             const selectedTimeDisplay = document.getElementById('SelectedTimeDisplay');
             const timeValueSpan = document.getElementById('TimeValue');
 
-            async function fetchSlots() 
+            async function fetchSlots()
             {
                 const vetId = vetSelect.value;
                 const dateVal = dateSelect.value;
@@ -101,36 +117,39 @@
                 finalInput.value = '';
                 selectedTimeDisplay.style.display = 'none';
 
-                if (!vetId || !dateVal) 
+                if (!vetId || !dateVal)
                 {
                     timeSlotSection.style.display = 'none';
                     return;
                 }
 
                 timeSlotSection.style.display = 'block';
-                slotsContainer.innerHTML = '<div class="spinner-border text-primary spinner-border-sm" role="status"></div> Loading...';
+                slotsContainer.innerHTML = '<div class="spinner-border text-primary spinner-border-sm" role="status"></div> <span class="text-muted small ms-2">Loading schedule...</span>';
 
-                try 
+                try
                 {
                     const response = await fetch(`?handler=TimeSlots&vetId=${vetId}&date=${dateVal}`);
+                    if (!response.ok) throw new Error('Network response was not ok');
+
                     const slots = await response.json();
 
                     slotsContainer.innerHTML = '';
 
-                    if (slots.length === 0) 
+                    if (slots.length === 0)
                     {
-                        slotsContainer.innerHTML = '<span class="text-danger">No available slots for this date.</span>';
+                        slotsContainer.innerHTML = '<span class="text-danger small"><i class="bi bi-x-circle me-1"></i>No available slots for this date.</span>';
                         return;
                     }
 
-                    slots.forEach(time => 
-                        {
+                    slots.forEach(time =>
+                    {
                         const btn = document.createElement('button');
                         btn.type = 'button';
                         btn.className = 'btn btn-outline-primary btn-sm slot-btn';
                         btn.textContent = time;
+                        btn.style.width = "80px";
 
-                        btn.onclick = function() 
+                        btn.onclick = function()
                         {
                             document.querySelectorAll('.slot-btn').forEach(b => {
                                 b.classList.remove('btn-primary', 'text-white');
@@ -149,11 +168,11 @@
                         slotsContainer.appendChild(btn);
                     });
 
-                } 
-                catch (error) 
+                }
+                catch (error)
                 {
                     console.error('Error fetching slots:', error);
-                    slotsContainer.innerHTML = '<span class="text-danger">Error loading schedule.</span>';
+                    slotsContainer.innerHTML = '<span class="text-danger small">Error loading schedule. Please try again.</span>';
                 }
             }
 
