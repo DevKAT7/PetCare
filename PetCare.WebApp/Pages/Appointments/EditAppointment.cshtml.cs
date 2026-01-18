@@ -162,8 +162,13 @@ namespace PetCare.WebApp.Pages.Appointments
 
             if (currentStatus != AppointmentStatus.Completed && currentStatus != AppointmentStatus.Cancelled)
             {
-                allowedStatuses.Add(AppointmentStatus.Completed);
-                allowedStatuses.Add(AppointmentStatus.NoShow);
+                allowedStatuses.Add(AppointmentStatus.Confirmed);
+
+                if (appointment.AppointmentDateTime <= DateTime.Now)
+                {
+                    allowedStatuses.Add(AppointmentStatus.Completed);
+                    allowedStatuses.Add(AppointmentStatus.NoShow);
+                }
             }
 
             StatusOptions = new SelectList(allowedStatuses.Distinct());
