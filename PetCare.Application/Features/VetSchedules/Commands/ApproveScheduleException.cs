@@ -8,12 +8,12 @@ using PetCare.Core.Enums;
 
 namespace PetCare.Application.Features.VetSchedules.Commands
 {
-    public class ApproveScheduleExceptionCommand : IRequest<Unit>
+    public class ApproveScheduleExceptionCommand : IRequest<int>
     {
         public int ExceptionId { get; set; }
     }
 
-    public class ApproveScheduleExceptionHandler : IRequestHandler<ApproveScheduleExceptionCommand, Unit>
+    public class ApproveScheduleExceptionHandler : IRequestHandler<ApproveScheduleExceptionCommand, int>
     {
         private readonly IApplicationDbContext _context;
         private readonly IMediator _mediator;
@@ -24,7 +24,7 @@ namespace PetCare.Application.Features.VetSchedules.Commands
             _mediator = mediator;
         }
 
-        public async Task<Unit> Handle(ApproveScheduleExceptionCommand request, CancellationToken cancellationToken)
+        public async Task<int> Handle(ApproveScheduleExceptionCommand request, CancellationToken cancellationToken)
         {
             var exception = await _context.ScheduleExceptions
                 .Include(e => e.Vet).ThenInclude(v => v.User)
@@ -45,7 +45,7 @@ namespace PetCare.Application.Features.VetSchedules.Commands
                 }
             });
 
-            return Unit.Value;
+            return exception.ScheduleExceptionId;
         }
     }
 }

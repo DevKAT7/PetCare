@@ -40,7 +40,7 @@ namespace PetCare.Application.Features.Appointments.Commands
             }
 
             var model = request.Appointment;
-            //TODO: zobacz pozniej czy bedziesz chciala umozliwiac zmiane zwierzaka i weterynarza w wizycie
+
             var pet = await _context.Pets.FirstOrDefaultAsync(p => p.PetId == model.PetId);
 
             if (pet == null)
