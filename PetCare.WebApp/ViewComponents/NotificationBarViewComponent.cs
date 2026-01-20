@@ -1,17 +1,17 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using PetCare.Application.Interfaces;
+﻿using MediatR;
+using Microsoft.AspNetCore.Mvc;
+using PetCare.Application.Features.Notifications.Queries;
 using System.Security.Claims;
 
 namespace PetCare.WebApp.ViewComponents
 {
     public class NotificationBarViewComponent : ViewComponent
     {
-        private readonly IApplicationDbContext _context;
+        private readonly IMediator _mediator;
 
-        public NotificationBarViewComponent(IApplicationDbContext context)
+        public NotificationBarViewComponent(IMediator mediator)
         {
-            _context = context;
+            _mediator = mediator;
         }
 
         public async Task<IViewComponentResult> InvokeAsync()
@@ -23,11 +23,7 @@ namespace PetCare.WebApp.ViewComponents
                 return Content(string.Empty);
             }
 
-            var notifications = await _context.Notifications
-                .Where(n => n.UserId == userId && n.ReadAt == null)
-                .OrderByDescending(n => n.CreatedAt)
-                .Take(5)
-                .ToListAsync();
+            var notifications = await _mediator.Send(new GetRecentUnreadNotificationsQuery(userId));
 
             return View(notifications);
         }
