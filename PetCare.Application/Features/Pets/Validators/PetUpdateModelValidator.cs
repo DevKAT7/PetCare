@@ -1,5 +1,5 @@
 using FluentValidation;
-using PetCare.Application.Features.Pets.Dto;
+using PetCare.Application.Features.Pets.Dtos;
 
 namespace PetCare.Application.Features.Pets.Validators
 {

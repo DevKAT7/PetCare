@@ -1,6 +1,6 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using PetCare.Application.Features.PetOwners.Dto;
+using PetCare.Application.Features.PetOwners.Dtos;
 using PetCare.Application.Interfaces;
 
 namespace PetCare.Application.Features.PetOwners.Queries

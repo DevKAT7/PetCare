@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
 using PetCare.Application.Exceptions;
-using PetCare.Application.Features.Vets.Dto;
+using PetCare.Application.Features.Vets.Dtos;
 using PetCare.Application.Interfaces;
 
 namespace PetCare.Application.Features.Vets.Queries
@@ -25,23 +25,23 @@ namespace PetCare.Application.Features.Vets.Queries
             var vet = await _context.Vets
                 .Where(v => v.VetId == request.VetId && v.IsActive)
                 .Select(vet => new VetReadModel
-                    {
-                        VetId = vet.VetId,
-                        FirstName = vet.FirstName,
-                        LastName = vet.LastName,
-                        ProfilePictureUrl = vet.ProfilePictureUrl,
-                        Description = vet.Description,
-                        CareerStartDate = vet.CareerStartDate,
-                        HireDate = vet.HireDate,
-                        Address = vet.Address,
+                {
+                    VetId = vet.VetId,
+                    FirstName = vet.FirstName,
+                    LastName = vet.LastName,
+                    ProfilePictureUrl = vet.ProfilePictureUrl,
+                    Description = vet.Description,
+                    CareerStartDate = vet.CareerStartDate,
+                    HireDate = vet.HireDate,
+                    Address = vet.Address,
                     Pesel = vet.Pesel,
-                        PhoneNumber = vet.User.PhoneNumber,
-                        Email = vet.User.Email,
-                        LicenseNumber = vet.LicenseNumber,
+                    PhoneNumber = vet.User.PhoneNumber,
+                    Email = vet.User.Email,
+                    LicenseNumber = vet.LicenseNumber,
                     Specializations = vet.SpecializationLinks
                             .Select(link => link.VetSpecialization.Name)
                             .ToList()
-                     })
+                })
                      .FirstOrDefaultAsync(cancellationToken);
 
             if (vet == null)

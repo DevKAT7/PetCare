@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using PetCare.Application.Exceptions;
 using PetCare.Application.Features.PetOwners.Queries;
 using PetCare.Application.Features.Pets.Commands;
-using PetCare.Application.Features.Pets.Dto;
+using PetCare.Application.Features.Pets.Dtos;
 using PetCare.Application.Features.Pets.Queries;
 using ValidationException = PetCare.Application.Exceptions.ValidationException;
 

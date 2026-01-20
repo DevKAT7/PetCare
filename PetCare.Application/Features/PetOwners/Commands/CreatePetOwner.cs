@@ -1,10 +1,9 @@
 using MediatR;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using PetCare.Application.Exceptions;
-using PetCare.Application.Features.PetOwners.Dto;
-using PetCare.Core.Models;
+using PetCare.Application.Features.PetOwners.Dtos;
 using PetCare.Application.Interfaces;
+using PetCare.Core.Models;
 
 namespace PetCare.Application.Features.PetOwners.Commands
 {

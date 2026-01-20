@@ -1,6 +1,6 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using PetCare.Application.Features.Appointments.Dto;
+using PetCare.Application.Features.Appointments.Dtos;
 using PetCare.Application.Interfaces;
 using PetCare.Core.Enums;
 
@@ -29,7 +29,7 @@ namespace PetCare.Application.Features.Appointments.Queries
             Status = status;
         }
 
-        public GetAllAppointmentsQuery(string? petName = null, string? ownerName = null,int? vetId = null,
+        public GetAllAppointmentsQuery(string? petName = null, string? ownerName = null, int? vetId = null,
             AppointmentStatus? status = null, string? sortColumn = "Date", string? sortDirection = "desc")
         {
             PetName = petName;

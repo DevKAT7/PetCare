@@ -2,9 +2,9 @@ using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using PetCare.Application.Exceptions;
-using PetCare.Application.Features.PetOwners.Dto;
-using PetCare.Core.Models;
+using PetCare.Application.Features.PetOwners.Dtos;
 using PetCare.Application.Interfaces;
+using PetCare.Core.Models;
 
 namespace PetCare.Application.Features.PetOwners.Commands
 {
@@ -69,7 +69,7 @@ namespace PetCare.Application.Features.PetOwners.Commands
                 var identityResult = await _userManager.UpdateAsync(user);
                 if (!identityResult.Succeeded)
                 {
-                    throw new Exception("Błąd aktualizacji danych użytkownika: " + string.Join(", ", identityResult.Errors.Select(e => e.Description)));
+                    throw new Exception("User data update error: " + string.Join(", ", identityResult.Errors.Select(e => e.Description)));
                 }
             }
 

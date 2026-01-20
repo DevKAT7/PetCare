@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
 using PetCare.Application.Exceptions;
-using PetCare.Application.Features.Invoices.Dto;
+using PetCare.Application.Features.Invoices.Dtos;
 using PetCare.Application.Interfaces;
 
 namespace PetCare.Application.Features.Invoices.Queries

@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace PetCare.Application.Features.PetOwners.Dto
+namespace PetCare.Application.Features.PetOwners.Dtos
 {
     public class PetOwnerUpdateModel
     {

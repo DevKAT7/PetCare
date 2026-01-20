@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using PetCare.Application.Features.Vets.Queries;
 using PetCare.Application.Features.VetSchedules.Commands;
-using PetCare.Application.Features.VetSchedules.Dto;
+using PetCare.Application.Features.VetSchedules.Dtos;
 using PetCare.Application.Features.VetSchedules.Queries;
 using PetCare.Core.Models;
 using PetCare.Infrastructure.Data;

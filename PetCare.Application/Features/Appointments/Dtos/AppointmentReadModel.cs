@@ -1,7 +1,6 @@
-using PetCare.Application.Features.Appointments.Dtos;
 using PetCare.Core.Enums;
 
-namespace PetCare.Application.Features.Appointments.Dto
+namespace PetCare.Application.Features.Appointments.Dtos
 {
     public class AppointmentReadModel
     {

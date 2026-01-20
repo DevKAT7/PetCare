@@ -1,4 +1,4 @@
-namespace PetCare.Application.Features.VetSchedules.Dto
+namespace PetCare.Application.Features.VetSchedules.Dtos
 {
     public class ScheduleExceptionCreateModel
     {

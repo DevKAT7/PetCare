@@ -1,7 +1,7 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using PetCare.Application.Features.Pets.Dto;
 using PetCare.Application.Exceptions;
+using PetCare.Application.Features.Pets.Dtos;
 using PetCare.Application.Interfaces;
 
 namespace PetCare.Application.Features.Pets.Queries
