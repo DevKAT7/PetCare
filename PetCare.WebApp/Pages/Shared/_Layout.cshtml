@@ -110,6 +110,12 @@
                                 <i class="bi bi-tags"></i> Vet Specializations
                             </a>
                         </li>
+                        <li>
+                            <a asp-area="" asp-page="/Admin/Content/Index"
+                               class="@(ViewContext.RouteData.Values["page"]?.ToString() == "/Admin/Content" ? "active" : "")">
+                                <i class="bi bi-layout-text-window-reverse"></i> CMS Dictionary
+                            </a>
+                        </li>
                     }
                 </ul>
             </nav>

@@ -1,25 +1,23 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using PetCare.Application.Features.Dashboard.Dtos;
 using PetCare.Application.Features.Dashboard.Queries;
+using PetCare.WebApp.Pages.Shared;
 
 namespace PetCare.WebApp.Pages
 {
     [Authorize(Roles = "Admin,Employee")]
-    public class IndexModel : PageModel
+    public class IndexModel : BasePageModel
     {
-        private readonly IMediator _mediator;
-
-        public IndexModel(IMediator mediator)
+        public IndexModel(IMediator mediator) : base(mediator)
         {
-            _mediator = mediator;
         }
 
         public DashboardDto Data { get; set; } = new();
 
         public async Task OnGetAsync()
         {
+            await LoadPageTextsAsync();
             Data = await _mediator.Send(new GetDashboardDataQuery());
         }
     }

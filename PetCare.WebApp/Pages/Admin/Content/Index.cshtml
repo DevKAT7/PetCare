@@ -1,0 +1,167 @@
+﻿@page
+@model PetCare.WebApp.Pages.Admin.Content.IndexModel
+@{
+    ViewData["Title"] = "CMS Dictionary";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3">CMS Content Management</h1>
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createModal">
+        <i class="bi bi-plus-lg"></i> Add New Text
+    </button>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body p-0">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th style="width: 30%">Key</th>
+                    <th style="width: 55%">Value</th>
+                    <th style="width: 15%">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.PageTexts)
+                {
+                    <tr>
+                        <td class="font-monospace text-primary">@item.Key</td>
+                        <td class="text-truncate" style="max-width: 400px;">@item.Value</td>
+                        <td>
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-sm btn-outline-secondary"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#editModal"
+                                        data-id="@item.PageTextId"
+                                        data-key="@item.Key"
+                                        data-val="@item.Value">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+
+                                <button class="btn btn-sm btn-outline-danger"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#deleteModal"
+                                        data-id="@item.PageTextId"
+                                        data-key="@item.Key">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="modal fade" id="createModal" tabindex="-1">
+    <div class="modal-dialog">
+        <form method="post" asp-page-handler="Create" class="modal-content">
+            <div class="modal-header-blue">
+                <h5 class="modal-title">New Text Content</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                <div class="mb-3">
+                    <label asp-for="Input.Key" class="form-label">Key <span class="text-danger">*</span></label>
+                    <input asp-for="Input.Key" class="form-control font-monospace" placeholder="e.g. HomePage_Welcome" />
+                    <span asp-validation-for="Input.Key" class="text-danger"></span>
+                    <div class="form-text">Unique identifier used by developers.</div>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="Input.Value" class="form-label">Value <span class="text-danger">*</span></label>
+                    <textarea asp-for="Input.Value" class="form-control" rows="3"></textarea>
+                    <span asp-validation-for="Input.Value" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn btn-primary">Save</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="modal fade" id="editModal" tabindex="-1">
+    <div class="modal-dialog">
+        <form method="post" asp-page-handler="Edit" class="modal-content">
+            <div class="modal-header-blue">
+                <h5 class="modal-title">Edit Text Content</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                <input type="hidden" asp-for="SelectedId" id="editId" />
+
+                <div class="mb-3">
+                    <label asp-for="Input.Key" class="form-label">Key</label>
+                    <input asp-for="Input.Key" id="editKey" class="form-control font-monospace" />
+                    <span asp-validation-for="Input.Key" class="text-danger"></span>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="Input.Value" class="form-label">Value</label>
+                    <textarea asp-for="Input.Value" id="editVal" class="form-control" rows="5"></textarea>
+                    <span asp-validation-for="Input.Value" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <form method="post" asp-page-handler="Delete" class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Delete Content</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" asp-for="SelectedId" id="deleteId" />
+                <p>Are you sure you want to delete the text key: <strong id="deleteKeyPlaceholder" class="font-monospace text-primary"></strong>?</p>
+                <p class="text-danger small">This might break the UI if the key is actively used in the code.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn btn-danger">Delete</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        var editModal = document.getElementById('editModal');
+        editModal.addEventListener('show.bs.modal', function (event) {
+            var btn = event.relatedTarget;
+            if (btn) {
+                editModal.querySelector('#editId').value = btn.getAttribute('data-id');
+                editModal.querySelector('#editKey').value = btn.getAttribute('data-key');
+                editModal.querySelector('#editVal').value = btn.getAttribute('data-val');
+            }
+        });
+
+        var delModal = document.getElementById('deleteModal');
+        delModal.addEventListener('show.bs.modal', function (event) {
+            var btn = event.relatedTarget;
+            if (btn) {
+                delModal.querySelector('#deleteId').value = btn.getAttribute('data-id');
+                delModal.querySelector('#deleteKeyPlaceholder').textContent = btn.getAttribute('data-key');
+            }
+        });
+
+        @if (ViewData["ShowCreateModal"] != null)
+        {
+                <text>new bootstrap.Modal(document.getElementById('createModal')).show();</text>
+        }
+        @if (ViewData["ShowEditModal"] != null)
+        {
+                <text>new bootstrap.Modal(document.getElementById('editModal')).show();</text>
+        }
+    </script>
+}

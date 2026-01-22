@@ -31,6 +31,7 @@ namespace PetCare.Infrastructure.Data
         public DbSet<Medication> Medications { get; set; }
         public DbSet<StockItem> StockItems { get; set; }
         public DbSet<StockTransaction> StockTransactions { get; set; }
+        public DbSet<PageText> PageTexts { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
