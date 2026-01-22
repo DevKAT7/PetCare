@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using PetCare.Application.Exceptions;
-using PetCare.Application.Features.Vets.Dto;
+using PetCare.Application.Features.Vets.Dtos;
 using PetCare.Application.Interfaces;
 using PetCare.Core.Models;
 

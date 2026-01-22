@@ -1,7 +1,7 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using PetCare.Application.Features.VetSchedules.Dto;
 using PetCare.Application.Exceptions;
+using PetCare.Application.Features.VetSchedules.Dtos;
 using PetCare.Application.Interfaces;
 
 namespace PetCare.Application.Features.VetSchedules.Commands
@@ -36,7 +36,6 @@ namespace PetCare.Application.Features.VetSchedules.Commands
                 throw new NotFoundException("Vet schedule", request.Id);
             }
 
-            //TODO: czy chce miec tutaj veta do zmiany?
             if (schedule.VetId != request.Schedule.VetId)
             {
                 var vetExists = await _context.Vets.AnyAsync(v => v.VetId == request.Schedule.VetId, cancellationToken);

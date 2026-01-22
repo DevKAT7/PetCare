@@ -1,4 +1,4 @@
-namespace PetCare.Application.Features.Invoices.Dto
+namespace PetCare.Application.Features.Invoices.Dtos
 {
     public class InvoiceItemReadModel
     {

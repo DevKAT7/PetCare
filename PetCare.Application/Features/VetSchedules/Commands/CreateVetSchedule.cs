@@ -1,9 +1,9 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using PetCare.Application.Features.VetSchedules.Dto;
 using PetCare.Application.Exceptions;
-using PetCare.Core.Models;
+using PetCare.Application.Features.VetSchedules.Dtos;
 using PetCare.Application.Interfaces;
+using PetCare.Core.Models;
 
 namespace PetCare.Application.Features.VetSchedules.Commands
 {
@@ -28,10 +28,10 @@ namespace PetCare.Application.Features.VetSchedules.Commands
             var vetExists = await _context.Vets.AnyAsync(v => v.VetId == model.VetId, cancellationToken);
 
             if (!vetExists)
-            { 
+            {
                 throw new NotFoundException("Vet not found.");
             }
-                
+
             var schedule = new VetSchedule
             {
                 DayOfWeek = model.DayOfWeek,

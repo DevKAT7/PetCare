@@ -1,16 +1,18 @@
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using PetCare.Application.Exceptions;
 using PetCare.Application.Features.PetOwners.Queries;
 using PetCare.Application.Features.Pets.Commands;
-using PetCare.Application.Features.Pets.Dto;
+using PetCare.Application.Features.Pets.Dtos;
 using PetCare.Application.Features.Pets.Queries;
 using ValidationException = PetCare.Application.Exceptions.ValidationException;
 
 namespace PetCare.WebApp.Pages.Pets
 {
+    [Authorize(Roles = "Admin,Employee")]
     public class CreatePetModel : PageModel
     {
         private readonly IMediator _mediator;

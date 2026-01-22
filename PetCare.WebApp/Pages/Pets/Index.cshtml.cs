@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using PetCare.Application.Features.Pets.Commands;
-using PetCare.Application.Features.Pets.Dto;
+using PetCare.Application.Features.Pets.Dtos;
 using PetCare.Application.Features.Pets.Queries;
 
 namespace PetCare.WebApp.Pages.Pets

@@ -1,14 +1,16 @@
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using PetCare.Application.Exceptions;
 using PetCare.Application.Features.Invoices.Commands;
-using PetCare.Application.Features.Invoices.Dto;
+using PetCare.Application.Features.Invoices.Dtos;
 using PetCare.Application.Features.Invoices.Queries;
 using ValidationException = PetCare.Application.Exceptions.ValidationException;
 
 namespace PetCare.WebApp.Pages.Invoices
 {
+    [Authorize(Roles = "Admin, Employee")]
     public class CreateInvoiceModel : PageModel
     {
         private readonly IMediator _mediator;
@@ -87,7 +89,7 @@ namespace PetCare.WebApp.Pages.Invoices
 
                     foreach (var errorMessage in errorMessages)
                     {
-                        
+
                         ModelState.AddModelError($"Input.{propertyName}", errorMessage);
                     }
                 }

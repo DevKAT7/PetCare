@@ -2,7 +2,7 @@ using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using PetCare.Application.Exceptions;
-using PetCare.Application.Features.VetSchedules.Dto;
+using PetCare.Application.Features.VetSchedules.Dtos;
 using PetCare.Application.Interfaces;
 using PetCare.Core.Enums;
 

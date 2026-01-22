@@ -1,4 +1,5 @@
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -11,6 +12,7 @@ using PetCare.Core.Enums;
 
 namespace PetCare.WebApp.Pages.Appointments
 {
+    [Authorize(Roles = "Admin, Employee")]
     public class EditAppointmentModel : PageModel
     {
         private readonly IMediator _mediator;
@@ -162,8 +164,13 @@ namespace PetCare.WebApp.Pages.Appointments
 
             if (currentStatus != AppointmentStatus.Completed && currentStatus != AppointmentStatus.Cancelled)
             {
-                allowedStatuses.Add(AppointmentStatus.Completed);
-                allowedStatuses.Add(AppointmentStatus.NoShow);
+                allowedStatuses.Add(AppointmentStatus.Confirmed);
+
+                if (appointment.AppointmentDateTime <= DateTime.Now)
+                {
+                    allowedStatuses.Add(AppointmentStatus.Completed);
+                    allowedStatuses.Add(AppointmentStatus.NoShow);
+                }
             }
 
             StatusOptions = new SelectList(allowedStatuses.Distinct());

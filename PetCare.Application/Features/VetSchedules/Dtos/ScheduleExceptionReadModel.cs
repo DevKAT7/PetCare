@@ -1,6 +1,6 @@
 using PetCare.Core.Enums;
 
-namespace PetCare.Application.Features.VetSchedules.Dto
+namespace PetCare.Application.Features.VetSchedules.Dtos
 {
     public class ScheduleExceptionReadModel
     {

@@ -414,6 +414,28 @@ namespace PetCare.Infrastructure.Migrations
                     b.ToTable("Notifications");
                 });
 
+            modelBuilder.Entity("PetCare.Core.Models.PageText", b =>
+                {
+                    b.Property<int>("PageTextId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PageTextId"));
+
+                    b.Property<string>("Key")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Value")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("PageTextId");
+
+                    b.ToTable("PageTexts");
+                });
+
             modelBuilder.Entity("PetCare.Core.Models.Pet", b =>
                 {
                     b.Property<int>("PetId")
@@ -721,6 +743,9 @@ namespace PetCare.Infrastructure.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("PhoneNumberConfirmed")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("RequirePasswordChange")
                         .HasColumnType("bit");
 
                     b.Property<string>("SecurityStamp")

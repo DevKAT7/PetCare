@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using PetCare.Application.Features.VetSchedules.Commands;
-using PetCare.Application.Features.VetSchedules.Dto;
+using PetCare.Application.Features.VetSchedules.Dtos;
 using PetCare.Application.Interfaces;
 
 namespace PetCare.Application.Features.VetSchedules.Validators

@@ -72,7 +72,7 @@ namespace PetCare.Infrastructure.Services
                 }
                 catch (Exception ex)
                 {
-                    // TODO: ILogger
+                    // TODO: Add Logger
                     Console.WriteLine($"Background Service Error: {ex.Message}");
                 }
 

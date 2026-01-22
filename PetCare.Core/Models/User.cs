@@ -5,6 +5,7 @@ namespace PetCare.Core.Models
     {
         //in IdentityUser there is already Id, UserName, Email, PasswordHash, PhoneNumber
         public bool IsActive { get; set; } = true;
+        public bool RequirePasswordChange { get; set; }
         public Vet? VetProfile { get; set; }
         public PetOwner? PetOwnerProfile { get; set; }
     }

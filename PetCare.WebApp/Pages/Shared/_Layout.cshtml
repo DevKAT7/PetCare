@@ -1,4 +1,8 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Identity
+@using PetCare.Core.Models
+@inject UserManager<User> UserManager
+
+<!DOCTYPE html>
 <html lang="pl">
 <head>
     <meta charset="utf-8" />
@@ -13,122 +17,153 @@
 
 </head>
 <body>
+    @{
+        var user = await UserManager.GetUserAsync(User);
+        //sprawdzenie czy user jest zalogowany, czy musi zmienić hasło
+        if (user != null && user.RequirePasswordChange && !Context.Request.Path.Value.Contains("ChangePassword") && !Context.Request.Path.Value.Contains("Logout"))
+        {
+            Context.Response.Redirect("/Identity/Account/Manage/ChangePassword");
+        }
+    }
 
-    <div class="d-flex-wrapper">
-        <nav id="sidebar">
-            <div class="sidebar-header">
-                <a href="/" class="sidebar-brand d-flex align-items-center">
-                    <img src="~/images/logo-petcare-white2.png" alt="PetCare Logo" class="img-fluid" style="height: 50px; width: 165px;">
-                </a>
-            </div>
-
-            <ul class="list-unstyled components">
-                <li>
-                    <a asp-page="/Index" class="@(ViewContext.RouteData.Values["page"]?.ToString() == "/Index" ? "active" : "")">
-                        <i class="bi bi-speedometer2"></i> Dashboard
+    @if (User.Identity.IsAuthenticated)
+    {
+        <div class="d-flex-wrapper">
+            <nav id="sidebar">
+                <div class="sidebar-header">
+                    <a href="/" class="sidebar-brand d-flex align-items-center">
+                        <img src="~/images/logo-petcare-white2.png" alt="PetCare Logo" class="img-fluid" style="height: 50px; width: 165px;">
                     </a>
-                </li>
-                @if (User.IsInRole("Admin") || User.IsInRole("Employee"))
-                {
-                    <li>
-                        <a asp-page="/Calendar/Calendar" class="@(ViewContext.RouteData.Values["page"]?.ToString() == "/Calendar/Calendar" ? "active" : "")">
-                            <i class="bi bi-calendar-event"></i> Calendar
-                        </a>
-                    </li>
-                    <li>
-                        <a asp-page="/Appointments/Index" class="@(ViewContext.RouteData.Values["page"]?.ToString() == "/Appointments/Index" ? "active" : "")">
-                            <i class="bi bi-calendar-check"></i> Appointments
-                        </a>
-                    </li>
-                    <li>
-                        <a asp-area="" asp-page="/Admin/Procedures/Index" 
-                        class="@(ViewContext.RouteData.Values["page"]?.ToString() == "/Admin/Procedures/Index" ? "active" : "")">
-                            <i class="bi bi-bandaid"></i> Medical Procedures
-                        </a>
-                    </li>
-                    <li>
-                        <a asp-page="/Pets/Index" class="@(ViewContext.RouteData.Values["page"]?.ToString() == "/Pets/Index" ? "active" : "")">
-                            <i class="fa-solid fa-cat"></i> Patients
-                        </a>
-                    </li>
-                    <li>
-                        <a asp-area="" asp-page="/Medications/Index" class="@(ViewContext.RouteData.Values["page"]?.ToString() == "/Medications/Index" ? "active" : "")">
-                            <i class="bi bi-capsule"></i> Medications
-                        </a>
-                    </li>
-                    <li>
-                        <a asp-area="" asp-page="/Storage/Index" class="@(ViewContext.RouteData.Values["page"]?.ToString() == "/Storage/Index" ? "active" : "")">
-                            <i class="bi bi-box-seam"></i> Storage
-                        </a>
-                    </li>
-                    <li>
-                        <a asp-area="" asp-page="/Invoices/Index" class="@(ViewContext.RouteData.Values["page"]?.ToString() == "/Invoices/Index" ? "active" : "")">
-                            <i class="bi bi-receipt-cutoff"></i> Invoices
-                        </a>
-                    </li>
-                }
-                @if (User.IsInRole("Employee"))
-                {
-                    <li>
-                        <a asp-page="/Employee/MySchedule" class="@(ViewContext.RouteData.Values["page"]?.ToString() == "/Employee/MySchedule" ? "active" : "")">
-                            <i class="bi bi-calendar-week"></i> My Schedule
-                        </a>
-                    </li>
-                }
-                @if (User.IsInRole("Admin"))
-                {
-                    <li class="mt-4 px-3 text-uppercase small text-white-50">Administration</li>
-                    <li>
-                        <a asp-area="" asp-page="/Admin/Vets/Index"
-                           class="@(ViewContext.RouteData.Values["page"]?.ToString() == "/Admin/Vets/Index" ? "active" : "")">
-                            <i class="bi bi-person-badge"></i> List of Vets
-                        </a>
-                    </li>
-                    <li>
-                        <a asp-area="" asp-page="/Admin/Vets/CreateVet"
-                           class="@(ViewContext.RouteData.Values["page"]?.ToString() == "/Admin/Vets/CreateVet" ? "active" : "")">
-                            <i class="bi bi-plus-circle"></i> Add New Vet
-                        </a>
-                    </li>
-                    <li>
-                        <a asp-area="" asp-page="/Admin/VetSpecializations/Index"
-                           class="@(ViewContext.RouteData.Values["page"]?.ToString() == "/Admin/Specializations" ? "active" : "")">
-                            <i class="bi bi-tags"></i> Vet Specializations
-                        </a>
-                    </li>
-                }
-            </ul>
-        </nav>
-
-        <div id="content">
-            <nav class="top-navbar">
-                <button type="button" id="sidebarCollapse" class="btn btn-outline-secondary d-md-none">
-                    <i class="bi bi-list"></i>
-                </button>
-
-                <h4 class="m-0 text-muted">@ViewData["Title"]</h4>
-
-                <div class="user-area">
-                    <ul class="navbar-nav d-flex flex-row align-items-center gap-3">
-
-                        <vc:notification-bar />
-
-                        <li class="d-none d-md-block border-end mx-2" style="height: 24px;"></li>
-
-                        <partial name="_LoginPartial" />
-                    </ul>
                 </div>
+
+                <ul class="list-unstyled components">
+                    <li>
+                        <a asp-page="/Index" class="@(ViewContext.RouteData.Values["page"]?.ToString() == "/Index" ? "active" : "")">
+                            <i class="bi bi-speedometer2"></i> Dashboard
+                        </a>
+                    </li>
+                    @if (User.IsInRole("Admin") || User.IsInRole("Employee"))
+                    {
+                        <li>
+                            <a asp-page="/Calendar/Calendar" class="@(ViewContext.RouteData.Values["page"]?.ToString() == "/Calendar/Calendar" ? "active" : "")">
+                                <i class="bi bi-calendar-event"></i> Calendar
+                            </a>
+                        </li>
+                        <li>
+                            <a asp-page="/Appointments/Index" class="@(ViewContext.RouteData.Values["page"]?.ToString() == "/Appointments/Index" ? "active" : "")">
+                                <i class="bi bi-calendar-check"></i> Appointments
+                            </a>
+                        </li>
+                        <li>
+                            <a asp-area="" asp-page="/Procedures/Index"
+                               class="@(ViewContext.RouteData.Values["page"]?.ToString() == "/Procedures/Index" ? "active" : "")">
+                                <i class="bi bi-bandaid"></i> Medical Procedures
+                            </a>
+                        </li>
+                        <li>
+                            <a asp-page="/Pets/Index" class="@(ViewContext.RouteData.Values["page"]?.ToString() == "/Pets/Index" ? "active" : "")">
+                                <i class="fa-solid fa-cat"></i> Patients
+                            </a>
+                        </li>
+                        <li>
+                            <a asp-area="" asp-page="/Medications/Index" class="@(ViewContext.RouteData.Values["page"]?.ToString() == "/Medications/Index" ? "active" : "")">
+                                <i class="bi bi-capsule"></i> Medications
+                            </a>
+                        </li>
+                        <li>
+                            <a asp-area="" asp-page="/Storage/Index" class="@(ViewContext.RouteData.Values["page"]?.ToString() == "/Storage/Index" ? "active" : "")">
+                                <i class="bi bi-box-seam"></i> Storage
+                            </a>
+                        </li>
+                        <li>
+                            <a asp-area="" asp-page="/Invoices/Index" class="@(ViewContext.RouteData.Values["page"]?.ToString() == "/Invoices/Index" ? "active" : "")">
+                                <i class="bi bi-receipt-cutoff"></i> Invoices
+                            </a>
+                        </li>
+                    }
+                    @if (User.IsInRole("Employee"))
+                    {
+                        <li>
+                            <a asp-page="/Employee/MySchedule" class="@(ViewContext.RouteData.Values["page"]?.ToString() == "/Employee/MySchedule" ? "active" : "")">
+                                <i class="bi bi-calendar-week"></i> My Schedule
+                            </a>
+                        </li>
+                    }
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <li class="mt-4 px-3 text-uppercase small text-white-50">Administration</li>
+                        <li>
+                            <a asp-area="" asp-page="/Admin/Vets/Index"
+                               class="@(ViewContext.RouteData.Values["page"]?.ToString() == "/Admin/Vets/Index" ? "active" : "")">
+                                <i class="bi bi-person-badge"></i> List of Vets
+                            </a>
+                        </li>
+                        <li>
+                            <a asp-area="" asp-page="/Admin/Vets/CreateVet"
+                               class="@(ViewContext.RouteData.Values["page"]?.ToString() == "/Admin/Vets/CreateVet" ? "active" : "")">
+                                <i class="bi bi-plus-circle"></i> Add New Vet
+                            </a>
+                        </li>
+                        <li>
+                            <a asp-area="" asp-page="/Admin/VetSpecializations/Index"
+                               class="@(ViewContext.RouteData.Values["page"]?.ToString() == "/Admin/Specializations" ? "active" : "")">
+                                <i class="bi bi-tags"></i> Vet Specializations
+                            </a>
+                        </li>
+                        <li>
+                            <a asp-area="" asp-page="/Admin/Content/Index"
+                               class="@(ViewContext.RouteData.Values["page"]?.ToString() == "/Admin/Content" ? "active" : "")">
+                                <i class="bi bi-layout-text-window-reverse"></i> CMS Dictionary
+                            </a>
+                        </li>
+                    }
+                </ul>
             </nav>
 
-            <div class="p-4">
+            <div id="content">
+                <nav class="top-navbar">
+                    <button type="button" id="sidebarCollapse" class="btn btn-outline-secondary d-md-none">
+                        <i class="bi bi-list"></i>
+                    </button>
+
+                    <h4 class="m-0 text-muted">@ViewData["Title"]</h4>
+
+                    <div class="user-area">
+                        <ul class="navbar-nav d-flex flex-row align-items-center gap-3">
+
+                            <vc:notification-bar />
+
+                            <li class="d-none d-md-block border-end mx-2" style="height: 24px;"></li>
+
+                            <partial name="_LoginPartial" />
+                        </ul>
+                    </div>
+                </nav>
+
+                <div class="p-4">
+                    @RenderBody()
+                </div>
+
+                <footer class="text-center text-muted mt-auto py-3 small">
+                    &copy; 2025 - PetCare.WebApp
+                </footer>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="d-flex align-items-center justify-content-center min-vh-100 bg-light">
+
+            <div class="container" style="max-width: 500px;">
                 @RenderBody()
             </div>
 
-            <footer class="text-center text-muted mt-auto py-3 small">
-                &copy; 2025 - PetCare.WebApp
-            </footer>
         </div>
-    </div>
+
+        <footer class="text-center text-muted py-3 small fixed-bottom">
+            &copy; 2025 - PetCare.WebApp
+        </footer>
+    }
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>

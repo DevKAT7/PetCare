@@ -93,7 +93,7 @@
 <div class="modal fade" id="adjustStockModal" tabindex="-1">
     <div class="modal-dialog">
         <form method="post" asp-page-handler="AdjustStock" class="modal-content">
-            <div class="modal-header">
+            <div class="modal-header-blue">
                 <h5 class="modal-title" id="adjustModalTitle">Adjust Stock</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
@@ -102,12 +102,12 @@
                 <input type="hidden" asp-for="TransactionType" id="adjustType" />
 
                 <div class="mb-3">
-                    <label class="form-label">Quantity</label>
+                    <label class="form-label">Quantity <span class="text-danger">*</span></label>
                     <input asp-for="TransactionInput.QuantityChange" type="number" min="1" class="form-control" required />
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label">Reason / Note</label>
+                    <label class="form-label">Reason / Note <span class="text-danger">*</span></label>
                     <input asp-for="TransactionInput.Reason" class="form-control" placeholder="e.g., Invoice #123 or Broken bottle" required />
                 </div>
             </div>

@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using PetCare.Application.Features.Invoices.Dto;
+using PetCare.Application.Features.Invoices.Dtos;
 using PetCare.Application.Features.Invoices.Queries;
 
 namespace PetCare.WebApp.Pages.Invoices

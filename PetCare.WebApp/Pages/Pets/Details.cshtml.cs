@@ -1,4 +1,5 @@
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using PetCare.Application.Exceptions;
@@ -7,6 +8,7 @@ using PetCare.Application.Features.Pets.Queries;
 
 namespace PetCare.WebApp.Pages.Pets
 {
+    [Authorize(Roles = "Admin,Employee")]
     public class DetailsModel : PageModel
     {
         private readonly IMediator _mediator;

@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using PetCare.Application.Features.Appointments.Dto;
+using PetCare.Application.Features.Appointments.Dtos;
 using PetCare.Application.Features.Appointments.Queries;
 using PetCare.Application.Features.Vets.Queries;
 using PetCare.Core.Enums;
@@ -40,8 +40,17 @@ namespace PetCare.WebApp.Pages.Appointments
         [BindProperty(SupportsGet = true)]
         public string SortDirection { get; set; } = "desc";
 
+
+        [BindProperty(SupportsGet = true)]
+        public int PageIndex { get; set; } = 1;
+        public int TotalPages { get; set; }
+        public int PageSize { get; set; } = 14;
+        public bool HasPreviousPage => PageIndex > 1;
+        public bool HasNextPage => PageIndex < TotalPages;
+
         public List<SelectListItem> VetOptions { get; set; } = new();
         public SelectList? StatusOptions { get; set; }
+
         public async Task OnGetAsync()
         {
             var vets = await _mediator.Send(new GetAllVetsQuery());
@@ -59,10 +68,20 @@ namespace PetCare.WebApp.Pages.Appointments
                 vetId: SearchVetId,
                 status: SearchStatus,
                 sortColumn: SortColumn,
-                sortDirection: SortDirection
+                sortDirection: SortDirection,
+                pageIndex: PageIndex,
+                pageSize: PageSize
             );
 
-            Appointments = await _mediator.Send(query);
+            var result = await _mediator.Send(query);
+
+            Appointments = result.Items;
+            TotalPages = result.TotalPages;
+
+            if (PageIndex > TotalPages && TotalPages > 0)
+            {
+                PageIndex = TotalPages;
+            }
         }
     }
 }

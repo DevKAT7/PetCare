@@ -1,4 +1,5 @@
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using PetCare.Application.Exceptions;
@@ -10,6 +11,7 @@ using PetCare.Application.Features.StockTransactions.Queries;
 
 namespace PetCare.WebApp.Pages.Storage
 {
+    [Authorize(Roles = "Admin,Employee")]
     public class IndexModel : PageModel
     {
         private readonly IMediator _mediator;

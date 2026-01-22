@@ -1,7 +1,6 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using PetCare.Application.Features.Appointments.Commands;
-using PetCare.Application.Features.Appointments.Dto;
 using PetCare.Application.Features.Appointments.Dtos;
 using PetCare.Application.Features.Appointments.Queries;
 
@@ -19,13 +18,30 @@ namespace PetCare.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll([FromQuery] int? ownerId, [FromQuery] int? vetId, [FromQuery] DateTime? from, [FromQuery] DateTime? to, [FromQuery] string? status)
+        public async Task<IActionResult> GetAll([FromQuery] int? petOwnerId, [FromQuery] int? vetId, [FromQuery] DateTime? from,
+            [FromQuery] DateTime? to, [FromQuery] string? status, [FromQuery] string? petName, [FromQuery] string? ownerName,
+            [FromQuery] string sortColumn = "Date", [FromQuery] string sortDirection = "desc", [FromQuery] int pageIndex = 1,
+            [FromQuery] int pageSize = 14)
         {
             Core.Enums.AppointmentStatus? parsedStatus = null;
             if (!string.IsNullOrEmpty(status) && Enum.TryParse<Core.Enums.AppointmentStatus>(status, true, out var s)) parsedStatus = s;
 
-            var query = new GetAllAppointmentsQuery(ownerId, vetId, from, to, parsedStatus);
+            var query = new GetAllAppointmentsQuery(
+                    petName: petName,
+                    ownerName: ownerName,
+                    vetId: vetId,
+                    petOwnerId: petOwnerId,
+                    from: from,
+                    to: to,
+                    status: parsedStatus,
+                    sortColumn: sortColumn,
+                    sortDirection: sortDirection,
+                    pageIndex: pageIndex,
+                    pageSize: pageSize
+                );
+
             var result = await _mediator.Send(query);
+
             return Ok(result);
         }
 

@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using PetCare.Application.Features.Appointments.Dto;
+using PetCare.Application.Features.Appointments.Dtos;
 using PetCare.Application.Features.Appointments.Queries;
 using PetCare.Application.Features.Vets.Queries;
 
@@ -63,7 +63,9 @@ namespace PetCare.WebApp.Pages
                 to: WeekDays.Last().AddDays(1).AddTicks(-1)
             );
 
-            Appointments = await _mediator.Send(appQuery);
+            var result = await _mediator.Send(appQuery);
+
+            Appointments = result.Items;
         }
     }
 }

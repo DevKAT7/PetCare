@@ -1,0 +1,113 @@
+﻿@page
+@model PetCare.WebApp.Areas.Identity.Pages.Account.Manage.IndexModel
+@{
+    ViewData["Title"] = "My Profile";
+    ViewData["ActivePage"] = ManageNavPages.Index;
+}
+
+<div class="container mt-4" style="max-width: 800px;">
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-header text-white py-3">
+            <h4 class="mb-0"><i class="bi bi-person-badge-fill me-2"></i>My Profile</h4>
+        </div>
+
+        <div class="card-body p-4">
+
+            @if (!string.IsNullOrEmpty(Model.ProfilePictureUrl))
+            {
+                <div class="d-flex justify-content-center mb-4">
+                    <div class="position-relative">
+                        <img src="@Model.ProfilePictureUrl" alt="Profile"
+                             class="rounded-circle border border-3 border-light shadow-sm"
+                             style="width: 120px; height: 120px; object-fit: cover;"
+                             onerror="this.src='/images/default-user.png'; this.onerror=null;">
+                    </div>
+                </div>
+            }
+
+            <div class="alert alert-info d-flex align-items-center mb-4 shadow-sm" role="alert">
+                <i class="bi bi-info-circle-fill fs-4 me-3"></i>
+                <div>
+                    <strong>View Only Mode</strong><br />
+                    Your profile details are managed by the administration.
+                    If you need to update your information, please contact the Administrator.
+                </div>
+            </div>
+
+            <form>
+                <h6 class="text-muted text-uppercase small fw-bold mb-3 border-bottom pb-2">
+                    <i class="bi bi-shield-lock me-1"></i> Account Details
+                </h6>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Username / Email</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light text-muted"><i class="bi bi-envelope"></i></span>
+                        <input value="@Model.Username" class="form-control" disabled />
+                    </div>
+                </div>
+
+                <h6 class="text-muted text-uppercase small fw-bold mb-3 mt-4 border-bottom pb-2">
+                    <i class="bi bi-person-vcard me-1"></i> Personal Information
+                </h6>
+
+                <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Full Name</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light text-muted"><i class="bi bi-person"></i></span>
+                            <input value="@Model.FullName" class="form-control" disabled />
+                        </div>
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(Model.Pesel))
+                    {
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">PESEL</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light text-muted"><i class="bi bi-card-heading"></i></span>
+                                <input value="@Model.Pesel" class="form-control" disabled />
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Phone Number</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light text-muted"><i class="bi bi-telephone"></i></span>
+                            <input value="@Model.PhoneNumber" class="form-control" disabled />
+                        </div>
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(Model.Address))
+                    {
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Home Address</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light text-muted"><i class="bi bi-geo-alt"></i></span>
+                                <input value="@Model.Address" class="form-control" disabled />
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                @if (!string.IsNullOrEmpty(Model.LicenseNumber))
+                {
+                    <h6 class="text-muted text-uppercase small fw-bold mb-3 mt-4 border-bottom pb-2">
+                        <i class="bi bi-briefcase me-1"></i> Professional Information
+                    </h6>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">License Number</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light text-muted"><i class="bi bi-award"></i></span>
+                            <input value="@Model.LicenseNumber" class="form-control" disabled />
+                        </div>
+                    </div>
+                }
+            </form>
+        </div>
+    </div>
+</div>

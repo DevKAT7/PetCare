@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using PetCare.Application.Exceptions;
 using PetCare.Application.Features.Notifications.Commands;
 using PetCare.Application.Features.Notifications.Dtos;
-using PetCare.Application.Features.VetSchedules.Dto;
+using PetCare.Application.Features.VetSchedules.Dtos;
 using PetCare.Application.Interfaces;
 using PetCare.Core.Enums;
 using PetCare.Core.Models;
@@ -25,7 +25,7 @@ namespace PetCare.Application.Features.VetSchedules.Commands
         private readonly IMediator _mediator;
 
         public CreateScheduleExceptionHandler(IApplicationDbContext context, UserManager<User> userManager,
-        IHttpContextAccessor httpContextAccessor,IMediator mediator)
+        IHttpContextAccessor httpContextAccessor, IMediator mediator)
         {
             _context = context;
             _userManager = userManager;

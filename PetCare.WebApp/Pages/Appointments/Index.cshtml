@@ -22,7 +22,7 @@
 }
 
 <div class="d-flex justify-content-between align-items-center mb-3">
-    <h2>Appointments</h2>
+    <h2></h2>
     <a asp-page="CreateAppointment" class="btn btn-primary">
         <i class="bi bi-plus-lg"></i> Book Appointment
     </a>
@@ -184,7 +184,10 @@
                                 </td>
                                 <td class="text-end pe-4">
                                     <div class="d-flex gap-1 justify-content-end">
-                                        <a asp-page="Details" asp-route-id="@item.AppointmentId" class="btn btn-sm btn-outline-secondary"><i class="bi bi-eye"></i></a>
+                                        @if(item.Status != AppointmentStatus.Cancelled)
+                                        {
+                                            <a asp-page="Details" asp-route-id="@item.AppointmentId" class="btn btn-sm btn-outline-secondary"><i class="bi bi-eye"></i></a>
+                                        }                                   
                                         <a asp-page="EditAppointment" asp-route-id="@item.AppointmentId" asp-route-source="index" 
                                         class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil"></i></a>
                                     </div>
@@ -197,3 +200,56 @@
         </div>
     </div>
 </div>
+
+@if (Model.TotalPages > 1)
+{
+    <nav aria-label="Page navigation" class="mt-4 mb-5">
+        <ul class="pagination justify-content-center">
+
+            <li class="page-item @(Model.HasPreviousPage ? "" : "disabled")">
+                <a class="page-link"
+                   asp-page="./Index"
+                   asp-route-pageIndex="@(Model.PageIndex - 1)"
+                   asp-route-sortColumn="@Model.SortColumn"
+                   asp-route-sortDirection="@Model.SortDirection"
+                   asp-route-searchPet="@Model.SearchPet"
+                   asp-route-searchOwner="@Model.SearchOwner"
+                   asp-route-searchVetId="@Model.SearchVetId"
+                   asp-route-searchStatus="@Model.SearchStatus">
+                    <i class="bi bi-chevron-left"></i> Previous
+                </a>
+            </li>
+
+            @for (var i = 1; i <= Model.TotalPages; i++)
+            {
+                <li class="page-item @(i == Model.PageIndex ? "active" : "")">
+                    <a class="page-link"
+                       asp-page="./Index"
+                       asp-route-pageIndex="@i"
+                       asp-route-sortColumn="@Model.SortColumn"
+                       asp-route-sortDirection="@Model.SortDirection"
+                       asp-route-searchPet="@Model.SearchPet"
+                       asp-route-searchOwner="@Model.SearchOwner"
+                       asp-route-searchVetId="@Model.SearchVetId"
+                       asp-route-searchStatus="@Model.SearchStatus">
+                        @i
+                    </a>
+                </li>
+            }
+
+            <li class="page-item @(Model.HasNextPage ? "" : "disabled")">
+                <a class="page-link"
+                   asp-page="./Index"
+                   asp-route-pageIndex="@(Model.PageIndex + 1)"
+                   asp-route-sortColumn="@Model.SortColumn"
+                   asp-route-sortDirection="@Model.SortDirection"
+                   asp-route-searchPet="@Model.SearchPet"
+                   asp-route-searchOwner="@Model.SearchOwner"
+                   asp-route-searchVetId="@Model.SearchVetId"
+                   asp-route-searchStatus="@Model.SearchStatus">
+                    Next <i class="bi bi-chevron-right"></i>
+                </a>
+            </li>
+        </ul>
+    </nav>
+}

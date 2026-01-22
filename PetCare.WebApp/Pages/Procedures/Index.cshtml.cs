@@ -9,7 +9,7 @@ using PetCare.Application.Features.Procedures.Dtos;
 using PetCare.Application.Features.Procedures.Queries;
 using PetCare.Application.Features.VetSpecializations.Queries;
 
-namespace PetCare.WebApp.Pages.Admin.Procedures
+namespace PetCare.WebApp.Pages.Procedures
 {
     [Authorize(Roles = "Admin, Employee")]
     public class IndexModel : PageModel

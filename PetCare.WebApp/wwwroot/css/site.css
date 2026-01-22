@@ -4,6 +4,7 @@
     --petcare-light: #f4f7f6;
     --petcare-text: #333333;
     --sidebar-width: 250px;
+    --petcare-blue: #7685CA;
 }
 
 .bg-blue-light {
@@ -114,8 +115,13 @@ body {
 }
 
 .card-header {
-    background-color: var(--petcare-primary)
+    background-color: var(--petcare-blue)
 }
+
+.card-header-blue {
+    background-color: var(--petcare-blue)
+}
+
 .btn-primary {
     background-color: var(--petcare-primary);
     border-color: var(--petcare-primary);
@@ -326,3 +332,22 @@ body {
         .status-noshow .btn-view:hover {
             background-color: #ffc107;
         }
+
+.modal-header-blue {
+    background-color: var(--petcare-blue);
+    color: white;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1rem;
+    border-top-left-radius: calc(0.3rem - 1px);
+    border-top-right-radius: calc(0.3rem - 1px);
+}
+
+
+    .modal-header-blue .btn-close {
+        filter: invert(1) grayscale(100%) brightness(200%);
+    }

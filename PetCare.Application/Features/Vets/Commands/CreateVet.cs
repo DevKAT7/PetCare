@@ -33,7 +33,8 @@ namespace PetCare.Application.Features.Vets.Commands
                 UserName = request.Email,
                 Email = request.Email,
                 IsActive = true,
-                PhoneNumber = request.PhoneNumber
+                PhoneNumber = request.PhoneNumber,
+                RequirePasswordChange = true
             };
 
             string temporaryPassword = request.Password;
