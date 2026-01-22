@@ -1,7 +1,7 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using PetCare.Application.Features.Invoices.Commands;
-using PetCare.Application.Features.Invoices.Dto;
+using PetCare.Application.Features.Invoices.Dtos;
 using PetCare.Application.Features.Invoices.Queries;
 
 namespace PetCare.Api.Controllers

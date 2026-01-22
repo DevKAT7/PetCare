@@ -63,7 +63,9 @@ namespace PetCare.WebApp.Pages
                 to: WeekDays.Last().AddDays(1).AddTicks(-1)
             );
 
-            Appointments = await _mediator.Send(appQuery);
+            var result = await _mediator.Send(appQuery);
+
+            Appointments = result.Items;
         }
     }
 }
