@@ -149,26 +149,26 @@
 <div class="modal fade" id="createModal" tabindex="-1">
     <div class="modal-dialog">
         <form method="post" asp-page-handler="Create" class="modal-content">
-            <div class="modal-header"><h5 class="modal-title">New Medication</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+            <div class="modal-header-blue"><h5 class="modal-title">New Medication</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
             <div class="modal-body">
                 <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
                 <div class="mb-3">
-                    <label asp-for="Input.Name" class="form-label">Name</label>
+                    <label asp-for="Input.Name" class="form-label">Name <span class="text-danger">*</span></label>
                     <input asp-for="Input.Name" class="form-control" />
                     <span asp-validation-for="Input.Name" class="text-danger"></span>
                 </div>
                 <div class="mb-3">
-                    <label asp-for="Input.Manufacturer" class="form-label">Manufacturer</label>
+                    <label asp-for="Input.Manufacturer" class="form-label">Manufacturer <span class="text-danger">*</span></label>
                     <input asp-for="Input.Manufacturer" class="form-control" />
                     <span asp-validation-for="Input.Manufacturer" class="text-danger"></span>
                 </div>
                 <div class="mb-3">
-                    <label asp-for="Input.Price" class="form-label">Price</label>
+                    <label asp-for="Input.Price" class="form-label">Price <span class="text-danger">*</span></label>
                     <input asp-for="Input.Price" type="number" step="0.01" class="form-control" />
                     <span asp-validation-for="Input.Price" class="text-danger"></span>
                 </div>
                 <div class="mb-3">
-                    <label asp-for="Input.Description" class="form-label">Description</label>
+                    <label asp-for="Input.Description" class="form-label">Description <span class="text-danger">*</span></label>
                     <textarea asp-for="Input.Description" class="form-control"></textarea>
                     <span asp-validation-for="Input.Description" class="text-danger"></span>
                 </div>
@@ -188,27 +188,27 @@
 <div class="modal fade" id="editModal" tabindex="-1">
     <div class="modal-dialog">
         <form method="post" asp-page-handler="Edit" class="modal-content">
-            <div class="modal-header"><h5 class="modal-title">Edit Medication</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+            <div class="modal-header-blue"><h5 class="modal-title">Edit Medication</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
             <div class="modal-body">
                 <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
                 <input type="hidden" asp-for="SelectedId" id="editId" />
                 <div class="mb-3">
-                    <label asp-for="Input.Name" class="form-label">Name</label>
+                    <label asp-for="Input.Name" class="form-label">Name <span class="text-danger">*</span></label>
                     <input asp-for="Input.Name" id="editName" class="form-control" />
                     <span asp-validation-for="Input.Name" class="text-danger"></span>
                 </div>
                 <div class="mb-3">
-                    <label asp-for="Input.Manufacturer" class="form-label">Manufacturer</label>
+                    <label asp-for="Input.Manufacturer" class="form-label">Manufacturer <span class="text-danger">*</span></label>
                     <input asp-for="Input.Manufacturer" id="editMan" class="form-control" />
                     <span asp-validation-for="Input.Manufacturer" class="text-danger"></span>
                 </div>
                 <div class="mb-3">
-                    <label asp-for="Input.Price" class="form-label">Price</label>
+                    <label asp-for="Input.Price" class="form-label">Price <span class="text-danger">*</span></label>
                     <input asp-for="Input.Price" id="editPrice" type="number" step="0.01" class="form-control" />
                     <span asp-validation-for="Input.Price" class="text-danger"></span>
                 </div>
                 <div class="mb-3">
-                    <label asp-for="Input.Description" class="form-label">Description</label>
+                    <label asp-for="Input.Description" class="form-label">Description <span class="text-danger">*</span></label>
                     <textarea asp-for="Input.Description" id="editDesc" class="form-control"></textarea>
                     <span asp-validation-for="Input.Description" class="text-danger"></span>
                 </div>
