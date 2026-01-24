@@ -1,0 +1,72 @@
+﻿@page "/login"
+@using Microsoft.AspNetCore.Components.Authorization
+@using PetCare.MobileApp.Services
+@using PetCare.Shared.Dtos
+@using PetCare.MobileApp.Auth
+@inject IApiService ApiService
+@inject AuthenticationStateProvider AuthStateProvider
+@inject NavigationManager Navigation
+
+<div class="d-flex justify-content-center align-items-center vh-100">
+    <div class="card p-4" style="width: 300px;">
+        <h3 class="text-center mb-4">Logowanie</h3>
+
+        <EditForm Model="@loginModel" OnValidSubmit="HandleLogin">
+            <DataAnnotationsValidator />
+            
+            <div class="mb-3">
+                <label class="form-label">Email</label>
+                <InputText @bind-Value="loginModel.Email" class="form-control" placeholder="enter email" />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Hasło</label>
+                <InputText @bind-Value="loginModel.Password" type="password" class="form-control" placeholder="enter password" />
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100">Log in</button>
+            
+            @if (!string.IsNullOrEmpty(errorMessage))
+            {
+                <div class="alert alert-danger mt-3 p-2 text-center">
+                    @errorMessage
+                </div>
+            }
+        </EditForm>
+    </div>
+</div>
+
+@code {
+    private LoginRequest loginModel = new();
+    private string errorMessage;
+
+    private async Task HandleLogin()
+    {
+        errorMessage = null;
+
+        try
+        {
+            var response = await ApiService.PostAsync<LoginRequest, AuthResponse>("api/auth/login", loginModel);
+
+            if (response.Success)
+            {
+                var customProvider = (CustomAuthStateProvider)AuthStateProvider;
+                
+                customProvider.MarkUserAsAuthenticated(loginModel.Email);
+                
+                // Opcjonalnie: w przyszłości dodać zapisywanie tokena do SecureStorage
+                // await SecureStorage.SetAsync("auth_token", response.Token);
+
+                Navigation.NavigateTo("/");
+            }
+            else
+            {
+                errorMessage = response.ErrorMessage ?? "Error login.";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error login: {ex.Message}";
+        }
+    }
+}

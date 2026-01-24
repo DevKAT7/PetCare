@@ -1,10 +1,13 @@
 using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 using PetCare.Api.Extensions;
 using PetCare.Application.Extensions;
 using PetCare.Infrastructure.Data;
 using PetCare.Infrastructure.Extensions;
+using System.Text;
 
 namespace PetCare.Api
 {
@@ -35,6 +38,33 @@ namespace PetCare.Api
                     Version = "v1",
                     Description = "API for PetCare app"
                 });
+            });
+
+            var jwtSecret = builder.Configuration["JwtSettings:Secret"];
+
+            if (string.IsNullOrEmpty(jwtSecret))
+            {
+                throw new Exception("No JWT key found in appsettings.json!");
+            }
+
+            var key = Encoding.ASCII.GetBytes(jwtSecret);
+
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(key),
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+                    ValidateLifetime = true,
+                    ClockSkew = TimeSpan.Zero
+                };
             });
 
             var app = builder.Build();

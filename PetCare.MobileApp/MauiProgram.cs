@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.Extensions.Logging;
+using PetCare.MobileApp.Auth;
 using PetCare.MobileApp.Services;
 
 namespace PetCare.MobileApp
@@ -32,6 +34,9 @@ namespace PetCare.MobileApp
             {
                 client.BaseAddress = new Uri(baseAddress);
             });
+
+            builder.Services.AddAuthorizationCore();
+            builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();
 
 #if DEBUG
             builder.Services.AddBlazorWebViewDeveloperTools();
