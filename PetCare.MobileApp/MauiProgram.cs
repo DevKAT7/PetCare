@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using PetCare.MobileApp.Auth;
 using PetCare.MobileApp.Services;
+using Serilog;
 
 namespace PetCare.MobileApp
 {
@@ -9,6 +10,11 @@ namespace PetCare.MobileApp
     {
         public static MauiApp CreateMauiApp()
         {
+            Log.Logger = new LoggerConfiguration()
+            .MinimumLevel.Debug()
+            .WriteTo.Debug()
+            .CreateLogger();
+
             var builder = MauiApp.CreateBuilder();
             builder
                 .UseMauiApp<App>()
@@ -37,6 +43,7 @@ namespace PetCare.MobileApp
 
             builder.Services.AddAuthorizationCore();
             builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();
+            builder.Services.AddLogging(logging => logging.AddSerilog());
 
 #if DEBUG
             builder.Services.AddBlazorWebViewDeveloperTools();

@@ -54,8 +54,7 @@
                 
                 customProvider.MarkUserAsAuthenticated(loginModel.Email);
                 
-                // Opcjonalnie: w przyszłości dodać zapisywanie tokena do SecureStorage
-                // await SecureStorage.SetAsync("auth_token", response.Token);
+                await SecureStorage.SetAsync("auth_token", response.Token);
 
                 Navigation.NavigateTo("/");
             }
