@@ -6,5 +6,6 @@
         public string Token { get; set; } = string.Empty;
         public string ErrorMessage { get; set; } = string.Empty;
         public IDictionary<string, string[]>? ValidationErrors { get; set; }
+        public string Role { get; set; } = string.Empty;
     }
 }

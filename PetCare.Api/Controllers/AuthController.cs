@@ -32,10 +32,19 @@ namespace PetCare.Api.Controllers
         public async Task<ActionResult<AuthResponse>> Login([FromBody] LoginRequest request)
         {
             var user = await _userManager.FindByEmailAsync(request.Email);
+
+            if (user == null || !await _userManager.CheckPasswordAsync(user, request.Password))
+            {
+                return BadRequest(new AuthResponse { Success = false, ErrorMessage = "Invalid login details" });
+            }
+
+            var roles = await _userManager.GetRolesAsync(user);
+            var userRole = roles.FirstOrDefault() ?? string.Empty;
+
             if (user != null && await _userManager.CheckPasswordAsync(user, request.Password))
             {
                 var token = GenerateJwtToken(user);
-                return Ok(new AuthResponse { Success = true, Token = token });
+                return Ok(new AuthResponse { Success = true, Token = token, Role = userRole });
             }
 
             return BadRequest(new AuthResponse { Success = false, ErrorMessage = "Invalid login details" });

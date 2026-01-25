@@ -1,0 +1,20 @@
+﻿@page "/logout"
+@using PetCare.MobileApp.Auth
+@inject AuthenticationStateProvider AuthStateProvider
+@inject NavigationManager Navigation
+
+<p>Logging Out...</p>
+
+@code {
+    protected override void OnInitialized()
+    {
+        SecureStorage.Remove("auth_token");
+
+        if (AuthStateProvider is CustomAuthStateProvider customProvider)
+        {
+            customProvider.MarkUserAsLoggedOut();
+        }
+
+        Navigation.NavigateTo("/login");
+    }
+}

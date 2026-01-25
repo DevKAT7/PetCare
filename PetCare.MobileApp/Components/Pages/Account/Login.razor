@@ -24,7 +24,7 @@
                 <InputText @bind-Value="loginModel.Password" type="password" class="form-control" placeholder="enter password" />
             </div>
 
-            <button type="submit" class="btn btn-primary w-100">Log in</button>
+            <button type="submit" class="btn btn-primary w-100">Login</button>
             
             @if (!string.IsNullOrEmpty(errorMessage))
             {
@@ -48,8 +48,17 @@
         {
             var response = await ApiService.PostAsync<LoginRequest, AuthResponse>("api/auth/login", loginModel);
 
-            if (response.Success)
+            if (response != null && response.Success)
             {
+                if (response.Role != "Client") 
+            {
+                errorMessage = "This application is intended for clients only. Veterinarians are requested to log into the web panel.";
+                
+                SecureStorage.Remove("auth_token");
+
+                return;
+            }
+
                 var customProvider = (CustomAuthStateProvider)AuthStateProvider;
                 
                 customProvider.MarkUserAsAuthenticated(loginModel.Email);
@@ -60,12 +69,12 @@
             }
             else
             {
-                errorMessage = response.ErrorMessage ?? "Error login.";
+                errorMessage = response.ErrorMessage ?? "Login failed.";
             }
         }
         catch (Exception ex)
         {
-            errorMessage = $"Error login: {ex.Message}";
+            errorMessage = $"Connection error: {ex.Message}";
         }
     }
 }
