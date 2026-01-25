@@ -1,17 +1,31 @@
 ﻿@inherits LayoutComponentBase
 
 <div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
+    <header class="top-header">
+        <h1>
+            <i class="bi bi-heart"></i> PetCare
+        </h1>
+    </header>
 
-    <main>
-        <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
-        </div>
-
-        <article class="content px-4">
-            @Body
-        </article>
+    <main class="content px-3 py-3">
+        @Body
     </main>
+
+    <nav class="bottom-nav">
+        <NavLink class="nav-item" href="" Match="NavLinkMatch.All">
+            <i class="bi bi-house-door-fill"></i> <span>Home</span>
+        </NavLink>
+
+        <NavLink class="nav-item" href="pets">
+            <i class="bi bi-postcard-heart-fill"></i> <span>Pets</span>
+        </NavLink>
+
+        <NavLink class="nav-item" href="visits">
+            <i class="bi bi-calendar-event-fill"></i> <span>Visits</span>
+        </NavLink>
+
+        <NavLink class="nav-item" href="profile">
+            <i class="bi bi-person-circle"></i> <span>Profile</span>
+        </NavLink>
+    </nav>
 </div>

@@ -1,8 +1,11 @@
 ﻿@page "/login"
+@layout LoginLayout
 @using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Authorization
 @using PetCare.MobileApp.Services
 @using PetCare.Shared.Dtos
 @using PetCare.MobileApp.Auth
+@attribute [AllowAnonymous]
 @inject IApiService ApiService
 @inject AuthenticationStateProvider AuthStateProvider
 @inject NavigationManager Navigation
@@ -32,6 +35,9 @@
                     @errorMessage
                 </div>
             }
+            <div class="text-center mt-3">
+                <a href="register">New here? Register</a>
+            </div>
         </EditForm>
     </div>
 </div>

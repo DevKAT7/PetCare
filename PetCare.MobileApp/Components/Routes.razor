@@ -1,10 +1,12 @@
-﻿<CascadingAuthenticationState>
-    
+﻿@using PetCare.MobileApp.Components.Pages.Account
+@using Microsoft.AspNetCore.Components.Authorization
+
+<CascadingAuthenticationState>
     <Router AppAssembly="@typeof(MauiProgram).Assembly">
         <Found Context="routeData">
             <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
                 <NotAuthorized>
-                    <p role="alert">You do not have access to this page. Please log in.</p>
+                    <RedirectToLogin />
                 </NotAuthorized>
             </AuthorizeRouteView>
             <FocusOnNavigate RouteData="@routeData" Selector="h1" />
@@ -15,5 +17,4 @@
             </LayoutView>
         </NotFound>
     </Router>
-
 </CascadingAuthenticationState>

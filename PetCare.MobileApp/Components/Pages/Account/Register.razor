@@ -1,20 +1,22 @@
 ﻿@page "/register"
+@layout LoginLayout
 @using PetCare.MobileApp.Services
 @using PetCare.Shared.Dtos
+@using Microsoft.AspNetCore.Authorization
+@attribute [AllowAnonymous]
 @inject IApiService ApiService
 @inject NavigationManager Navigation
 
-<div class="d-flex justify-content-center align-items-center min-vh-100 py-4">
-    <div class="card p-4 shadow-sm" style="width: 100%; max-width: 400px;">
-        <h3 class="text-center mb-4">Pet Owner Registration</h3>
-
+<div class="d-flex flex-column align-items-center justify-content-center mt-3">
+    <h3 class="mb-4 text-center">Pet Owner Registration</h3>
+    <div class="w-100" style="max-width: 400px;">
         <EditForm EditContext="@editContext" OnValidSubmit="HandleRegistration">
             <DataAnnotationsValidator />
-            
+
             <CustomValidation @ref="customValidation" />
 
-            <h5 class="border-bottom pb-2 mb-3">Account Details</h5>
-            
+            <h6 class="text-muted mb-3 border-bottom pb-2">Account Details</h6>
+
             <div class="mb-3">
                 <label class="form-label">Email</label>
                 <InputText @bind-Value="registerModel.Email" class="form-control" placeholder="name@example.com" />
@@ -26,7 +28,7 @@
                 <InputText @bind-Value="registerModel.Password" type="password" class="form-control" />
                 <ValidationMessage For="@(() => registerModel.Password)" class="text-danger small" />
             </div>
-            
+
             <div class="mb-3">
                 <label class="form-label">Confirm Password</label>
                 <InputText @bind-Value="registerModel.ConfirmPassword" type="password" class="form-control" />
@@ -55,23 +57,25 @@
 
             <div class="mb-3">
                 <label class="form-label">Address</label>
-                <InputTextArea @bind-Value="registerModel.Address" class="form-control" rows="2" />
+                <InputTextArea @bind-Value="registerModel.Address" class="form-control" rows="2" style="background-color: #e7f1ff;"/>
                 <ValidationMessage For="@(() => registerModel.Address)" class="text-danger small" />
             </div>
 
-            <button type="submit" class="btn btn-success w-100 mt-3">Register</button>
+            <button type="submit" class="btn btn-primary w-100 mt-4 py-2 fw-bold" style="background-color: #198754;">
+                Register
+            </button>
 
             @if (!string.IsNullOrEmpty(globalError))
             {
                 <div class="alert alert-danger mt-3">@globalError</div>
             }
+            <div class="text-center mt-3">
+                <a href="login">Already have an account? Login</a>
+            </div>
         </EditForm>
-        
-        <div class="text-center mt-3">
-            <a href="login">Already have an account? Login</a>
-        </div>
     </div>
 </div>
+
 
 @code {
     private RegisterRequest registerModel = new();
