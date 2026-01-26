@@ -1,6 +1,17 @@
 ﻿@page "/"
+@using Microsoft.AspNetCore.Components.Authorization
+@inject AuthenticationStateProvider AuthStateProvider
 
-<h4 class="mb-3">Witaj, Anna!</h4>
+<div class="d-flex justify-content-between align-items-center mb-4 pt-2">
+    <div>
+        <h4 class="mb-0 fw-bold">Hello, @userName! </h4>
+        <small class="text-muted">Have a nice day!</small>
+    </div>
+
+    <a href="profile" class="profile-icon-btn">
+        <i class="bi bi-person-fill"></i>
+    </a>
+</div>
 
 <div class="card-custom" style="background-color: #f0f2f5;">
     <h6 class="fw-bold">Twoja najbliższa wizyta:</h6>
@@ -39,3 +50,18 @@
         + Dodaj nowego zwierzaka
     </button>
 </div>
+
+@code {
+    private string userName = "Anna";
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity != null && user.Identity.IsAuthenticated)
+        {
+            userName = user.Identity.Name ?? "User";
+        }
+    }
+}
