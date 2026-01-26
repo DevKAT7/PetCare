@@ -7,73 +7,80 @@
 @inject IApiService ApiService
 @inject NavigationManager Navigation
 
-<div class="d-flex flex-column align-items-center justify-content-center mt-3">
-    <h3 class="mb-4 text-center">Pet Owner Registration</h3>
-    <div class="w-100" style="max-width: 400px;">
-        <EditForm EditContext="@editContext" OnValidSubmit="HandleRegistration">
-            <DataAnnotationsValidator />
-
-            <CustomValidation @ref="customValidation" />
-
-            <h6 class="text-muted mb-3 border-bottom pb-2">Account Details</h6>
-
-            <div class="mb-3">
-                <label class="form-label">Email</label>
-                <InputText @bind-Value="registerModel.Email" class="form-control" placeholder="name@example.com" />
-                <ValidationMessage For="@(() => registerModel.Email)" class="text-danger small" />
-            </div>
-
-            <div class="mb-3">
-                <label class="form-label">Password</label>
-                <InputText @bind-Value="registerModel.Password" type="password" class="form-control" />
-                <ValidationMessage For="@(() => registerModel.Password)" class="text-danger small" />
-            </div>
-
-            <div class="mb-3">
-                <label class="form-label">Confirm Password</label>
-                <InputText @bind-Value="registerModel.ConfirmPassword" type="password" class="form-control" />
-                <ValidationMessage For="@(() => registerModel.ConfirmPassword)" class="text-danger small" />
-            </div>
-
-            <h5 class="border-bottom pb-2 mb-3 mt-4">Profile Information</h5>
-
-            <div class="mb-3">
-                <label class="form-label">First Name</label>
-                <InputText @bind-Value="registerModel.FirstName" class="form-control" />
-                <ValidationMessage For="@(() => registerModel.FirstName)" class="text-danger small" />
-            </div>
-
-            <div class="mb-3">
-                <label class="form-label">Last Name</label>
-                <InputText @bind-Value="registerModel.LastName" class="form-control" />
-                <ValidationMessage For="@(() => registerModel.LastName)" class="text-danger small" />
-            </div>
-
-            <div class="mb-3">
-                <label class="form-label">Phone Number</label>
-                <InputText @bind-Value="registerModel.PhoneNumber" class="form-control" />
-                <ValidationMessage For="@(() => registerModel.PhoneNumber)" class="text-danger small" />
-            </div>
-
-            <div class="mb-3">
-                <label class="form-label">Address</label>
-                <InputTextArea @bind-Value="registerModel.Address" class="form-control" rows="2" style="background-color: #e7f1ff;"/>
-                <ValidationMessage For="@(() => registerModel.Address)" class="text-danger small" />
-            </div>
-
-            <button type="submit" class="btn btn-primary w-100 mt-4 py-2 fw-bold" style="background-color: #198754;">
-                Register
-            </button>
-
-            @if (!string.IsNullOrEmpty(globalError))
-            {
-                <div class="alert alert-danger mt-3">@globalError</div>
-            }
-            <div class="text-center mt-3">
-                <a href="login">Already have an account? Login</a>
-            </div>
-        </EditForm>
+<div class="auth-card my-3">
+    <div class="auth-header">
+        <h3 class="auth-title">Create Account</h3>
+        <p class="auth-subtitle">Join the PetCare family today</p>
     </div>
+
+    <EditForm EditContext="@editContext" OnValidSubmit="HandleRegistration">
+        <DataAnnotationsValidator />
+        <CustomValidation @ref="customValidation" />
+
+        <h6 class="text-uppercase text-muted small fw-bold mb-3 mt-2">Account Details</h6>
+        
+        <div class="auth-input-group">
+            <span class="auth-input-icon"><i class="bi bi-envelope"></i></span>
+            <InputText @bind-Value="registerModel.Email" class="form-control auth-input" placeholder="Email" />
+        </div>
+        <ValidationMessage For="@(() => registerModel.Email)" class="text-danger small" />
+
+        <div class="auth-input-group mt-3">
+            <span class="auth-input-icon"><i class="bi bi-lock"></i></span>
+            <InputText @bind-Value="registerModel.Password" type="password" class="form-control auth-input" placeholder="Password" />
+        </div>
+        <ValidationMessage For="@(() => registerModel.Password)" class="text-danger small" />
+
+        <div class="auth-input-group mt-3">
+            <span class="auth-input-icon"><i class="bi bi-check-lg"></i></span> <InputText @bind-Value="registerModel.ConfirmPassword" 
+            type="password" class="form-control auth-input" placeholder="Confirm Password" />
+        </div>
+        <ValidationMessage For="@(() => registerModel.ConfirmPassword)" class="text-danger small" />
+
+        <h6 class="text-uppercase text-muted small fw-bold mb-3 mt-4">Personal Information</h6>
+
+        <div class="row g-2">
+            <div class="col-6">
+                <div class="auth-input-group">
+                    <span class="auth-input-icon"><i class="bi bi-person"></i></span>
+                    <InputText @bind-Value="registerModel.FirstName" class="form-control auth-input" placeholder="First Name" />
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="auth-input-group">
+                    <InputText @bind-Value="registerModel.LastName" class="form-control auth-input px-3" placeholder="Last Name" />
+                </div>
+            </div>
+        </div>
+        <ValidationMessage For="@(() => registerModel.FirstName)" class="text-danger small" />
+        <ValidationMessage For="@(() => registerModel.LastName)" class="text-danger small" />
+
+        <div class="auth-input-group mt-2">
+            <span class="auth-input-icon"><i class="bi bi-telephone"></i></span>
+            <InputText @bind-Value="registerModel.PhoneNumber" class="form-control auth-input" placeholder="Phone Number" />
+        </div>
+        <ValidationMessage For="@(() => registerModel.PhoneNumber)" class="text-danger small" />
+
+        <div class="auth-input-group mt-2">
+            <span class="auth-input-icon"><i class="bi bi-geo-alt"></i></span>
+            <InputTextArea @bind-Value="registerModel.Address" class="form-control auth-input" rows="1" placeholder="Address" style="resize: none; padding-top: 10px;" />
+        </div>
+        <ValidationMessage For="@(() => registerModel.Address)" class="text-danger small" />
+
+        <button type="submit" class="btn btn-primary w-100 py-3 mt-4 fw-bold shadow-sm" style="border-radius: 12px;">
+            Register
+        </button>
+
+        @if (!string.IsNullOrEmpty(globalError))
+        {
+            <div class="alert alert-danger mt-3 text-center small">@globalError</div>
+        }
+
+        <div class="text-center mt-3">
+            <span class="text-muted">Already have an account?</span>
+            <a href="login" class="auth-link ms-1">Log in</a>
+        </div>
+    </EditForm>
 </div>
 
 

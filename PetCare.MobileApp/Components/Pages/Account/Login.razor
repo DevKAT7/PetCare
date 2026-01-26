@@ -10,36 +10,46 @@
 @inject AuthenticationStateProvider AuthStateProvider
 @inject NavigationManager Navigation
 
-<div class="d-flex justify-content-center align-items-center vh-100">
-    <div class="card p-4" style="width: 300px;">
-        <h3 class="text-center mb-4">Logowanie</h3>
-
-        <EditForm Model="@loginModel" OnValidSubmit="HandleLogin">
-            <DataAnnotationsValidator />
-            
-            <div class="mb-3">
-                <label class="form-label">Email</label>
-                <InputText @bind-Value="loginModel.Email" class="form-control" placeholder="enter email" />
-            </div>
-
-            <div class="mb-3">
-                <label class="form-label">Hasło</label>
-                <InputText @bind-Value="loginModel.Password" type="password" class="form-control" placeholder="enter password" />
-            </div>
-
-            <button type="submit" class="btn btn-primary w-100">Login</button>
-            
-            @if (!string.IsNullOrEmpty(errorMessage))
-            {
-                <div class="alert alert-danger mt-3 p-2 text-center">
-                    @errorMessage
-                </div>
-            }
-            <div class="text-center mt-3">
-                <a href="register">New here? Register</a>
-            </div>
-        </EditForm>
+<div class="auth-card">
+    <div class="auth-header">
+        <div class="auth-logo-icon">
+            <i class="bi bi-heart-pulse-fill"></i>
+        </div>
+        <h3 class="auth-title">Welcome Back!</h3>
+        <p class="auth-subtitle">Log in to manage your pet's health.</p>
     </div>
+
+    <EditForm Model="@loginModel" OnValidSubmit="HandleLogin">
+        <DataAnnotationsValidator />
+
+        <div class="auth-input-group">
+            <span class="auth-input-icon"><i class="bi bi-envelope"></i></span>
+            <InputText @bind-Value="loginModel.Email" class="form-control auth-input" placeholder="Email address" />
+        </div>
+        <ValidationMessage For="@(() => loginModel.Email)" class="text-danger small ms-2" />
+
+        <div class="auth-input-group mt-3">
+            <span class="auth-input-icon"><i class="bi bi-lock"></i></span>
+            <InputText @bind-Value="loginModel.Password" type="password" class="form-control auth-input" placeholder="Password" />
+        </div>
+        <ValidationMessage For="@(() => loginModel.Password)" class="text-danger small ms-2" />
+
+        <button type="submit" class="btn btn-primary w-100 py-3 mt-4 fw-bold shadow-sm" style="border-radius: 12px;">
+            Log In
+        </button>
+
+        @if (!string.IsNullOrEmpty(errorMessage))
+        {
+            <div class="alert alert-danger mt-3 text-center small">
+                <i class="bi bi-exclamation-circle me-2"></i> @errorMessage
+            </div>
+        }
+
+        <div class="text-center mt-4">
+            <span class="text-muted">Don't have an account?</span>
+            <a href="register" class="auth-link ms-1">Register</a>
+        </div>
+    </EditForm>
 </div>
 
 @code {

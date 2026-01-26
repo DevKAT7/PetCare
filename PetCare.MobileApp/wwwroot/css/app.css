@@ -158,3 +158,93 @@ body {
     .profile-icon-btn:active {
         transform: scale(0.95);
     }
+
+/* AUTH SCREENS STYLING (Login & Register) */
+
+.auth-background {
+    background: linear-gradient(135deg, var(--petcare-primary) 0%, var(--petcare-dark) 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.auth-card {
+    background-color: white;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    padding: 2.5rem;
+    width: 100%;
+    max-width: 450px;
+    border: none;
+}
+
+.auth-input-group {
+    background-color: #f8f9fa;
+    border-radius: 12px;
+    border: 1px solid #eee;
+    padding: 5px 10px;
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+    .auth-input-group:focus-within {
+        border-color: var(--petcare-primary);
+        box-shadow: 0 0 0 4px rgba(38, 124, 132, 0.1);
+        background-color: #fff;
+    }
+
+.auth-input-icon {
+    color: var(--petcare-primary);
+    font-size: 1.2rem;
+    padding: 0 10px;
+}
+
+.auth-input {
+    border: none;
+    background: transparent;
+    box-shadow: none !important;
+    height: 45px;
+    font-size: 1rem;
+}
+
+    .auth-input:focus {
+        background: transparent;
+        box-shadow: none;
+    }
+
+.auth-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.auth-logo-icon {
+    font-size: 3.5rem;
+    color: var(--petcare-primary);
+    margin-bottom: 10px;
+}
+
+.auth-title {
+    color: var(--petcare-dark);
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+
+.auth-subtitle {
+    color: #888;
+    font-size: 0.9rem;
+}
+
+.auth-link {
+    color: var(--petcare-primary);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+    .auth-link:hover {
+        text-decoration: underline;
+        color: var(--petcare-dark);
+    }
