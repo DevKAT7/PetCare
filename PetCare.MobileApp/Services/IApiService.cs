@@ -10,5 +10,6 @@ namespace PetCare.MobileApp.Services
         Task PostAsync<TRequest>(string endpoint, TRequest data);
         Task<List<PetReadModel>> GetPetsAsync(int? ownerId = null);
         Task<PetDetailDto?> GetPetDetailsAsync(int petId);
+        Task AddPetAsync(PetCreateModel petModel);
     }
 }

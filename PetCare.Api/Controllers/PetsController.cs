@@ -36,9 +36,12 @@ namespace PetCare.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreatePet([FromBody] CreatePetCommand command)
+        public async Task<IActionResult> CreatePet([FromBody] PetCreateModel model)
         {
+            var command = new CreatePetCommand { Pet = model };
+
             var petId = await _mediator.Send(command);
+
             return CreatedAtAction(nameof(GetPet), new { id = petId }, petId);
         }
 

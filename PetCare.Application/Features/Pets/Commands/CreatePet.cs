@@ -1,7 +1,7 @@
 using MediatR;
-using PetCare.Application.Features.Pets.Dtos;
 using PetCare.Application.Interfaces;
 using PetCare.Core.Models;
+using PetCare.Shared.Dtos;
 
 namespace PetCare.Application.Features.Pets.Commands
 {

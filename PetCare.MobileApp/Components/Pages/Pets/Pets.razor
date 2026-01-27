@@ -2,6 +2,8 @@
 @using PetCare.Shared.Dtos
 @using PetCare.MobileApp.Services
 @using Microsoft.AspNetCore.Authorization
+@using Microsoft.Extensions.Logging
+@inject ILogger<AddPet> Logger
 @attribute [Authorize]
 @inject IApiService ApiService
 @inject NavigationManager Navigation
@@ -95,7 +97,7 @@ else
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error fetching pets: {ex.Message}");
+            Logger.LogError($"Error fetching pets: {ex.Message}");
             pets = new List<PetReadModel>();
         }
         finally
@@ -118,7 +120,7 @@ else
 
     private void NavigateToAddPet()
     {
-        //Navigation.NavigateTo("/pets/add");
+        Navigation.NavigateTo("/pets/add");
     }
 
     private void NavigateToDetails(int petId)

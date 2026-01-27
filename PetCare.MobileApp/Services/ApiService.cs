@@ -158,5 +158,10 @@ namespace PetCare.MobileApp.Services
         {
             return await GetAsync<PetDetailDto>($"api/pets/{petId}");
         }
+
+        public async Task AddPetAsync(PetCreateModel petModel)
+        {
+            await PostAsync("api/pets", petModel);
+        }
     }
 }
