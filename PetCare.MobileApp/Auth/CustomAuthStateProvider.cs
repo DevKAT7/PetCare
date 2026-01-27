@@ -54,12 +54,11 @@ namespace PetCare.MobileApp.Auth
             return new AuthenticationState(_currentUser);
         }
 
-        public void MarkUserAsAuthenticated(string email)
+        public void MarkUserAsAuthenticated(string token)
         {
-            var identity = new ClaimsIdentity(new[]
-            {
-                new Claim(ClaimTypes.Name, email),
-            }, "apiauth");
+            var claims = ParseClaimsFromJwt(token);
+
+            var identity = new ClaimsIdentity(claims, "apiauth");
 
             _currentUser = new ClaimsPrincipal(identity);
             NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
@@ -77,7 +76,30 @@ namespace PetCare.MobileApp.Auth
             var payload = jwt.Split('.')[1];
             var jsonBytes = ParseBase64WithoutPadding(payload);
             var keyValuePairs = JsonSerializer.Deserialize<Dictionary<string, object>>(jsonBytes);
-            return keyValuePairs.Select(kvp => new Claim(kvp.Key, kvp.Value.ToString()));
+
+            var claimMapping = new Dictionary<string, string>
+            {
+                { "unique_name", ClaimTypes.Name },
+                { "name", ClaimTypes.Name },
+                { "role", ClaimTypes.Role },
+            };
+
+            var claims = new List<Claim>();
+
+            foreach (var kvp in keyValuePairs)
+            {
+                var value = kvp.Value.ToString();
+                var claimType = kvp.Key;
+
+                if (claimMapping.TryGetValue(kvp.Key, out var mappedType))
+                {
+                    claimType = mappedType;
+                }
+
+                claims.Add(new Claim(claimType, value));
+            }
+
+            return claims;
         }
 
         private byte[] ParseBase64WithoutPadding(string base64)

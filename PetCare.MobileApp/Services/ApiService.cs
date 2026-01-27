@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using PetCare.Shared.Dtos;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json;
@@ -138,6 +139,19 @@ namespace PetCare.MobileApp.Services
                 _logger.LogError(ex, "Error in POST (No Return) {Endpoint}", endpoint);
                 throw;
             }
+        }
+
+        public async Task<List<PetReadModel>> GetPetsAsync(int? ownerId = null)
+        {
+            var url = "api/pets";
+
+            if (ownerId.HasValue)
+            {
+                url += $"?ownerId={ownerId.Value}";
+            }
+            var result = await GetAsync<List<PetReadModel>>(url);
+
+            return result ?? new List<PetReadModel>();
         }
     }
 }

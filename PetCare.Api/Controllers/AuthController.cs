@@ -5,6 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using PetCare.Application.Exceptions;
 using PetCare.Application.Features.PetOwners.Commands;
 using PetCare.Application.Features.PetOwners.Dtos;
+using PetCare.Application.Features.PetOwners.Queries;
 using PetCare.Core.Models;
 using PetCare.Shared.Dtos;
 using System.IdentityModel.Tokens.Jwt;
@@ -40,10 +41,11 @@ namespace PetCare.Api.Controllers
 
             var roles = await _userManager.GetRolesAsync(user);
             var userRole = roles.FirstOrDefault() ?? string.Empty;
+            var petOwnerData = await _mediator.Send(new GetPetOwnerByUserIdQuery(user.Id));
 
             if (user != null && await _userManager.CheckPasswordAsync(user, request.Password))
             {
-                var token = GenerateJwtToken(user);
+                var token = GenerateJwtToken(user, petOwnerData);
                 return Ok(new AuthResponse { Success = true, Token = token, Role = userRole });
             }
 
@@ -103,7 +105,7 @@ namespace PetCare.Api.Controllers
             }
         }
 
-        private string GenerateJwtToken(User user)
+        private string GenerateJwtToken(User user, PetOwnerAuthDto? petOwnerData)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
 
@@ -115,13 +117,26 @@ namespace PetCare.Api.Controllers
             }
 
             var key = Encoding.ASCII.GetBytes(secret);
-            var tokenDescriptor = new SecurityTokenDescriptor
+
+            var claims = new List<Claim>
             {
-                Subject = new ClaimsIdentity(new[]
-                {
                 new Claim(ClaimTypes.NameIdentifier, user.Id),
                 new Claim(ClaimTypes.Email, user.Email!)
-            }),
+            };
+
+            if (petOwnerData != null)
+            {
+                claims.Add(new Claim(ClaimTypes.Name, petOwnerData.FirstName));
+                claims.Add(new Claim("PetOwnerId", petOwnerData.PetOwnerId.ToString()));
+            }
+            else
+            {
+                claims.Add(new Claim(ClaimTypes.Name, user.UserName ?? "User"));
+            }
+
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(claims),
                 Expires = DateTime.UtcNow.AddDays(7),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };

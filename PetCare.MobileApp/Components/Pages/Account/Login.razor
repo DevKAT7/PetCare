@@ -77,7 +77,7 @@
 
                 var customProvider = (CustomAuthStateProvider)AuthStateProvider;
                 
-                customProvider.MarkUserAsAuthenticated(loginModel.Email);
+                customProvider.MarkUserAsAuthenticated(response.Token);
                 
                 await SecureStorage.SetAsync("auth_token", response.Token);
 
