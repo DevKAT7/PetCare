@@ -1,4 +1,4 @@
-namespace PetCare.Application.Features.Pets.Dtos
+﻿namespace PetCare.Shared.Dtos
 {
     public class PetUpdateModel
     {

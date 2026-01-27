@@ -28,7 +28,9 @@ else
             </button>
             <h4 class="mb-0 fw-bold">Pet Profile</h4>
             <div class="ms-auto">
-                <button class="btn btn-light text-primary rounded-circle shadow-sm" style="width: 40px; height: 40px;">
+                <button class="btn btn-light text-primary rounded-circle shadow-sm"
+                        style="width: 40px; height: 40px;"
+                        @onclick="NavigateToEdit">
                     <i class="bi bi-pencil-fill"></i>
                 </button>
             </div>
@@ -299,6 +301,11 @@ else
     private void GoBack()
     {
         Navigation.NavigateTo("/pets");
+    }
+
+    private void NavigateToEdit()
+    {
+        Navigation.NavigateTo($"/pets/edit/{Id}");
     }
 
     private string GetSpeciesIcon(string species)

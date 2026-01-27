@@ -1,0 +1,205 @@
+﻿@page "/pets/edit/{Id:int}"
+@using PetCare.Shared.Dtos
+@using PetCare.MobileApp.Services
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.Extensions.Logging
+@attribute [Authorize]
+@inject IApiService ApiService
+@inject NavigationManager Navigation
+@inject AuthenticationStateProvider AuthStateProvider
+@inject ILogger<EditPet> Logger
+
+<div class="details-page pb-5">
+    <div class="d-flex align-items-center mb-4">
+        <button class="btn btn-link text-dark p-0 me-3" @onclick="GoBack">
+            <i class="bi bi-arrow-left fs-4"></i>
+        </button>
+        <h4 class="mb-0 fw-bold">Edit Pet</h4>
+    </div>
+
+    @if (isLoading)
+    {
+        <div class="d-flex justify-content-center mt-5">
+            <div class="spinner-border text-primary" role="status"></div>
+        </div>
+    }
+    else if (petModel == null)
+    {
+        <div class="alert alert-danger">Could not load pet details.</div>
+    }
+    else
+    {
+        <div class="card border-0 shadow-sm p-4">
+            <EditForm Model="@petModel" OnValidSubmit="HandleValidSubmit">
+                <DataAnnotationsValidator />
+                <ValidationSummary class="text-danger small mb-3" />
+
+                <div class="mb-4 text-center">
+                    <div class="image-upload-container">
+                        <div class="image-preview shadow-sm">
+                            @if (!string.IsNullOrEmpty(imagePreview))
+                            {
+                                <img src="@imagePreview" alt="Preview" />
+                            }
+                            else
+                            {
+                                <i class="bi bi-camera fs-1 text-secondary"></i>
+                            }
+                        </div>
+                        
+                        <label class="btn btn-primary btn-sm rounded-circle shadow-sm upload-btn">
+                            <i class="bi bi-pencil-fill text-white small"></i>
+                            <InputFile OnChange="HandleImageUpload" accept=".png,.jpg,.jpeg" hidden />
+                        </label>
+                    </div>
+                    <div class="small text-muted mt-2">Change photo</div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label small text-muted fw-bold text-uppercase">Name</label>
+                    <InputText @bind-Value="petModel.Name" class="form-control" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label small text-muted fw-bold text-uppercase">Species</label>
+                    <InputSelect @bind-Value="petModel.Species" class="form-select">
+                        <option value="Dog">Dog 🐶</option>
+                        <option value="Cat">Cat 🐱</option>
+                        <option value="Rabbit">Rabbit 🐰</option>
+                        <option value="Bird">Bird 🐦</option>
+                        <option value="Other">Other 🐾</option>
+                    </InputSelect>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label small text-muted fw-bold text-uppercase">Breed</label>
+                    <InputText @bind-Value="petModel.Breed" class="form-control" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label small text-muted fw-bold text-uppercase">Date of Birth</label>
+                    <InputDate @bind-Value="petModel.DateOfBirth" class="form-control" />
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label small text-muted fw-bold text-uppercase d-block">Gender</label>
+                    <div class="btn-group w-100" role="group">
+                        <input type="radio" class="btn-check" name="gender" id="male" autocomplete="off" 
+                               checked="@(petModel.IsMale)" @onchange="@(() => petModel.IsMale = true)">
+                        <label class="btn btn-outline-primary" for="male"><i class="bi bi-gender-male"></i> Male</label>
+
+                        <input type="radio" class="btn-check" name="gender" id="female" autocomplete="off" 
+                               checked="@(!petModel.IsMale)" @onchange="@(() => petModel.IsMale = false)">
+                        <label class="btn btn-outline-danger" for="female"><i class="bi bi-gender-female"></i> Female</label>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100 py-3 fw-bold rounded-3 shadow-sm" disabled="@isSubmitting">
+                    @if (isSubmitting)
+                    {
+                        <span class="spinner-border spinner-border-sm me-2"></span> <span>Saving...</span>
+                    }
+                    else
+                    {
+                        <span>Update Pet</span>
+                    }
+                </button>
+            </EditForm>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private PetUpdateModel? petModel;
+    private bool isLoading = true;
+    private bool isSubmitting = false;
+    private string? imagePreview;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var details = await ApiService.GetPetDetailsAsync(Id);
+
+            if (details != null)
+            {
+                petModel = new PetUpdateModel
+                {
+                    Name = details.Name,
+                    Species = details.Species,
+                    Breed = details.Breed,
+                    DateOfBirth = details.DateOfBirth,
+                    IsMale = details.IsMale,
+                    ImageUrl = details.ImageUrl,
+                    PetOwnerId = details.PetOwnerId
+                };
+
+                imagePreview = details.ImageUrl;
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to load pet details for edit.");
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        if (petModel == null) return;
+        
+        isSubmitting = true;
+        try
+        {
+            Logger.LogInformation("Updating pet {Id}...", Id);
+            
+            await ApiService.UpdatePetAsync(Id, petModel);
+
+            Logger.LogInformation("Pet updated successfully.");
+            Navigation.NavigateTo($"/pets/{Id}");
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error updating pet.");
+        }
+        finally
+        {
+            isSubmitting = false;
+        }
+    }
+
+    private async Task HandleImageUpload(InputFileChangeEventArgs e)
+    {
+        var file = e.File;
+        if (file != null && petModel != null)
+        {
+            try
+            {
+                var resizedFile = await file.RequestImageFileAsync("image/jpeg", 400, 400);
+                var buffer = new byte[resizedFile.Size];
+                await resizedFile.OpenReadStream().ReadAsync(buffer);
+                
+                var base64 = Convert.ToBase64String(buffer);
+                var dataUrl = $"data:image/jpeg;base64,{base64}";
+
+                imagePreview = dataUrl;
+                petModel.ImageUrl = dataUrl;
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "Failed to process image.");
+            }
+        }
+    }
+
+    private void GoBack()
+    {
+        Navigation.NavigateTo($"/pets/{Id}");
+    }
+}

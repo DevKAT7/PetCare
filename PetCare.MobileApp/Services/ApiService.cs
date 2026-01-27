@@ -163,5 +163,16 @@ namespace PetCare.MobileApp.Services
         {
             await PostAsync("api/pets", petModel);
         }
+
+        public async Task UpdatePetAsync(int petId, PetUpdateModel petModel)
+        {
+            var response = await _httpClient.PutAsJsonAsync($"api/pets/{petId}", petModel);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var errorContent = await response.Content.ReadAsStringAsync();
+                throw new Exception($"Error updating pet: {response.StatusCode}. {errorContent}");
+            }
+        }
     }
 }
