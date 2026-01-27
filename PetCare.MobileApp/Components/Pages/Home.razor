@@ -1,6 +1,10 @@
 ﻿@page "/"
+@using PetCare.Shared.Dtos
+@using PetCare.MobileApp.Services
 @using Microsoft.AspNetCore.Components.Authorization
 @inject AuthenticationStateProvider AuthStateProvider
+@inject IApiService ApiService
+@inject NavigationManager Navigation
 
 <div class="d-flex justify-content-between align-items-center mb-4 pt-2">
     <div>
@@ -13,55 +17,128 @@
     </a>
 </div>
 
-<div class="card-custom" style="background-color: #f0f2f5;">
-    <h6 class="fw-bold">Twoja najbliższa wizyta:</h6>
+<div class="card-custom shadow-sm mb-3" style="background-color: #f0f2f5; border-left: 5px solid #267C84;">
+    <h6 class="fw-bold text-uppercase small text-muted mb-3">Your next appointment</h6>
 
-    <div class="d-flex align-items-center my-2">
-        <span class="fs-5 me-2">🐶</span>
-        <span><strong>Mika</strong> (kontrola)</span>
+    <div class="d-flex align-items-center mb-3">
+        <div class="icon-circle bg-white shadow-sm me-3">
+            🐶
+        </div>
+        <div>
+            <h5 class="fw-bold mb-0">Mika</h5>
+            <small class="text-muted">General Check-up</small>
+        </div>
     </div>
 
-    <div class="mb-3">
-        JUTRO, 21.11 o 10:30
+    <div class="mb-3 d-flex align-items-center text-dark">
+        <i class="bi bi-calendar-event me-2 text-primary"></i>
+        <strong>TOMORROW, 10:30 AM</strong>
     </div>
 
     <div class="d-flex gap-2">
-        <button class="btn btn-danger btn-sm">Odwołaj</button>
-        <button class="btn btn-secondary btn-sm" style="background-color: #267C84; border: none;">Zmień termin</button>
+        <button class="btn btn-outline-danger btn-sm flex-grow-1">Cancel</button>
+        <button class="btn btn-primary btn-sm flex-grow-1 text-white" style="background-color: #267C84; border: none;">Reschedule</button>
     </div>
 </div>
 
-<button class="btn w-100 text-white my-3 py-3 shadow-sm d-flex align-items-center justify-content-center"
-        style="background-color: #267C84; border-radius: 8px;">
-    <span class="oi oi-plus me-2"></span> Umów nową wizytę
+<button class="btn w-100 text-white mb-4 py-3 shadow-sm d-flex align-items-center justify-content-center cta-button">
+    <i class="bi bi-plus-circle me-2 fs-5"></i> Book new appointment
 </button>
 
-<h5 class="mt-4 mb-3">Twoje zwierzaki:</h5>
+<h5 class="mb-3 fw-bold">Your Pets</h5>
 
-<div class="card-custom">
-    <div class="d-flex align-items-center mb-2">
-        <span class="me-2">🐶</span> <span>Mika</span>
-    </div>
-    <div class="d-flex align-items-center mb-3">
-        <span class="me-2">🐱</span> <span>Mruczek</span>
-    </div>
+<div class="card-custom shadow-sm p-0 overflow-hidden">
+    @if (isLoading)
+    {
+        <div class="p-4 text-center">
+            <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
+        </div>
+    }
+    else if (pets != null && pets.Any())
+    {
+        <div class="list-group list-group-flush">
+            @foreach (var pet in pets.Take(3))
+            {
+                <button class="list-group-item list-group-item-action p-3 d-flex align-items-center border-0 border-bottom"
+                        @onclick="() => GoToPetDetails(pet.PetId)">
+                    <div class="icon-circle bg-light me-3">
+                        @GetSpeciesIcon(pet.Species)
+                    </div>
+                    <div class="flex-grow-1 text-start">
+                        <h6 class="fw-bold mb-0">@pet.Name</h6>
+                        <small class="text-muted">@pet.Species</small>
+                    </div>
+                    <i class="bi bi-chevron-right text-muted small"></i>
+                </button>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="p-4 text-center text-muted">
+            <p class="mb-2">No pets found.</p>
+        </div>
+    }
 
-    <button class="btn btn-sm w-100 text-white" style="background-color: #267C84;">
-        + Dodaj nowego zwierzaka
-    </button>
+    <div class="p-3 bg-light">
+        <button class="btn btn-sm w-100 btn-outline-primary fw-bold" @onclick="GoToAddPet">
+            + Add new pet
+        </button>
+    </div>
 </div>
 
 @code {
-    private string userName = "Anna";
+    private string userName = "User";
+    private List<PetReadModel> pets;
+    private bool isLoading = true;
 
     protected override async Task OnInitializedAsync()
     {
-        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
-        var user = authState.User;
-
-        if (user.Identity != null && user.Identity.IsAuthenticated)
+        try
         {
-            userName = user.Identity.Name ?? "User";
+            var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+            var user = authState.User;
+
+            if (user.Identity != null && user.Identity.IsAuthenticated)
+            {
+                userName = user.Identity.Name ?? "User";
+            }
+
+            var ownerIdClaim = user.FindFirst("PetOwnerId");
+            if (ownerIdClaim != null && int.TryParse(ownerIdClaim.Value, out int id))
+            {
+                pets = await ApiService.GetPetsAsync(id);
+            }
         }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading home data: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private void GoToPetDetails(int petId)
+    {
+        Navigation.NavigateTo($"/pets/{petId}");
+    }
+
+    private void GoToAddPet()
+    {
+        Navigation.NavigateTo("/pets/add");
+    }
+
+    private string GetSpeciesIcon(string species)
+    {
+        return species?.ToLower() switch
+        {
+            "dog" or "pies" => "🐶",
+            "cat" or "kot" => "🐱",
+            "rabbit" or "królik" => "🐰",
+            "bird" or "ptak" => "🐦",
+            _ => "🐾"
+        };
     }
 }
