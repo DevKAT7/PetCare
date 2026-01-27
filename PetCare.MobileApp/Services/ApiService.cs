@@ -153,5 +153,10 @@ namespace PetCare.MobileApp.Services
 
             return result ?? new List<PetReadModel>();
         }
+
+        public async Task<PetDetailDto?> GetPetDetailsAsync(int petId)
+        {
+            return await GetAsync<PetDetailDto>($"api/pets/{petId}");
+        }
     }
 }
