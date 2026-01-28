@@ -38,38 +38,28 @@ namespace PetCare.MobileApp.Services
             try
             {
                 await AddAuthorizationHeaderAsync();
-
                 _logger.LogInformation("HTTP GET: {Endpoint}", endpoint);
 
                 var response = await _httpClient.GetAsync(endpoint);
 
-                if (response.IsSuccessStatusCode)
+                if (response.StatusCode == System.Net.HttpStatusCode.NoContent)
                 {
-                    if (response.StatusCode == System.Net.HttpStatusCode.NoContent)
-                    {
-                        return default;
-                    }
-
-                    return await response.Content.ReadFromJsonAsync<T>(_jsonOptions);
-                }
-                else
-                {
-                    if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
-                    {
-                        _logger.LogWarning("HTTP 401 Unauthorized for {Endpoint}. Token might be expired.", endpoint);
-                    }
-                    else
-                    {
-                        _logger.LogError("HTTP GET Error for {Endpoint}. Status: {Status}", endpoint, response.StatusCode);
-                    }
-
                     return default;
                 }
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    var error = await response.Content.ReadAsStringAsync();
+                    _logger.LogError("HTTP GET Error {Status}: {Content}", response.StatusCode, error);
+                    throw new HttpRequestException($"Request failed: {response.StatusCode}. {error}");
+                }
+
+                return await response.Content.ReadFromJsonAsync<T>(_jsonOptions);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Critical connection error in GET {Endpoint}", endpoint);
-                return default;
+                _logger.LogError(ex, "Critical error in GET {Endpoint}", endpoint);
+                throw;
             }
         }
 
@@ -78,37 +68,29 @@ namespace PetCare.MobileApp.Services
             try
             {
                 await AddAuthorizationHeaderAsync();
-
                 _logger.LogInformation("HTTP POST: {Endpoint}", endpoint);
 
                 var response = await _httpClient.PostAsJsonAsync(endpoint, data);
 
-                if (response.Content != null)
+                var jsonString = await response.Content.ReadAsStringAsync();
+
+                if (!response.IsSuccessStatusCode)
                 {
-                    var jsonString = await response.Content.ReadAsStringAsync();
-
-                    if (!response.IsSuccessStatusCode)
-                    {
-                        _logger.LogWarning("API Response [{Status}]: {Content}", response.StatusCode, jsonString);
-                    }
-                    else
-                    {
-                        _logger.LogDebug("API Success: {Content}", jsonString);
-                    }
-
-                    try
-                    {
-                        var result = JsonSerializer.Deserialize<TResponse>(jsonString, _jsonOptions);
-                        return result;
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.LogError(ex, "JSON Deserialization error. Raw content: {Content}", jsonString);
-                        throw new Exception($"Error reading response. Status: {response.StatusCode}");
-                    }
+                    _logger.LogWarning("API Error {Status}: {Content}", response.StatusCode, jsonString);
+                    throw new HttpRequestException($"Request failed: {response.StatusCode}. {jsonString}");
                 }
 
-                throw new Exception($"Empty response. Status: {response.StatusCode}");
+                try
+                {
+                    _logger.LogDebug("API Success: {Content}", jsonString);
+
+                    return JsonSerializer.Deserialize<TResponse>(jsonString, _jsonOptions);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "JSON Deserialization error. Raw content: {Content}", jsonString);
+                    throw new Exception("Error parsing API response", ex);
+                }
             }
             catch (Exception ex)
             {
@@ -129,7 +111,7 @@ namespace PetCare.MobileApp.Services
                 if (!response.IsSuccessStatusCode)
                 {
                     var errorContent = await response.Content.ReadAsStringAsync();
-                    _logger.LogError("HTTP POST Failed. Status: {Status}. Content: {Content}", response.StatusCode, errorContent);
+                    throw new HttpRequestException($"POST failed: {response.StatusCode}. {errorContent}");       
                 }
 
                 response.EnsureSuccessStatusCode();
@@ -137,6 +119,50 @@ namespace PetCare.MobileApp.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error in POST (No Return) {Endpoint}", endpoint);
+                throw;
+            }
+        }
+
+        public async Task PutAsync<TRequest>(string endpoint, TRequest data)
+        {
+            try
+            {
+                await AddAuthorizationHeaderAsync();
+                _logger.LogInformation("HTTP PUT: {Endpoint}", endpoint);
+
+                var response = await _httpClient.PutAsJsonAsync(endpoint, data);
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    var error = await response.Content.ReadAsStringAsync();
+                    throw new HttpRequestException($"PUT failed: {response.StatusCode}. {error}");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error in PUT {Endpoint}", endpoint);
+                throw;
+            }
+        }
+
+        public async Task DeleteAsync(string endpoint)
+        {
+            try
+            {
+                await AddAuthorizationHeaderAsync();
+                _logger.LogInformation("HTTP DELETE: {Endpoint}", endpoint);
+
+                var response = await _httpClient.DeleteAsync(endpoint);
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    var error = await response.Content.ReadAsStringAsync();
+                    throw new HttpRequestException($"DELETE failed: {response.StatusCode}. {error}");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error in DELETE {Endpoint}", endpoint);
                 throw;
             }
         }
@@ -166,13 +192,12 @@ namespace PetCare.MobileApp.Services
 
         public async Task UpdatePetAsync(int petId, PetUpdateModel petModel)
         {
-            var response = await _httpClient.PutAsJsonAsync($"api/pets/{petId}", petModel);
+            await PutAsync($"api/pets/{petId}", petModel);
+        }
 
-            if (!response.IsSuccessStatusCode)
-            {
-                var errorContent = await response.Content.ReadAsStringAsync();
-                throw new Exception($"Error updating pet: {response.StatusCode}. {errorContent}");
-            }
+        public async Task DeletePetAsync(int petId)
+        {
+            await DeleteAsync($"api/pets/{petId}");
         }
     }
 }

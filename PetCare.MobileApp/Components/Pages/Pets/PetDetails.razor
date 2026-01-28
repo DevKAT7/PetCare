@@ -2,6 +2,7 @@
 @using PetCare.Shared.Dtos
 @using PetCare.MobileApp.Services
 @using Microsoft.Extensions.Logging
+@using Microsoft.Maui.Controls
 @inject ILogger<AddPet> Logger
 @inject IApiService ApiService
 @inject NavigationManager Navigation
@@ -27,7 +28,12 @@ else
                 <i class="bi bi-arrow-left fs-4"></i>
             </button>
             <h4 class="mb-0 fw-bold">Pet Profile</h4>
-            <div class="ms-auto">
+            <div class="ms-auto d-flex gap-2">
+                <button class="btn btn-light text-danger rounded-circle shadow-sm"
+                        style="width: 40px; height: 40px;"
+                        @onclick="DeletePet">
+                    <i class="bi bi-trash"></i>
+                </button>
                 <button class="btn btn-light text-primary rounded-circle shadow-sm"
                         style="width: 40px; height: 40px;"
                         @onclick="NavigateToEdit">
@@ -295,6 +301,34 @@ else
         finally
         {
             isLoading = false;
+        }
+    }
+
+    private async Task DeletePet()
+    {
+        bool confirmed = await Application.Current.MainPage.DisplayAlert(
+            "Confirm Delete",
+            $"Are you sure you want to delete {pet?.Name}?",
+            "Yes, Delete",
+            "Cancel");
+
+        if (confirmed)
+        {
+            try
+            {
+                Logger.LogInformation("Deleting pet {Id}...", Id);
+
+                await ApiService.DeletePetAsync(Id);
+
+                Logger.LogInformation("Pet deleted successfully.");
+                Navigation.NavigateTo("/pets");
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "Failed to delete pet.");
+
+                await Application.Current.MainPage.DisplayAlert("Error", "Error deleting pet. Please try again.", "OK");
+            }
         }
     }
 
