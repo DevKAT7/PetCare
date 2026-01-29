@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 using PetCare.Application.Features.Appointments.Commands;
-using PetCare.Application.Features.Appointments.Dto;
+using PetCare.Application.Features.Appointments.Dtos;
 
 namespace PetCare.Application.Features.Appointments.Validators
 {

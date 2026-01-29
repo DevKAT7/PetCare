@@ -6,6 +6,7 @@ using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using PetCare.MobileApp.Models.Vets;
 
 namespace PetCare.MobileApp.Services
 {
@@ -221,6 +222,25 @@ namespace PetCare.MobileApp.Services
             var result = await GetAsync<PaginatedResult<AppointmentReadModel>>(url);
 
             return result ?? new PaginatedResult<AppointmentReadModel>();
+        }
+
+        public async Task<List<VetLookupDto>> GetVetsForLookupAsync()
+        {
+            var result = await GetAsync<List<VetLookupDto>>("api/vets/lookup");
+            return result ?? new List<VetLookupDto>();
+        }
+
+        public async Task<List<TimeSpan>> GetVetAvailabilityAsync(int vetId, DateTime date)
+        {
+            var url = $"api/appointments/availability?vetId={vetId}&date={date:yyyy-MM-dd}";
+
+            var result = await GetAsync<List<TimeSpan>>(url);
+            return result ?? new List<TimeSpan>();
+        }
+
+        public async Task CreateAppointmentAsync(AppointmentCreateModel model)
+        {
+            await PostAsync("api/appointments", model);
         }
     }
 }

@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using PetCare.Application.Features.Appointments.Commands;
-using PetCare.Application.Features.Appointments.Dto;
+using PetCare.Application.Features.Appointments.Dtos;
 using PetCare.Application.Features.Appointments.Queries;
 using PetCare.Application.Features.Pets.Queries;
 using PetCare.Application.Features.Vets.Queries;

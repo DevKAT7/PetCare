@@ -16,6 +16,13 @@ namespace PetCare.Api.Controllers
             _mediator = mediator;
         }
 
+        [HttpGet("lookup")]
+        public async Task<ActionResult<List<VetLookupDto>>> GetVetsForLookup()
+        {
+            var result = await _mediator.Send(new GetVetsLookupQuery());
+            return Ok(result);
+        }
+
         [HttpGet]
         public async Task<IActionResult> GetAllVets()
         {

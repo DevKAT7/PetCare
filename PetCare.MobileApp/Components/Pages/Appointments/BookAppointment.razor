@@ -1,0 +1,247 @@
+﻿@page "/appointments/book"
+@using Microsoft.Extensions.Logging
+@using PetCare.MobileApp.Models.Appointments
+@using PetCare.MobileApp.Models.Vets
+@using PetCare.Shared.Dtos
+@using PetCare.MobileApp.Services
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize]
+@inject IApiService ApiService
+@inject AuthenticationStateProvider AuthStateProvider
+@inject NavigationManager Navigation
+@inject ILogger<BookAppointment> Logger
+
+<div class="create-appointment-page pb-5">
+    <div class="d-flex align-items-center mb-4">
+        <button class="btn btn-link text-dark p-0 me-3" @onclick="GoBack">
+            <i class="bi bi-arrow-left fs-4"></i>
+        </button>
+        <h4 class="mb-0 fw-bold">Book Appointment</h4>
+    </div>
+
+    <EditForm Model="@createModel" OnValidSubmit="HandleSubmit">
+        <DataAnnotationsValidator />
+        
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-body">
+                <h6 class="text-primary fw-bold mb-3"><i class="bi bi-calendar-event me-2"></i>Date & Vet</h6>
+                
+                <div class="mb-3">
+                    <label class="form-label small text-muted fw-bold">Select Veterinarian</label>
+                    <InputSelect class="form-select" Value="@createModel.VetId" ValueExpression="@(() => createModel.VetId)" 
+                        ValueChanged="@((int id) => OnVetChanged(id))">
+                        <option value="0">-- Choose Vet --</option>
+                        @foreach (var vet in vets)
+                        {
+                            <option value="@vet.VetId">@vet.FullName</option>
+                        }
+                    </InputSelect>
+                    <ValidationMessage For="@(() => createModel.VetId)" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label small text-muted fw-bold">Select Date</label>
+                    <InputDate class="form-control" Value="@selectedDate" ValueExpression="@(() => selectedDate)" 
+                        ValueChanged="@((DateTime d) => OnDateChanged(d))" min="@DateTime.Today.ToString("yyyy-MM-dd")" />
+                </div>
+            </div>
+        </div>
+
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-body">
+                <h6 class="text-primary fw-bold mb-3"><i class="bi bi-clock me-2"></i>Available Time</h6>
+
+                @if (isLoadingSlots)
+                {
+                    <div class="text-center py-3">
+                        <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
+                        <span class="ms-2 small text-muted">Checking availability...</span>
+                    </div>
+                }
+                else if (timeSlots.Any())
+                {
+                    <div class="d-flex flex-wrap gap-2">
+                        @foreach (var slot in timeSlots)
+                        {
+                            <button type="button" 
+                                    class="btn btn-sm slot-btn @(selectedTime == slot ? "active-slot" : "btn-outline-primary")" 
+                                    @onclick="() => SelectSlot(slot)">
+                                @slot.ToString("HH:mm")
+                            </button>
+                        }
+                    </div>
+                    @if (selectedTime.HasValue)
+                    {
+                        <div class="mt-2 text-success small fw-bold">
+                            <i class="bi bi-check-circle-fill me-1"></i> Selected: @selectedTime.Value.ToString("HH:mm")
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="text-center text-muted small py-2 border rounded bg-light">
+                        @(createModel.VetId == 0 ? "Select a vet first." : "No slots available for this date.")
+                    </div>
+                }
+                <ValidationMessage For="@(() => createModel.AppointmentDateTime)" />
+            </div>
+        </div>
+
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-body">
+                <h6 class="text-primary fw-bold mb-3"><i class="bi bi-paw me-2"></i>Details</h6>
+
+                <div class="mb-3">
+                    <label class="form-label small text-muted fw-bold">Patient</label>
+                    <InputSelect class="form-select" @bind-Value="createModel.PetId">
+                        <option value="">-- Choose Pet --</option>
+                        @foreach (var pet in myPets)
+                        {
+                            <option value="@pet.PetId">@pet.Name</option>
+                        }
+                    </InputSelect>
+                    <ValidationMessage For="@(() => createModel.PetId)" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label small text-muted fw-bold">Reason for Visit</label>
+                    <InputText class="form-control" @bind-Value="createModel.ReasonForVisit" placeholder="e.g. Vaccination, Coughing..." />
+                    <ValidationMessage For="@(() => createModel.ReasonForVisit)" />
+                </div>
+                
+                <div class="mb-2">
+                    <label class="form-label small text-muted fw-bold">Description (Optional)</label>
+                    <InputTextArea class="form-control" @bind-Value="createModel.Description" rows="3" />
+                </div>
+            </div>
+        </div>
+
+        <div class="d-grid pb-4">
+            <button type="submit" class="btn btn-primary btn-lg shadow fw-bold" disabled="@isSubmitting">
+                @if (isSubmitting)
+                {
+                    <span class="spinner-border spinner-border-sm me-2"></span> <span>Booking...</span>
+                }
+                else
+                {
+                    <span>Confirm Booking</span>
+                }
+            </button>
+        </div>
+    </EditForm>
+</div>
+
+@code {
+    private AppointmentCreateModel createModel = new();
+    
+    private List<VetLookupDto> vets = new();
+    private List<PetReadModel> myPets = new();
+    private List<DateTime> timeSlots = new();
+    
+    private DateTime selectedDate = DateTime.Today.AddDays(1);
+    private DateTime? selectedTime;
+    private bool isLoadingSlots = false;
+    private bool isSubmitting = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+            var user = authState.User;
+
+            var ownerIdClaim = user.FindFirst("PetOwnerId");
+
+            int? myPetOwnerId = null;
+
+            if (ownerIdClaim != null && int.TryParse(ownerIdClaim.Value, out int id))
+            {
+                myPetOwnerId = id;
+            }
+
+            var vetsTask = ApiService.GetVetsForLookupAsync();
+            var petsTask = ApiService.GetPetsAsync(myPetOwnerId);
+
+            await Task.WhenAll(vetsTask, petsTask);
+
+            vets = await vetsTask;
+            myPets = await petsTask;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading initial data");
+            await Application.Current.MainPage.DisplayAlert("Error", "Could not load data.", "OK");
+        }
+    }
+
+    private async Task OnVetChanged(int vetId)
+    {
+        createModel.VetId = vetId;
+        await LoadSlots();
+    }
+
+    private async Task OnDateChanged(DateTime date)
+    {
+        selectedDate = date;
+        await LoadSlots();
+    }
+
+    private async Task LoadSlots()
+    {
+        selectedTime = null;
+        timeSlots.Clear();
+
+        if (createModel.VetId == 0) return;
+
+        isLoadingSlots = true;
+        try
+        {
+            var slots = await ApiService.GetVetAvailabilityAsync(createModel.VetId, selectedDate);
+            
+            timeSlots = slots.Select(ts => selectedDate.Date.Add(ts)).ToList();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading slots");
+        }
+        finally
+        {
+            isLoadingSlots = false;
+        }
+    }
+
+    private void SelectSlot(DateTime slot)
+    {
+        selectedTime = slot;
+        createModel.AppointmentDateTime = slot; 
+    }
+
+    private async Task HandleSubmit()
+    {
+        if (!selectedTime.HasValue)
+        {
+            await Application.Current.MainPage.DisplayAlert("Info", "Please select a time slot.", "OK");
+            return;
+        }
+
+        isSubmitting = true;
+        try
+        {
+            await ApiService.CreateAppointmentAsync(createModel);
+            
+            await Application.Current.MainPage.DisplayAlert("Success", "Appointment booked successfully!", "OK");
+            Navigation.NavigateTo("/appointments");
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error creating appointment");
+            await Application.Current.MainPage.DisplayAlert("Error", "Failed to book appointment. Please try again.", "OK");
+        }
+        finally
+        {
+            isSubmitting = false;
+        }
+    }
+
+    private void GoBack() => Navigation.NavigateTo("/appointments");
+}
