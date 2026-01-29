@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using PetCare.MobileApp.Models.Appointments;
 using PetCare.MobileApp.Common;
-using PetCare.Shared.Dtos;
+using PetCare.MobileApp.Models.Pets;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json;

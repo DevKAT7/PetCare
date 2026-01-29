@@ -1,7 +1,7 @@
 ﻿using PetCare.MobileApp.Common;
 using PetCare.MobileApp.Models.Appointments;
 using PetCare.MobileApp.Models.Vets;
-using PetCare.Shared.Dtos;
+using PetCare.MobileApp.Models.Pets;
 
 namespace PetCare.MobileApp.Services
 {

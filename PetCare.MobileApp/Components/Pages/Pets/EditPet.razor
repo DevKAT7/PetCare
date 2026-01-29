@@ -1,5 +1,5 @@
 ﻿@page "/pets/edit/{Id:int}"
-@using PetCare.Shared.Dtos
+@using PetCare.MobileApp.Models.Pets
 @using PetCare.MobileApp.Services
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.Extensions.Logging
@@ -32,7 +32,6 @@
         <div class="card border-0 shadow-sm p-4">
             <EditForm Model="@petModel" OnValidSubmit="HandleValidSubmit">
                 <DataAnnotationsValidator />
-                <ValidationSummary class="text-danger small mb-3" />
 
                 <div class="mb-4 text-center">
                     <div class="image-upload-container">
@@ -58,6 +57,7 @@
                 <div class="mb-3">
                     <label class="form-label small text-muted fw-bold text-uppercase">Name</label>
                     <InputText @bind-Value="petModel.Name" class="form-control" />
+                    <ValidationMessage For="@(() => petModel.Name)" class="text-danger small" />
                 </div>
 
                 <div class="mb-3">
@@ -69,16 +69,19 @@
                         <option value="Bird">Bird 🐦</option>
                         <option value="Other">Other 🐾</option>
                     </InputSelect>
+                    <ValidationMessage For="@(() => petModel.Species)" class="text-danger small" />
                 </div>
 
                 <div class="mb-3">
                     <label class="form-label small text-muted fw-bold text-uppercase">Breed</label>
                     <InputText @bind-Value="petModel.Breed" class="form-control" />
+                    <ValidationMessage For="@(() => petModel.Breed)" class="text-danger small" />
                 </div>
 
                 <div class="mb-3">
                     <label class="form-label small text-muted fw-bold text-uppercase">Date of Birth</label>
                     <InputDate @bind-Value="petModel.DateOfBirth" class="form-control" />
+                    <ValidationMessage For="@(() => petModel.DateOfBirth)" class="text-danger small" />
                 </div>
 
                 <div class="mb-4">
