@@ -36,7 +36,7 @@
                             <option value="@vet.VetId">@vet.FullName</option>
                         }
                     </InputSelect>
-                    <ValidationMessage For="@(() => createModel.VetId)" />
+                    <ValidationMessage For="@(() => createModel.VetId)" class="text-danger small" />
                 </div>
 
                 <div class="mb-3">
@@ -83,7 +83,7 @@
                         @(createModel.VetId == 0 ? "Select a vet first." : "No slots available for this date.")
                     </div>
                 }
-                <ValidationMessage For="@(() => createModel.AppointmentDateTime)" />
+                <ValidationMessage For="@(() => createModel.AppointmentDateTime)" class="text-danger small" />
             </div>
         </div>
 
@@ -100,13 +100,13 @@
                             <option value="@pet.PetId">@pet.Name</option>
                         }
                     </InputSelect>
-                    <ValidationMessage For="@(() => createModel.PetId)" />
+                    <ValidationMessage For="@(() => createModel.PetId)" class="text-danger small" />
                 </div>
 
                 <div class="mb-3">
                     <label class="form-label small text-muted fw-bold">Reason for Visit</label>
                     <InputText class="form-control" @bind-Value="createModel.ReasonForVisit" placeholder="e.g. Vaccination, Coughing..." />
-                    <ValidationMessage For="@(() => createModel.ReasonForVisit)" />
+                    <ValidationMessage For="@(() => createModel.ReasonForVisit)" class="text-danger small" />
                 </div>
                 
                 <div class="mb-2">
@@ -228,7 +228,6 @@
         try
         {
             await ApiService.CreateAppointmentAsync(createModel);
-            
             await Application.Current.MainPage.DisplayAlert("Success", "Appointment booked successfully!", "OK");
             Navigation.NavigateTo("/appointments");
         }
