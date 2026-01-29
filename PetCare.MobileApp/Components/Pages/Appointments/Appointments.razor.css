@@ -1,0 +1,9 @@
+﻿.nav-pills .nav-link.active.bg-white {
+    background-color: white !important;
+    color: var(--petcare-primary) !important;
+}
+
+.nav-pills .nav-link:not(.active) {
+    background-color: transparent;
+    color: #6c757d;
+}

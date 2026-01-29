@@ -1,4 +1,6 @@
-﻿using PetCare.Shared.Dtos;
+﻿using PetCare.MobileApp.Common;
+using PetCare.MobileApp.Models.Appointments;
+using PetCare.Shared.Dtos;
 
 namespace PetCare.MobileApp.Services
 {
@@ -15,5 +17,7 @@ namespace PetCare.MobileApp.Services
         Task AddPetAsync(PetCreateModel petModel);
         Task UpdatePetAsync(int petId, PetUpdateModel petModel);
         Task DeletePetAsync(int petId);
+        Task<PaginatedResult<AppointmentReadModel>> GetMyAppointmentsAsync
+            (int ownerId, bool upcomingOnly, int page = 1, int pageSize = 10);
     }
 }

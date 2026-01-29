@@ -1,8 +1,11 @@
 ﻿using Microsoft.Extensions.Logging;
+using PetCare.MobileApp.Models.Appointments;
+using PetCare.MobileApp.Common;
 using PetCare.Shared.Dtos;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace PetCare.MobileApp.Services
 {
@@ -19,7 +22,8 @@ namespace PetCare.MobileApp.Services
 
             _jsonOptions = new JsonSerializerOptions
             {
-                PropertyNameCaseInsensitive = true
+                PropertyNameCaseInsensitive = true,
+                Converters = { new JsonStringEnumConverter() }
             };
         }
 
@@ -198,6 +202,25 @@ namespace PetCare.MobileApp.Services
         public async Task DeletePetAsync(int petId)
         {
             await DeleteAsync($"api/pets/{petId}");
+        }
+
+        public async Task<PaginatedResult<AppointmentReadModel>> GetMyAppointmentsAsync
+            (int ownerId, bool upcomingOnly, int page = 1, int pageSize = 10)
+        {
+            var url = $"api/appointments?petOwnerId={ownerId}&pageIndex={page}&pageSize={pageSize}";
+
+            if (upcomingOnly)
+            {
+                url += $"&from={DateTime.Today:yyyy-MM-dd}&sortColumn=Date&sortDirection=asc";
+            }
+            else
+            {
+                url += $"&to={DateTime.Today.AddDays(-1):yyyy-MM-dd}&sortColumn=Date&sortDirection=desc";
+            }
+
+            var result = await GetAsync<PaginatedResult<AppointmentReadModel>>(url);
+
+            return result ?? new PaginatedResult<AppointmentReadModel>();
         }
     }
 }
