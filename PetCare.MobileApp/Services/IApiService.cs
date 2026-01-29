@@ -23,5 +23,6 @@ namespace PetCare.MobileApp.Services
         Task<List<VetLookupDto>> GetVetsForLookupAsync();
         Task<List<TimeSpan>> GetVetAvailabilityAsync(int vetId, DateTime date);
         Task CreateAppointmentAsync(AppointmentCreateModel model);
+        Task<AppointmentReadModel?> GetAppointmentDetailsAsync(int appointmentId);
     }
 }
