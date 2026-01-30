@@ -2,6 +2,7 @@
 using PetCare.MobileApp.Models.Appointments;
 using PetCare.MobileApp.Models.Vets;
 using PetCare.MobileApp.Models.Pets;
+using PetCare.MobileApp.Models.Invoices;
 
 namespace PetCare.MobileApp.Services
 {
@@ -25,5 +26,8 @@ namespace PetCare.MobileApp.Services
         Task CreateAppointmentAsync(AppointmentCreateModel model);
         Task<AppointmentReadModel?> GetAppointmentDetailsAsync(int appointmentId);
         Task CancelAppointmentAsync(int appointmentId);
+        Task<List<InvoiceReadModel>> GetMyInvoicesAsync(int ownerId);
+        Task<InvoiceReadModel?> GetInvoiceAsync(int invoiceId);
+        Task MarkInvoicePaidAsync(int invoiceId, DateTime paymentDate);
     }
 }

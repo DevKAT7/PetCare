@@ -1,0 +1,135 @@
+@page "/invoices"
+@using Microsoft.Extensions.Logging
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
+@using PetCare.MobileApp.Models.Invoices
+@using PetCare.MobileApp.Services
+@attribute [Authorize]
+@inject IApiService ApiService
+@inject NavigationManager Navigation
+@inject AuthenticationStateProvider AuthStateProvider
+@inject ILogger<Invoices> Logger
+
+<div class="details-page pb-5">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4 class="mb-0 fw-bold">My Bills</h4>
+    </div>
+
+    @if (isLoading)
+    {
+        <div class="text-center py-5">
+            <div class="spinner-border text-primary" role="status"></div>
+        </div>
+    }
+    else if (invoices != null && invoices.Any())
+    {
+        <div class="d-flex flex-column gap-2">
+            @foreach (var inv in invoices)
+            {
+                var status = GetStatusInfo(inv);
+
+                <div class="card-custom" @onclick="() => GoToDetails(inv.InvoiceId)" 
+                     style="cursor:pointer; border-left: 5px solid @status.BorderColor;">
+                    
+                    <div class="card-body p-2"> 
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <div>
+                                <h6 class="fw-bold mb-0 text-dark">@inv.InvoiceNumber</h6>
+                                <small class="text-muted">
+                                    <i class="bi bi-calendar-event me-1"></i>
+                                    @inv.InvoiceDate.ToString("dd MMM yyyy")
+                                </small>
+                            </div>
+                            
+                            <span class="badge @status.BadgeClass">
+                                @status.Text
+                            </span>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-end mt-2">
+                            <div class="small fw-bold @status.TextClass">
+                                @if (!inv.IsPaid)
+                                {
+                                    <span>Due: @inv.DueDate.ToString("dd MMM")</span>
+                                }
+                            </div>
+                            <div class="fw-bold fs-5 text-primary">
+                                @inv.TotalAmount.ToString("C")
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="text-center py-5 text-muted">
+            <i class="bi bi-receipt display-1 opacity-25"></i>
+            <p class="mt-3">No invoices found.</p>
+        </div>
+    }
+</div>
+
+@code {
+    private List<InvoiceReadModel> invoices = new();
+    private bool isLoading = true;
+    private int ownerId;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+            var user = authState.User;
+            var claim = user.FindFirst("PetOwnerId");
+
+            if (claim != null && int.TryParse(claim.Value, out int id))
+            {
+                ownerId = id;
+                await LoadInvoices();
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error initializing invoices page");
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task LoadInvoices()
+    {
+        try
+        {
+            var result = await ApiService.GetMyInvoicesAsync(ownerId);
+            invoices = result ?? new List<InvoiceReadModel>();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to load invoices");
+        }
+    }
+
+    private void GoToDetails(int id)
+    {
+        Navigation.NavigateTo($"/invoices/{id}");
+    }
+
+    private (string BorderColor, string BadgeClass, string TextClass, string Text) GetStatusInfo(InvoiceReadModel inv)
+    {
+        if (inv.IsPaid)
+        {
+            return ("#198754", "bg-success-subtle text-success", "text-success", "PAID");
+        }
+        
+        if (inv.DueDate < DateTime.Today)
+        {
+            return ("#dc3545", "bg-danger-subtle text-danger", "text-danger", "OVERDUE");
+        }
+
+        return ("#ffc107", "bg-warning-subtle text-dark", "text-dark", "UNPAID");
+    }
+}

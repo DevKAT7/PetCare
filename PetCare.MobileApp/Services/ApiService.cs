@@ -7,6 +7,7 @@ using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using PetCare.MobileApp.Models.Vets;
+using PetCare.MobileApp.Models.Invoices;
 
 namespace PetCare.MobileApp.Services
 {
@@ -251,6 +252,22 @@ namespace PetCare.MobileApp.Services
         public async Task CancelAppointmentAsync(int appointmentId)
         {
             await DeleteAsync($"api/appointments/{appointmentId}");
+        }
+
+        public async Task<List<InvoiceReadModel>> GetMyInvoicesAsync(int ownerId)
+        {
+            var result = await GetAsync<List<InvoiceReadModel>>($"api/invoices/by-owner/{ownerId}");
+            return result ?? new List<InvoiceReadModel>();
+        }
+
+        public async Task<InvoiceReadModel?> GetInvoiceAsync(int invoiceId)
+        {
+            return await GetAsync<InvoiceReadModel>($"api/invoices/{invoiceId}");
+        }
+
+        public async Task MarkInvoicePaidAsync(int invoiceId, DateTime paymentDate)
+        {
+            await PostAsync($"api/invoices/{invoiceId}/pay", paymentDate);
         }
     }
 }
