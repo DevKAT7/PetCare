@@ -114,30 +114,55 @@
             }
         </div>
 
-        @if (appointment.Status == AppointmentStatus.Scheduled)
+@if (appointment.Status == AppointmentStatus.Scheduled)
         {
-            <div class="d-grid pb-4 gap-2">
+            <div class="pb-4">
                 @if (appointment.AppointmentDateTime > DateTime.Now.AddHours(2))
                 {
-                    <button class="btn btn-danger btn-lg shadow fw-bold" @onclick="CancelAppointment" disabled="@isSubmitting">
-                        @if (isSubmitting)
-                        {
-                            <span class="spinner-border spinner-border-sm me-2"></span>
-                            <span>Cancelling...</span>
-                        }
-                        else
-                        {
-                            <span>Cancel Appointment</span>
-                        }
-                    </button>
+                    <div class="row g-2 pt-3">
+                        
+                        <div class="col-6">
+                            <button class="btn btn-outline-danger btn-lg w-100 fw-bold shadow-sm" 
+                                    @onclick="CancelAppointment" disabled="@isSubmitting">
+                                 Cancel
+                            </button>
+                        </div>
+
+                        <div class="col-6">
+                            <button class="btn btn-primary btn-lg w-100 fw-bold text-white shadow-sm" 
+                                    style="background-color: #267C84; border: none;"
+                                    @onclick="ConfirmAppointment" disabled="@isSubmitting">
+                                @if (isSubmitting)
+                                {
+                                    <span class="spinner-border spinner-border-sm me-2"></span>
+                                }
+                                else
+                                {
+                                    <i class="bi bi-check-lg me-1"></i> <span>Confirm</span>
+                                }
+                            </button>
+                        </div>
+                    </div>
                 }
                 else
                 {
-                    <button class="btn btn-secondary btn-lg shadow fw-bold" disabled
-                            style="background-color: #e9ecef; border-color: #e9ecef; color: #6c757d;">
-                        Too late to cancel
-                    </button>
-                    <small class="text-center text-muted">Cancellations are allowed up to 2 hours before the visit.</small>
+                    <div class="d-grid gap-2 pt-3">
+                        
+                        @if (appointment.AppointmentDateTime > DateTime.Now)
+                        {
+                            <button class="btn btn-primary btn-lg shadow fw-bold text-white" 
+                                    style="background-color: #267C84; border: none;"
+                                    @onclick="ConfirmAppointment" disabled="@isSubmitting">
+                                <i class="bi bi-check-lg me-1"></i> Confirm Attendance
+                            </button>
+                        }
+
+                        <button class="btn btn-secondary btn-lg shadow fw-bold" disabled
+                                style="background-color: #e9ecef; border-color: #e9ecef; color: #6c757d;">
+                            Too late to cancel
+                        </button>
+                        <small class="text-center text-muted">Cancellations are allowed up to 2 hours before the visit.</small>
+                    </div>
                 }
             </div>
         }
@@ -154,8 +179,14 @@
 
     protected override async Task OnInitializedAsync()
     {
+        await LoadData();
+    }
+
+    private async Task LoadData()
+    {
         try
         {
+            isLoading = true;
             appointment = await ApiService.GetAppointmentDetailsAsync(Id);
         }
         catch (Exception ex)
@@ -165,6 +196,38 @@
         finally
         {
             isLoading = false;
+        }
+    }
+
+    private async Task ConfirmAppointment()
+    {
+        if (appointment == null) return;
+
+        bool confirm = await Application.Current.MainPage.DisplayAlert(
+            "Confirm Visit",
+            "Do you want to confirm your attendance for this appointment?",
+            "Yes, Confirm",
+            "No");
+
+        if (!confirm) return;
+
+        isSubmitting = true;
+        try
+        {
+            await ApiService.ConfirmAppointmentAsync(Id);
+
+            await Application.Current.MainPage.DisplayAlert("Success", "Appointment confirmed!", "OK");
+
+            await LoadData();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error confirming appointment");
+            await Application.Current.MainPage.DisplayAlert("Error", "Failed to confirm appointment.", "OK");
+        }
+        finally
+        {
+            isSubmitting = false;
         }
     }
 

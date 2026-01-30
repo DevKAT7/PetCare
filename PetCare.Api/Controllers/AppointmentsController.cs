@@ -111,6 +111,14 @@ namespace PetCare.Api.Controllers
             return NoContent();
         }
 
+        [HttpPut("{id}/confirm")]
+        public async Task<IActionResult> Confirm(int id)
+        {
+            var command = new ConfirmAppointmentCommand(id);
+            await _mediator.Send(command);
+            return NoContent();
+        }
+
         [HttpGet("availability")]
         public async Task<IActionResult> GetAvailability([FromQuery] int vetId, [FromQuery] DateTime date, 
             [FromQuery] int duration = 30)
