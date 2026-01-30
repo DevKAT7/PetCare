@@ -7,3 +7,28 @@
     background-color: transparent;
     color: #6c757d;
 }
+
+.border-scheduled {
+    border-left: 5px solid #6f42c1 !important;
+}
+
+.border-confirmed {
+    border-left: 5px solid #198754 !important;
+}
+
+.border-completed {
+    border-left: 5px solid #6c757d !important;
+}
+
+.border-cancelled {
+    border-left: 5px solid #dc3545 !important;
+}
+
+.border-noshow {
+    border-left: 5px solid #212529 !important;
+}
+
+.badge-scheduled {
+    background-color: #e0cffc;
+    color: #59359a;
+}

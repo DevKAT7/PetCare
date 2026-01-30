@@ -248,3 +248,7 @@ body {
         text-decoration: underline;
         color: var(--petcare-dark);
     }
+
+.text-custom-purple {
+    color: #59359a !important;
+}
