@@ -123,6 +123,8 @@ public class GetAllAppointmentsHandler : IRequestHandler<GetAllAppointmentsQuery
                 Notes = a.Notes,
                 PetId = a.PetId,
                 PetName = a.Pet.Name,
+                PetSpecies = a.Pet.Species,
+                PetImageUrl = a.Pet.ImageUrl,
                 OwnerName = a.Pet.PetOwner.FirstName + " " + a.Pet.PetOwner.LastName,
                 VetId = a.VetId,
                 VetName = a.Vet.FirstName + " " + a.Vet.LastName

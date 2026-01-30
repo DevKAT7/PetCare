@@ -1,4 +1,4 @@
-﻿using PetCare.Shared.Enums;
+﻿using PetCare.MobileApp.Enums;
 
 namespace PetCare.MobileApp.Models.Appointments
 {

@@ -1,5 +1,6 @@
 @page "/appointments/{Id:int}"
 @using Microsoft.Extensions.Logging
+@using PetCare.MobileApp.Enums
 @using PetCare.MobileApp.Models.Appointments
 @using PetCare.MobileApp.Services
 @using Microsoft.AspNetCore.Authorization
@@ -113,20 +114,31 @@
             }
         </div>
 
-        @if (appointment.Status == PetCare.Shared.Enums.AppointmentStatus.Scheduled)
+        @if (appointment.Status == AppointmentStatus.Scheduled)
         {
-            <div class="d-grid pb-4">
-                <button class="btn btn-danger btn-lg shadow fw-bold" @onclick="CancelAppointment" disabled="@isSubmitting">
-                    @if (isSubmitting)
-                    {
-                        <span class="spinner-border spinner-border-sm me-2"></span>         
-                        <span>Cancelling...</span>
-                    }
-                    else
-                    {
-                        <span>Cancel Appointment</span>
-                    }
-                </button>
+            <div class="d-grid pb-4 gap-2">
+                @if (appointment.AppointmentDateTime > DateTime.Now.AddHours(2))
+                {
+                    <button class="btn btn-danger btn-lg shadow fw-bold" @onclick="CancelAppointment" disabled="@isSubmitting">
+                        @if (isSubmitting)
+                        {
+                            <span class="spinner-border spinner-border-sm me-2"></span>
+                            <span>Cancelling...</span>
+                        }
+                        else
+                        {
+                            <span>Cancel Appointment</span>
+                        }
+                    </button>
+                }
+                else
+                {
+                    <button class="btn btn-secondary btn-lg shadow fw-bold" disabled
+                            style="background-color: #e9ecef; border-color: #e9ecef; color: #6c757d;">
+                        Too late to cancel
+                    </button>
+                    <small class="text-center text-muted">Cancellations are allowed up to 2 hours before the visit.</small>
+                }
             </div>
         }
     }
@@ -160,10 +172,24 @@
     {
         if (appointment == null) return;
 
+        if (appointment.AppointmentDateTime <= DateTime.Now.AddHours(2))
+        {
+            await Application.Current.MainPage.DisplayAlert("Too Late", "You cannot cancel less than 2 hours before the visit.", "OK");
+            return;
+        }
+
+        bool confirm = await Application.Current.MainPage.DisplayAlert(
+            "Cancel Appointment",
+            "Are you sure you want to cancel this visit?",
+            "Yes, Cancel",
+            "No");
+
+        if (!confirm) return;
+
         isSubmitting = true;
         try
         {
-            await ApiService.DeleteAsync($"api/appointments/{Id}");
+            await ApiService.CancelAppointmentAsync(Id);
             await Application.Current.MainPage.DisplayAlert("Success", "Appointment cancelled.", "OK");
             Navigation.NavigateTo("/appointments");
         }
@@ -183,15 +209,15 @@
         Navigation.NavigateTo("/appointments");
     }
 
-    private string GetStatusBadgeClass(PetCare.Shared.Enums.AppointmentStatus status)
+    private string GetStatusBadgeClass(AppointmentStatus status)
     {
         return status switch
         {
-            PetCare.Shared.Enums.AppointmentStatus.Scheduled => "bg-primary-subtle text-custom-purple",
-            PetCare.Shared.Enums.AppointmentStatus.Confirmed => "bg-success-subtle text-success",
-            PetCare.Shared.Enums.AppointmentStatus.Completed => "bg-secondary-subtle text-secondary",
-            PetCare.Shared.Enums.AppointmentStatus.Cancelled => "bg-danger-subtle text-danger",
-            PetCare.Shared.Enums.AppointmentStatus.NoShow => "bg-dark-subtle text-dark",
+            AppointmentStatus.Scheduled => "bg-primary-subtle text-custom-purple",
+            AppointmentStatus.Confirmed => "bg-success-subtle text-success",
+            AppointmentStatus.Completed => "bg-secondary-subtle text-secondary",
+            AppointmentStatus.Cancelled => "bg-danger-subtle text-danger",
+            AppointmentStatus.NoShow => "bg-dark-subtle text-dark",
             _ => "bg-light text-dark"
         };
     }

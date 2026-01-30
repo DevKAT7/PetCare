@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using PetCare.MobileApp.Auth;
 using PetCare.MobileApp.Services;
 using Serilog;
+using System.Globalization;
 
 namespace PetCare.MobileApp
 {
@@ -49,6 +50,9 @@ namespace PetCare.MobileApp
             builder.Services.AddBlazorWebViewDeveloperTools();
     		builder.Logging.AddDebug();
 #endif
+            var culture = new CultureInfo("en-US");
+            CultureInfo.DefaultThreadCurrentCulture = culture;
+            CultureInfo.DefaultThreadCurrentUICulture = culture;
 
             return builder.Build();
         }

@@ -1,4 +1,4 @@
-﻿namespace PetCare.Shared.Enums
+﻿namespace PetCare.MobileApp.Enums
 {
     public enum AppointmentStatus
     {

@@ -247,5 +247,10 @@ namespace PetCare.MobileApp.Services
         {
             return await GetAsync<AppointmentReadModel>($"api/appointments/{appointmentId}");
         }
+
+        public async Task CancelAppointmentAsync(int appointmentId)
+        {
+            await DeleteAsync($"api/appointments/{appointmentId}");
+        }
     }
 }

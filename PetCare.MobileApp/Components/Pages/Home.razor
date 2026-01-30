@@ -1,4 +1,6 @@
 ﻿@page "/"
+@using PetCare.MobileApp.Enums
+@using PetCare.MobileApp.Models.Appointments
 @using PetCare.MobileApp.Models.Pets
 @using PetCare.MobileApp.Services
 @using Microsoft.AspNetCore.Components.Authorization
@@ -17,32 +19,67 @@
     </a>
 </div>
 
-<div class="card-custom shadow-sm mb-3" style="background-color: #f0f2f5; border-left: 5px solid #267C84;">
-    <h6 class="fw-bold text-uppercase small text-muted mb-3">Your next appointment</h6>
+@if (nextAppointment != null)
+{
+    <div class="card-custom shadow-sm mb-3" style="background-color: #f0f2f5; border-left: 5px solid #267C84;">
+        <h6 class="fw-bold text-uppercase small text-muted mb-3">Your next appointment</h6>
 
-    <div class="d-flex align-items-center mb-3">
-        <div class="icon-circle bg-white shadow-sm me-3">
-            🐶
+        <div class="d-flex align-items-center mb-3">
+            <div class="icon-circle bg-white shadow-sm me-3" style="overflow: hidden;">
+
+                @if (!string.IsNullOrEmpty(nextAppointment.PetImageUrl))
+                {
+                    <img src="@nextAppointment.PetImageUrl"
+                         alt="@nextAppointment.PetName"
+                         style="width: 100%; height: 100%; object-fit: cover; display: block;" />
+                }
+                else
+                {
+                    <i class="bi bi-paw fs-4 text-muted"></i>
+                }
+            </div>
+            <div>
+                <h5 class="fw-bold mb-0">@nextAppointment.PetName</h5>
+                <small class="text-muted">@nextAppointment.ReasonForVisit</small>
+                <div class="small text-muted">Dr @nextAppointment.VetName</div>
+            </div>
         </div>
-        <div>
-            <h5 class="fw-bold mb-0">Mika</h5>
-            <small class="text-muted">General Check-up</small>
+
+        <div class="mb-3 d-flex align-items-center text-dark">
+            <i class="bi bi-calendar-event me-2 text-primary"></i>
+            <strong>@FormatAppointmentDate(nextAppointment.AppointmentDateTime)</strong>
+        </div>
+
+        <div class="d-flex gap-2">
+            @if (nextAppointment.AppointmentDateTime > DateTime.Now.AddHours(2))
+            {
+                <button class="btn btn-outline-danger btn-sm flex-grow-1" @onclick="CancelAppointment">
+                    Cancel
+                </button>
+            }
+            else
+            {
+                <button class="btn btn-outline-secondary btn-sm flex-grow-1" disabled>
+                    Too late to cancel
+                </button>
+            }
+            <button class="btn btn-primary btn-sm flex-grow-1 text-white" style="background-color: #267C84; border: none;"
+                    @onclick="RescheduleAppointment">
+                Reschedule
+            </button>
         </div>
     </div>
-
-    <div class="mb-3 d-flex align-items-center text-dark">
-        <i class="bi bi-calendar-event me-2 text-primary"></i>
-        <strong>TOMORROW, 10:30 AM</strong>
+}
+else if (!isLoading)
+{
+    <div class="card-custom shadow-sm mb-3 p-4 text-center bg-light">
+        <p class="text-muted mb-0">No upcoming appointments.</p>
     </div>
+}
 
-    <div class="d-flex gap-2">
-        <button class="btn btn-outline-danger btn-sm flex-grow-1">Cancel</button>
-        <button class="btn btn-primary btn-sm flex-grow-1 text-white" style="background-color: #267C84; border: none;">Reschedule</button>
-    </div>
-</div>
-
-<button class="btn w-100 text-white mb-4 py-3 shadow-sm d-flex align-items-center justify-content-center cta-button">
-    <i class="bi bi-plus-circle me-2 fs-5"></i> Book new appointment
+<button class="btn w-100 text-white mb-4 py-3 shadow-sm d-flex align-items-center justify-content-center cta-button"
+        @onclick="GoToBookAppointment">
+    <i class="bi bi-plus me-2 fs-4"></i> Book new appointment
 </button>
 
 <h5 class="mb-3 fw-bold">Your Pets</h5>
@@ -90,6 +127,7 @@
 @code {
     private string userName = "User";
     private List<PetReadModel> pets;
+    private AppointmentReadModel? nextAppointment;
     private bool isLoading = true;
 
     protected override async Task OnInitializedAsync()
@@ -107,7 +145,21 @@
             var ownerIdClaim = user.FindFirst("PetOwnerId");
             if (ownerIdClaim != null && int.TryParse(ownerIdClaim.Value, out int id))
             {
-                pets = await ApiService.GetPetsAsync(id);
+                var petsTask = ApiService.GetPetsAsync(id);
+
+                var appointmentTask = ApiService.GetMyAppointmentsAsync(id, upcomingOnly: true, page: 1, pageSize: 5);
+
+                await Task.WhenAll(petsTask, appointmentTask);
+
+                pets = await petsTask;
+                var appointmentResult = await appointmentTask;
+
+                nextAppointment = appointmentResult.Items
+                    .Where(a => a.Status != AppointmentStatus.Cancelled
+                             && a.Status != AppointmentStatus.Completed
+                             && a.Status != AppointmentStatus.NoShow)
+                    .OrderBy(a => a.AppointmentDateTime)
+                    .FirstOrDefault();
             }
         }
         catch (Exception ex)
@@ -128,6 +180,68 @@
     private void GoToAddPet()
     {
         Navigation.NavigateTo("/pets/add");
+    }
+
+    private void GoToBookAppointment()
+    {
+        Navigation.NavigateTo("/appointments/book");
+    }
+
+    private void RescheduleAppointment()
+    {
+        if (nextAppointment == null) return;
+
+        Navigation.NavigateTo($"/appointments/book?preselectedVetId={nextAppointment.VetId}" +
+        $"&preselectedPetId={nextAppointment.PetId}&oldId={nextAppointment.AppointmentId}");
+    }
+
+    private async Task CancelAppointment()
+    {
+        if (nextAppointment == null) return;
+
+        if (nextAppointment.AppointmentDateTime <= DateTime.Now.AddHours(2))
+        {
+            await Application.Current.MainPage.DisplayAlert(
+                "Cannot Cancel",
+                "You cannot cancel an appointment that has already started or passed.",
+                "OK");
+            return;
+        }
+
+        bool confirm = await Application.Current.MainPage.DisplayAlert(
+            "Cancel Appointment",
+            "Are you sure you want to cancel this visit?",
+            "Yes, Cancel",
+            "No");
+
+        if (confirm)
+        {
+            try
+            {
+                await ApiService.CancelAppointmentAsync(nextAppointment.AppointmentId);
+
+                nextAppointment = null;
+                await Application.Current.MainPage.DisplayAlert("Success", "Appointment cancelled.", "OK");
+            }
+            catch (Exception ex)
+            {
+                await Application.Current.MainPage.DisplayAlert("Error", "Failed to cancel.", "OK");
+            }
+        }
+    }
+
+    private string FormatAppointmentDate(DateTime date)
+    {
+        if (date.Date == DateTime.Today.AddDays(1))
+        {
+            return $"TOMORROW, {date:hh:mm tt}";
+        }
+        if (date.Date == DateTime.Today)
+        {
+            return $"TODAY, {date:hh:mm tt}";
+        }
+
+        return date.ToString("MMM dd, hh:mm tt");
     }
 
     private string GetSpeciesIcon(string species)

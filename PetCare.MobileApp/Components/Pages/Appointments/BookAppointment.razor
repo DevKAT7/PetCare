@@ -143,6 +143,15 @@
     private bool isLoadingSlots = false;
     private bool isSubmitting = false;
 
+    [SupplyParameterFromQuery]
+    public int? PreselectedVetId { get; set; }
+
+    [SupplyParameterFromQuery]
+    public int? PreselectedPetId { get; set; }
+
+    [SupplyParameterFromQuery]
+    public int? OldId { get; set; }
+
     protected override async Task OnInitializedAsync()
     {
         try
@@ -166,6 +175,17 @@
 
             vets = await vetsTask;
             myPets = await petsTask;
+
+            if (PreselectedVetId.HasValue)
+            {
+                createModel.VetId = PreselectedVetId.Value;
+                await LoadSlots(); 
+            }
+
+            if (PreselectedPetId.HasValue)
+            {
+                createModel.PetId = PreselectedPetId.Value;
+            }
         }
         catch (Exception ex)
         {
@@ -228,7 +248,25 @@
         try
         {
             await ApiService.CreateAppointmentAsync(createModel);
-            await Application.Current.MainPage.DisplayAlert("Success", "Appointment booked successfully!", "OK");
+            
+            if (OldId.HasValue)
+            {
+                try 
+                {
+                    await ApiService.CancelAppointmentAsync(OldId.Value);
+                    await Application.Current.MainPage.DisplayAlert("Success", "Appointment rescheduled successfully!", "OK");
+                }
+                catch
+                {
+                    await Application.Current.MainPage.DisplayAlert("Warning", 
+                    "New appointment booked, but failed to cancel the old one. Please cancel it manually.", "OK");
+                }
+            }
+            else
+            {
+                await Application.Current.MainPage.DisplayAlert("Success", "Appointment booked successfully!", "OK");
+            }
+
             Navigation.NavigateTo("/appointments");
         }
         catch (Exception ex)
