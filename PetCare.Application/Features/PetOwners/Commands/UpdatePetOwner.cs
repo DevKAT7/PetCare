@@ -11,12 +11,12 @@ namespace PetCare.Application.Features.PetOwners.Commands
     public class UpdatePetOwnerCommand : IRequest<int>
     {
         public int PetOwnerId { get; }
-        public PetOwnerUpdateModel PetOwnerDto { get; set; } = null!;
+        public PetOwnerUpdateModel PetOwner { get; set; } = null!;
 
         public UpdatePetOwnerCommand(int petOwnerId, PetOwnerUpdateModel petOwnerDto)
         {
             PetOwnerId = petOwnerId;
-            PetOwnerDto = petOwnerDto;
+            PetOwner = petOwnerDto;
         }
     }
 
@@ -33,7 +33,7 @@ namespace PetCare.Application.Features.PetOwners.Commands
 
         public async Task<int> Handle(UpdatePetOwnerCommand command, CancellationToken cancellationToken)
         {
-            var request = command.PetOwnerDto;
+            var request = command.PetOwner;
 
             var owner = await _context.PetOwners
                 .Include(o => o.User)

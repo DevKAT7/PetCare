@@ -1,4 +1,4 @@
-﻿namespace PetCare.Application.Features.Pets.Dtos
+﻿namespace PetCare.Shared.Dtos
 {
     public class PetDetailDto
     {
@@ -21,6 +21,15 @@
         public List<PetPrescriptionDto> Prescriptions { get; set; } = new();
         public List<PetTestDto> MedicalTests { get; set; } = new();
         public List<PetVaccinationDto> Vaccinations { get; set; } = new();
+
+        public int Age => CalculateAge(DateOfBirth);
+        private static int CalculateAge(DateTime dob)
+        {
+            var today = DateTime.Today;
+            var age = today.Year - dob.Year;
+            if (dob.Date > today.AddYears(-age)) age--;
+            return age;
+        }
     }
 
     public class PetAppointmentDto

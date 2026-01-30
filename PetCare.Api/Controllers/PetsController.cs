@@ -1,8 +1,8 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using PetCare.Application.Features.Pets.Commands;
-using PetCare.Application.Features.Pets.Dtos;
 using PetCare.Application.Features.Pets.Queries;
+using PetCare.Shared.Dtos;
 
 namespace PetCare.Api.Controllers
 {
@@ -26,17 +26,21 @@ namespace PetCare.Api.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<PetReadModel>> GetPet(int id)
+        public async Task<ActionResult<PetDetailDto>> GetPet(int id)
         {
-            var query = new GetPetQuery(id);
+            var query = new GetPetDetailQuery { PetId = id };
             var result = await _mediator.Send(query);
+
             return Ok(result);
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreatePet([FromBody] CreatePetCommand command)
+        public async Task<IActionResult> CreatePet([FromBody] PetCreateModel model)
         {
+            var command = new CreatePetCommand { Pet = model };
+
             var petId = await _mediator.Send(command);
+
             return CreatedAtAction(nameof(GetPet), new { id = petId }, petId);
         }
 

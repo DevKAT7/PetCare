@@ -1,0 +1,54 @@
+﻿.icon-circle {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    flex-shrink: 0;
+}
+
+.cta-button {
+    background-color: var(--petcare-primary);
+    border-radius: 12px;
+    border: none;
+    font-weight: 600;
+    transition: transform 0.1s, background-color 0.2s;
+}
+
+    .cta-button:active {
+        transform: scale(0.98);
+        background-color: var(--petcare-dark);
+    }
+
+.list-group-item {
+    transition: background-color 0.2s;
+}
+
+    .list-group-item:active {
+        background-color: #f8f9fa;
+    }
+
+.btn-outline-primary {
+    color: var(--petcare-primary);
+    border-color: var(--petcare-primary);
+    background-color: transparent;
+}
+
+    .btn-outline-primary:hover {
+        background-color: var(--petcare-primary) !important;
+        border-color: var(--petcare-primary) !important;
+        color: white !important;
+    }
+
+    .btn-outline-primary:active,
+    .btn-outline-primary:focus,
+    .btn-outline-primary:active:focus {
+        background-color: var(--petcare-dark) !important;
+        border-color: var(--petcare-dark) !important;
+        color: white !important;
+        box-shadow: none !important;
+    }
+
+

@@ -1,0 +1,32 @@
+﻿.profile-img {
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 4px solid white;
+}
+
+.profile-placeholder {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background-color: #f8f9fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3.5rem;
+    border: 4px solid white;
+    color: #adb5bd;
+}
+
+.nav-pills .nav-link {
+    color: var(--petcare-dark);
+    border-radius: 8px;
+    transition: all 0.2s;
+}
+
+    .nav-pills .nav-link.active {
+        background-color: white;
+        color: var(--petcare-primary);
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }

@@ -41,7 +41,7 @@ namespace PetCare.Application.Features.PetOwners.Commands
             if (!identityResult.Succeeded)
             {
                 var errors = identityResult.Errors.Select(e => e.Description).ToList();
-                throw new BadRequestException("Nie udało się utworzyć konta użytkownika.", errors);
+                throw new BadRequestException("Failed to create user account.", errors);
             }
 
             await _userManager.AddToRoleAsync(user, "Client");

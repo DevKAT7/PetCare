@@ -25,6 +25,7 @@ namespace PetCare.Application.Interfaces
         DbSet<StockItem> StockItems { get; set; }
         DbSet<StockTransaction> StockTransactions { get; set; }
         DbSet<PageText> PageTexts { get; set; }
+        public DbSet<AppointmentSummaryView> AppointmentSummaryViews { get; set; }
 
         Task<int> SaveChangesAsync(CancellationToken cancellationToken);
     }

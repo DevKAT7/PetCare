@@ -1,4 +1,4 @@
-namespace PetCare.Application.Features.Appointments.Dto
+namespace PetCare.Application.Features.Appointments.Dtos
 {
     public class AppointmentCreateModel
     {

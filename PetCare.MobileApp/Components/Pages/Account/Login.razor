@@ -1,0 +1,96 @@
+﻿@page "/login"
+@layout LoginLayout
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Authorization
+@using PetCare.MobileApp.Services
+@using PetCare.Shared.Dtos
+@using PetCare.MobileApp.Auth
+@attribute [AllowAnonymous]
+@inject IApiService ApiService
+@inject AuthenticationStateProvider AuthStateProvider
+@inject NavigationManager Navigation
+
+<div class="auth-card">
+    <div class="auth-header">
+        <div class="auth-logo-icon">
+            <i class="bi bi-heart-pulse-fill"></i>
+        </div>
+        <h3 class="auth-title">Welcome Back!</h3>
+        <p class="auth-subtitle">Log in to manage your pet's health.</p>
+    </div>
+
+    <EditForm Model="@loginModel" OnValidSubmit="HandleLogin">
+        <DataAnnotationsValidator />
+
+        <div class="auth-input-group">
+            <span class="auth-input-icon"><i class="bi bi-envelope"></i></span>
+            <InputText @bind-Value="loginModel.Email" class="form-control auth-input" placeholder="Email address" />
+        </div>
+        <ValidationMessage For="@(() => loginModel.Email)" class="text-danger small ms-2" />
+
+        <div class="auth-input-group mt-3">
+            <span class="auth-input-icon"><i class="bi bi-lock"></i></span>
+            <InputText @bind-Value="loginModel.Password" type="password" class="form-control auth-input" placeholder="Password" />
+        </div>
+        <ValidationMessage For="@(() => loginModel.Password)" class="text-danger small ms-2" />
+
+        <button type="submit" class="btn btn-primary w-100 py-3 mt-4 fw-bold shadow-sm" style="border-radius: 12px;">
+            Log In
+        </button>
+
+        @if (!string.IsNullOrEmpty(errorMessage))
+        {
+            <div class="alert alert-danger mt-3 text-center small">
+                <i class="bi bi-exclamation-circle me-2"></i> @errorMessage
+            </div>
+        }
+
+        <div class="text-center mt-4">
+            <span class="text-muted">Don't have an account?</span>
+            <a href="register" class="auth-link ms-1">Register</a>
+        </div>
+    </EditForm>
+</div>
+
+@code {
+    private LoginRequest loginModel = new();
+    private string errorMessage;
+
+    private async Task HandleLogin()
+    {
+        errorMessage = null;
+
+        try
+        {
+            var response = await ApiService.PostAsync<LoginRequest, AuthResponse>("api/auth/login", loginModel);
+
+            if (response != null && response.Success)
+            {
+                if (response.Role != "Client") 
+            {
+                errorMessage = "This application is intended for clients only. Veterinarians are requested to log into the web panel.";
+                
+                SecureStorage.Remove("auth_token");
+
+                return;
+            }
+
+                var customProvider = (CustomAuthStateProvider)AuthStateProvider;
+                
+                customProvider.MarkUserAsAuthenticated(response.Token);
+                
+                await SecureStorage.SetAsync("auth_token", response.Token);
+
+                Navigation.NavigateTo("/");
+            }
+            else
+            {
+                errorMessage = response.ErrorMessage ?? "Login failed.";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Connection error: {ex.Message}";
+        }
+    }
+}

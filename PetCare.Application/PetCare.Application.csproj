@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\PetCare.Core\PetCare.Core.csproj" />
+    <ProjectReference Include="..\PetCare.Shared\PetCare.Shared.csproj" />
   </ItemGroup>
 
 </Project>

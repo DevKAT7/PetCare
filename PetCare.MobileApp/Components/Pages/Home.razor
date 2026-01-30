@@ -1,0 +1,299 @@
+﻿@page "/"
+@using PetCare.MobileApp.Enums
+@using PetCare.MobileApp.Models.Appointments
+@using PetCare.MobileApp.Models.Pets
+@using PetCare.MobileApp.Models.Invoices
+@using PetCare.MobileApp.Services
+@using Microsoft.AspNetCore.Components.Authorization
+@inject AuthenticationStateProvider AuthStateProvider
+@inject IApiService ApiService
+@inject NavigationManager Navigation
+
+<div class="d-flex justify-content-between align-items-center mb-4 pt-2">
+    <div>
+        <h4 class="mb-0 fw-bold">Hello, @userName! </h4>
+        <small class="text-muted">Have a nice day!</small>
+    </div>
+
+    <a href="profile" class="profile-icon-btn">
+        <i class="bi bi-person-fill"></i>
+    </a>
+</div>
+
+@if (overdueInvoices != null && overdueInvoices.Any())
+{
+    <div class="card-custom shadow-sm mb-4" style="background-color: #fff5f5; border-left: 5px solid #dc3545;">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h6 class="fw-bold text-danger mb-1">
+                    <i class="bi bi-exclamation-circle-fill me-2"></i>Action Required
+                </h6>
+                <div class="small text-muted mb-1">
+                    You have <strong>@overdueInvoices.Count</strong> overdue bill(s).
+                </div>
+                <div class="fw-bold fs-5 text-dark">
+                    Total: @totalOverdueAmount.ToString("C")
+                </div>
+            </div>
+            <button class="btn btn-danger btn-sm shadow-sm px-3" @onclick="GoToInvoices">
+                Pay Now
+            </button>
+        </div>
+    </div>
+}
+
+@if (nextAppointment != null)
+{
+    <div class="card-custom shadow-sm mb-3" style="background-color: #f0f2f5; border-left: 5px solid #267C84;">
+        <h6 class="fw-bold text-uppercase small text-muted mb-3">Your next appointment</h6>
+
+        <div class="d-flex align-items-center mb-3">
+            <div class="icon-circle bg-white shadow-sm me-3" style="overflow: hidden;">
+
+                @if (!string.IsNullOrEmpty(nextAppointment.PetImageUrl))
+                {
+                    <img src="@nextAppointment.PetImageUrl"
+                         alt="@nextAppointment.PetName"
+                         style="width: 100%; height: 100%; object-fit: cover; display: block;" />
+                }
+                else
+                {
+                    <i class="bi bi-paw fs-4 text-muted"></i>
+                }
+            </div>
+            <div>
+                <h5 class="fw-bold mb-0">@nextAppointment.PetName</h5>
+                <small class="text-muted">@nextAppointment.ReasonForVisit</small>
+                <div class="small text-muted">Dr @nextAppointment.VetName</div>
+            </div>
+        </div>
+
+        <div class="mb-3 d-flex align-items-center text-dark">
+            <i class="bi bi-calendar-event me-2 text-primary"></i>
+            <strong>@FormatAppointmentDate(nextAppointment.AppointmentDateTime)</strong>
+        </div>
+
+        <div class="d-flex gap-2">
+            @if (nextAppointment.AppointmentDateTime > DateTime.Now.AddHours(2))
+            {
+                <button class="btn btn-outline-danger btn-sm flex-grow-1" @onclick="CancelAppointment">
+                    Cancel
+                </button>
+            }
+            else
+            {
+                <button class="btn btn-outline-secondary btn-sm flex-grow-1" disabled>
+                    Too late to cancel
+                </button>
+            }
+            <button class="btn btn-primary btn-sm flex-grow-1 text-white" style="background-color: #267C84; border: none;"
+                    @onclick="RescheduleAppointment">
+                Reschedule
+            </button>
+        </div>
+    </div>
+}
+else if (!isLoading)
+{
+    <div class="card-custom shadow-sm mb-3 p-4 text-center bg-light">
+        <p class="text-muted mb-0">No upcoming appointments.</p>
+    </div>
+}
+
+<button class="btn w-100 text-white mb-4 py-3 shadow-sm d-flex align-items-center justify-content-center cta-button"
+        @onclick="GoToBookAppointment">
+    <i class="bi bi-plus me-2 fs-4"></i> Book new appointment
+</button>
+
+<h5 class="mb-3 fw-bold">Your Pets</h5>
+
+<div class="card-custom shadow-sm p-0 overflow-hidden">
+    @if (isLoading)
+    {
+        <div class="p-4 text-center">
+            <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
+        </div>
+    }
+    else if (pets != null && pets.Any())
+    {
+        <div class="list-group list-group-flush">
+            @foreach (var pet in pets.Take(3))
+            {
+                <button class="list-group-item list-group-item-action p-3 d-flex align-items-center border-0 border-bottom"
+                        @onclick="() => GoToPetDetails(pet.PetId)">
+                    <div class="icon-circle bg-light me-3">
+                        @GetSpeciesIcon(pet.Species)
+                    </div>
+                    <div class="flex-grow-1 text-start">
+                        <h6 class="fw-bold mb-0">@pet.Name</h6>
+                        <small class="text-muted">@pet.Species</small>
+                    </div>
+                    <i class="bi bi-chevron-right text-muted small"></i>
+                </button>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="p-4 text-center text-muted">
+            <p class="mb-2">No pets found.</p>
+        </div>
+    }
+
+    <div class="p-3 bg-light">
+        <button class="btn btn-sm w-100 btn-outline-primary fw-bold" @onclick="GoToAddPet">
+            + Add new pet
+        </button>
+    </div>
+</div>
+
+@code {
+    private string userName = "User";
+    private List<PetReadModel> pets;
+    private AppointmentReadModel? nextAppointment;
+    private List<InvoiceReadModel> overdueInvoices = new();
+    private decimal totalOverdueAmount = 0;
+    private bool isLoading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+            var user = authState.User;
+
+            if (user.Identity != null && user.Identity.IsAuthenticated)
+            {
+                userName = user.Identity.Name ?? "User";
+            }
+
+            var ownerIdClaim = user.FindFirst("PetOwnerId");
+
+            if (ownerIdClaim != null && int.TryParse(ownerIdClaim.Value, out int id))
+            {
+                var petsTask = ApiService.GetPetsAsync(id);
+                var appointmentTask = ApiService.GetMyAppointmentsAsync(id, upcomingOnly: true, page: 1, pageSize: 5);
+                var invoicesTask = ApiService.GetMyInvoicesAsync(id); 
+
+                await Task.WhenAll(petsTask, appointmentTask, invoicesTask);
+
+                pets = await petsTask;
+
+                var appointmentResult = await appointmentTask;
+                nextAppointment = appointmentResult.Items
+                    .Where(a => a.Status != AppointmentStatus.Cancelled
+                             && a.Status != AppointmentStatus.Completed
+                             && a.Status != AppointmentStatus.NoShow)
+                    .OrderBy(a => a.AppointmentDateTime)
+                    .FirstOrDefault();
+
+                var invoicesResult = await invoicesTask;
+                if (invoicesResult != null)
+                {
+                    overdueInvoices = invoicesResult
+                        .Where(inv => !inv.IsPaid && inv.DueDate < DateTime.Today)
+                        .ToList();
+
+                    totalOverdueAmount = overdueInvoices.Sum(i => i.TotalAmount);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading home data: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private void GoToPetDetails(int petId)
+    {
+        Navigation.NavigateTo($"/pets/{petId}");
+    }
+
+    private void GoToAddPet()
+    {
+        Navigation.NavigateTo("/pets/add");
+    }
+
+    private void GoToBookAppointment()
+    {
+        Navigation.NavigateTo("/appointments/book");
+    }
+
+    private void GoToInvoices()
+    {
+        Navigation.NavigateTo("/invoices");
+    }
+
+    private void RescheduleAppointment()
+    {
+        if (nextAppointment == null) return;
+
+        Navigation.NavigateTo($"/appointments/book?preselectedVetId={nextAppointment.VetId}" +
+        $"&preselectedPetId={nextAppointment.PetId}&oldId={nextAppointment.AppointmentId}");
+    }
+
+    private async Task CancelAppointment()
+    {
+        if (nextAppointment == null) return;
+
+        if (nextAppointment.AppointmentDateTime <= DateTime.Now.AddHours(2))
+        {
+            await Application.Current.MainPage.DisplayAlert(
+                "Cannot Cancel",
+                "You cannot cancel an appointment that has already started or passed.",
+                "OK");
+            return;
+        }
+
+        bool confirm = await Application.Current.MainPage.DisplayAlert(
+            "Cancel Appointment",
+            "Are you sure you want to cancel this visit?",
+            "Yes, Cancel",
+            "No");
+
+        if (confirm)
+        {
+            try
+            {
+                await ApiService.CancelAppointmentAsync(nextAppointment.AppointmentId);
+
+                nextAppointment = null;
+                await Application.Current.MainPage.DisplayAlert("Success", "Appointment cancelled.", "OK");
+            }
+            catch (Exception ex)
+            {
+                await Application.Current.MainPage.DisplayAlert("Error", "Failed to cancel.", "OK");
+            }
+        }
+    }
+
+    private string FormatAppointmentDate(DateTime date)
+    {
+        if (date.Date == DateTime.Today.AddDays(1))
+        {
+            return $"TOMORROW, {date:hh:mm tt}";
+        }
+        if (date.Date == DateTime.Today)
+        {
+            return $"TODAY, {date:hh:mm tt}";
+        }
+
+        return date.ToString("MMM dd, hh:mm tt");
+    }
+
+    private string GetSpeciesIcon(string species)
+    {
+        return species?.ToLower() switch
+        {
+            "dog" or "pies" => "🐶",
+            "cat" or "kot" => "🐱",
+            "rabbit" or "królik" => "🐰",
+            "bird" or "ptak" => "🐦",
+            _ => "🐾"
+        };
+    }
+}

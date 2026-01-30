@@ -1,0 +1,190 @@
+@page "/invoices/{InvoiceId:int}"
+@using Microsoft.Extensions.Logging
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
+@using PetCare.MobileApp.Models.Invoices
+@using PetCare.MobileApp.Services
+@attribute [Authorize]
+@inject IApiService ApiService
+@inject NavigationManager Navigation
+@inject AuthenticationStateProvider AuthStateProvider
+@inject ILogger<InvoiceDetails> Logger
+
+<div class="details-page pb-5">
+    <div class="d-flex align-items-center mb-4">
+        <button class="btn btn-link text-dark p-0 me-3" @onclick="GoBack">
+            <i class="bi bi-arrow-left fs-4"></i>
+        </button>
+        <h4 class="mb-0 fw-bold">Invoice Details</h4>
+    </div>
+
+    @if (isLoading)
+    {
+        <div class="text-center py-5">
+            <div class="spinner-border text-primary" role="status"></div>
+        </div>
+    }
+    else if (invoice != null)
+    {
+        var status = GetDetailsStatus(invoice);
+
+        <div class="card border-0 shadow-sm mb-4 overflow-hidden">
+            <div class="card-header border-0 text-center py-3 @status.HeaderClass">
+                <i class="bi @status.Icon fs-1 mb-2"></i>
+                <h5 class="mb-0 fw-bold">@status.Title</h5>
+                
+                @if (invoice.IsPaid && invoice.PaymentDate.HasValue)
+                {
+                    <small> on @invoice.PaymentDate.Value.ToString("dd MMM yyyy")</small>
+                }
+                else if (!invoice.IsPaid && invoice.DueDate < DateTime.Today)
+                {
+                     <small>Due was: @invoice.DueDate.ToString("dd MMM yyyy")</small>
+                }
+            </div>
+
+            <div class="card-body p-4">
+                <div class="text-center mb-4">
+                    <small class="text-muted text-uppercase fw-bold">Total Amount</small>
+                    <h2 class="fw-bold text-primary mb-0">
+                        @invoice.TotalAmount.ToString("C")
+                    </h2>
+                    <div class="text-muted small">Invoice #@invoice.InvoiceNumber</div>
+                </div>
+
+                <div class="row g-3 mb-4 border-top border-bottom py-3">
+                    <div class="col-6 text-center border-end">
+                        <small class="text-muted d-block fw-bold text-uppercase">Issued</small>
+                        <span>@invoice.InvoiceDate.ToString("dd MMM")</span>
+                    </div>
+                    <div class="col-6 text-center">
+                        <small class="text-muted d-block fw-bold text-uppercase">Due Date</small>
+                        <span class="@(invoice.IsPaid ? "" : (invoice.DueDate < DateTime.Today ? "text-danger fw-bold" : "text-dark"))">
+                            @invoice.DueDate.ToString("dd MMM")
+                        </span>
+                    </div>
+                </div>
+
+                <h6 class="fw-bold mb-3">Items</h6>
+                <div class="list-group list-group-flush">
+                    @foreach (var item in invoice.Items)
+                    {
+                        <div class="list-group-item px-0 py-2 border-0 d-flex justify-content-between align-items-center">
+                            <div>
+                                <div class="fw-bold text-dark">@item.Description</div>
+                                <small class="text-muted">@item.Quantity x @item.UnitPrice.ToString("C")</small>
+                            </div>
+                            <div class="fw-bold">@item.Total.ToString("C")</div>
+                        </div>
+                    }
+                </div>
+                
+                <div class="border-top mt-2 pt-3 d-flex justify-content-between align-items-center">
+                    <span class="fw-bold fs-5">Total</span>
+                    <span class="fw-bold fs-5 text-primary">@invoice.TotalAmount.ToString("C")</span>
+                </div>
+            </div>
+        </div>
+
+        @if (!invoice.IsPaid)
+        {
+            <div class="d-grid">
+                <button class="btn btn-primary btn-lg shadow fw-bold py-3" @onclick="MarkPaid" disabled="@isPaying">
+                    @if (isPaying)
+                    {
+                        <span class="spinner-border spinner-border-sm me-2"></span> <span>Processing...</span>
+                    }
+                    else
+                    {
+                        <i class="bi bi-credit-card me-2"></i> <span>Pay Now</span>
+                    }
+                </button>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="text-center py-5 text-muted">
+            <i class="bi bi-file-earmark-x display-1 opacity-25"></i>
+            <p class="mt-3">Invoice not found.</p>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public int InvoiceId { get; set; }
+
+    private InvoiceReadModel? invoice;
+    private bool isLoading = true;
+    private bool isPaying = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            await LoadInvoice();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error initializing invoice details");
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task LoadInvoice()
+    {
+        try 
+        {
+            invoice = await ApiService.GetInvoiceAsync(InvoiceId);
+        }
+        catch(Exception ex)
+        {
+            Logger.LogError(ex, "Error loading invoice");
+        }
+    }
+
+    private async Task MarkPaid()
+    {
+        if (invoice == null) return;
+
+        try
+        {
+            isPaying = true;
+            await ApiService.MarkInvoicePaidAsync(invoice.InvoiceId, DateTime.Now);
+            await LoadInvoice();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to mark invoice as paid");
+            await Application.Current.MainPage.DisplayAlert("Error", "Payment failed.", "OK");
+        }
+        finally
+        {
+            isPaying = false;
+        }
+    }
+
+    private void GoBack()
+    {
+        Navigation.NavigateTo("/invoices");
+    }
+
+    private (string HeaderClass, string Icon, string Title) GetDetailsStatus(InvoiceReadModel inv)
+    {
+        if (inv.IsPaid)
+        {
+            return ("bg-success text-white", "bi-check-circle-fill", "PAID");
+        }
+        
+        if (inv.DueDate < DateTime.Today)
+        {
+            return ("bg-danger text-white", "bi-exclamation-octagon-fill", "OVERDUE");
+        }
+
+        return ("bg-warning text-dark", "bi-exclamation-circle-fill", "PAYMENT DUE");
+    }
+}

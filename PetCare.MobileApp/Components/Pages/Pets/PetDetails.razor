@@ -1,0 +1,356 @@
+﻿@page "/pets/{Id:int}"
+@using PetCare.MobileApp.Models.Pets
+@using PetCare.MobileApp.Services
+@using Microsoft.Extensions.Logging
+@using Microsoft.Maui.Controls
+@inject ILogger<AddPet> Logger
+@inject IApiService ApiService
+@inject NavigationManager Navigation
+
+@if (isLoading)
+{
+    <div class="d-flex justify-content-center mt-5">
+        <div class="spinner-border text-primary" role="status"></div>
+    </div>
+}
+else if (pet == null)
+{
+    <div class="text-center mt-5">
+        <h3>Pet not found</h3>
+        <button class="btn btn-secondary" @onclick="GoBack">Go Back</button>
+    </div>
+}
+else
+{
+    <div class="details-page pb-5">
+        <div class="d-flex align-items-center mb-3">
+            <button class="btn btn-link text-dark p-0 me-3" @onclick="GoBack">
+                <i class="bi bi-arrow-left fs-4"></i>
+            </button>
+            <h4 class="mb-0 fw-bold">Pet Profile</h4>
+            <div class="ms-auto d-flex gap-2">
+                <button class="btn btn-light text-danger rounded-circle shadow-sm"
+                        style="width: 40px; height: 40px;"
+                        @onclick="DeletePet">
+                    <i class="bi bi-trash"></i>
+                </button>
+                <button class="btn btn-light text-primary rounded-circle shadow-sm"
+                        style="width: 40px; height: 40px;"
+                        @onclick="NavigateToEdit">
+                    <i class="bi bi-pencil-fill"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="card border-0 shadow-sm mb-4 text-center p-3" style="border-radius: 20px;">
+            <div class="d-flex justify-content-center mb-3">
+                @if (!string.IsNullOrEmpty(pet.ImageUrl))
+                {
+                    <img src="@pet.ImageUrl" class="profile-img shadow-sm" />
+                }
+                else
+                {
+                    <div class="profile-placeholder shadow-sm">
+                        @GetSpeciesIcon(pet.Species)
+                    </div>
+                }
+            </div>
+
+            <h2 class="fw-bold mb-1">@pet.Name</h2>
+            <p class="text-muted mb-2">@pet.Species • @(pet.Breed ?? "Mixed")</p>
+
+            <div class="d-flex justify-content-center gap-2">
+                @if (pet.IsMale)
+                {
+                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-2 rounded-pill">
+                        <i class="bi bi-gender-male me-1"></i> Male
+                    </span>
+                }
+                else
+                {
+                    <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-3 py-2 rounded-pill">
+                        <i class="bi bi-gender-female me-1"></i> Female
+                    </span>
+                }
+                <span class="badge bg-light text-dark border px-3 py-2 rounded-pill">
+                    <i class="bi bi-cake2 me-1"></i> @pet.Age years
+                </span>
+            </div>
+        </div>
+
+        @{
+            var upcomingVisits = pet.Appointments.Where(a => a.Date > DateTime.Now).OrderBy(a => a.Date).Take(2).ToList();
+            var upcomingVaccines = pet.Vaccinations.Where(v => v.NextDueDate.HasValue && v.NextDueDate.Value > DateOnly.FromDateTime(DateTime.Now)).OrderBy(v => v.NextDueDate).Take(2).ToList();
+        }
+
+        @if (upcomingVisits.Any() || upcomingVaccines.Any())
+        {
+            <div class="card border-0 shadow-sm mb-4 border-start border-4 border-warning">
+                <div class="card-body">
+                    <h6 class="text-warning fw-bold text-uppercase small mb-3">
+                        <i class="bi bi-bell-fill me-2"></i>Upcoming
+                    </h6>
+                    @foreach (var visit in upcomingVisits)
+                    {
+                        <div class="d-flex align-items-center mb-2 bg-light rounded p-2">
+                            <div class="text-center me-3" style="min-width: 45px; line-height: 1.1;">
+                                <div class="fw-bold fs-5">@visit.Date.Day</div>
+                                <small class="text-uppercase text-muted" style="font-size: 0.7rem;">@visit.Date.ToString("MMM")</small>
+                            </div>
+                            <div>
+                                <div class="fw-bold small">Vet Visit</div>
+                                <div class="text-muted small">@visit.Date.ToShortTimeString() • @visit.VetName</div>
+                            </div>
+                        </div>
+                    }
+                    @foreach (var vax in upcomingVaccines)
+                    {
+                        <div class="d-flex align-items-center mb-2 bg-light rounded p-2">
+                            <div class="me-3 text-center" style="min-width: 45px;">
+                                <i class="bi bi-eyedropper text-danger fs-4"></i>
+                            </div>
+                            <div>
+                                <div class="fw-bold small">Vaccine Due</div>
+                                <div class="text-muted small">@vax.VaccineName • @vax.NextDueDate?.ToString("yyyy-MM-dd")</div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white p-0 border-bottom-0">
+                <ul class="nav nav-pills nav-fill p-2 bg-light rounded-top">
+                    <li class="nav-item">
+                        <button class="nav-link small fw-bold @(activeTab == "visits" ? "active" : "")"
+                                @onclick="@(() => activeTab = "visits")">
+                            Visits
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link small fw-bold @(activeTab == "meds" ? "active" : "")"
+                                @onclick="@(() => activeTab = "meds")">
+                            Prescriptions
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link small fw-bold @(activeTab == "vax" ? "active" : "")"
+                                @onclick="@(() => activeTab = "vax")">
+                            Vaccinations
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link small fw-bold @(activeTab == "tests" ? "active" : "")"
+                                @onclick="@(() => activeTab = "tests")">
+                            Medical tests
+                        </button>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="card-body p-0">
+                <div class="tab-content">
+
+                    @if (activeTab == "visits")
+                    {
+                        @if (pet.Appointments.Any())
+                        {
+                            <div class="list-group list-group-flush">
+                                @foreach (var item in pet.Appointments.OrderByDescending(a => a.Date))
+                                {
+                                    <div class="list-group-item p-3">
+                                        <div class="d-flex justify-content-between">
+                                            <span class="fw-bold text-dark">@item.Date.ToString("yyyy-MM-dd")</span>
+                                            <span class="badge bg-light text-dark border">@item.VetName</span>
+                                        </div>
+                                        <div class="mt-1 text-secondary small">
+                                            @(string.IsNullOrEmpty(item.Diagnosis) ? item.Status : item.Diagnosis)
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="text-center py-4 text-muted small">No visit history.</div>
+                        }
+                    }
+
+                    @if (activeTab == "meds")
+                    {
+                        @if (pet.Prescriptions.Any())
+                        {
+                            <div class="list-group list-group-flush">
+                                @foreach (var item in pet.Prescriptions.OrderByDescending(p => p.Date))
+                                {
+                                    <div class="list-group-item p-3">
+                                        <div class="d-flex justify-content-between">
+                                            <span class="fw-bold text-primary">@item.MedicationName</span>
+                                            <span class="text-muted small">@item.Date.ToString("yyyy-MM-dd")</span>
+                                        </div>
+                                        <div class="small text-muted">@item.Dosage</div>
+                                    </div>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="text-center py-4 text-muted small">No prescriptions.</div>
+                        }
+                    }
+
+                    @if (activeTab == "vax")
+                    {
+                        @if (pet.Vaccinations.Any())
+                        {
+                            <div class="list-group list-group-flush">
+                                @foreach (var item in pet.Vaccinations.OrderByDescending(v => v.DateAdministered))
+                                {
+                                    var isOverdue = item.NextDueDate.HasValue && item.NextDueDate < DateOnly.FromDateTime(DateTime.Now);
+                                    <div class="list-group-item p-3">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <div class="fw-bold">@item.VaccineName</div>
+                                                <div class="text-muted small">Given: @item.DateAdministered.ToString("yyyy-MM-dd")</div>
+                                            </div>
+                                            @if (isOverdue)
+                                            {
+                                                <span class="badge bg-danger">Overdue</span>
+                                            }
+                                            else if (item.NextDueDate.HasValue && item.NextDueDate > DateOnly.FromDateTime(DateTime.Now))
+                                            {
+                                                <span class="badge bg-success">Valid</span>
+                                            }
+                                        </div>
+                                        @if (item.NextDueDate.HasValue)
+                                        {
+                                            <div class="text-end mt-1">
+                                                <small class="text-muted d-block" style="font-size: 0.75rem;">Next Due:</small>
+                                                <small class="fw-bold text-dark">@item.NextDueDate?.ToString("yyyy-MM-dd")</small>
+                                            </div>
+                                        }
+                                    </div>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="text-center py-4 text-muted small">No vaccinations.</div>
+                        }
+                    }
+
+                    @if (activeTab == "tests")
+                    {
+                        @if (pet.MedicalTests.Any())
+                        {
+                            <div class="list-group list-group-flush">
+                                @foreach (var item in pet.MedicalTests.OrderByDescending(t => t.Date))
+                                {
+                                    <div class="list-group-item p-3">
+                                        <div class="d-flex justify-content-between">
+                                            <span class="fw-bold text-dark">@item.TestName</span>
+                                            <span class="text-muted small">@item.Date.ToString("yyyy-MM-dd")</span>
+                                        </div>
+                                        <div class="mt-1 small">
+                                            <span class="text-muted">Result: </span>
+                                            @if (!string.IsNullOrEmpty(item.Result))
+                                            {
+                                                <span class="fw-medium text-dark">@item.Result</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-warning text-dark border border-warning-subtle">Waiting for result</span>
+                                            }
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="text-center py-4 text-muted small">No medical tests recorded.</div>
+                        }
+                    }
+
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private PetDetailDto? pet;
+    private bool isLoading = true;
+
+    private string activeTab = "visits";
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            pet = await ApiService.GetPetDetailsAsync(Id);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError($"Error: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task DeletePet()
+    {
+        bool confirmed = await Application.Current.MainPage.DisplayAlert(
+            "Confirm Delete",
+            $"Are you sure you want to delete {pet?.Name}?",
+            "Yes, Delete",
+            "Cancel");
+
+        if (confirmed)
+        {
+            try
+            {
+                Logger.LogInformation("Deleting pet {Id}...", Id);
+
+                await ApiService.DeletePetAsync(Id);
+
+                Logger.LogInformation("Pet deleted successfully.");
+                Navigation.NavigateTo("/pets");
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "Failed to delete pet.");
+
+                await Application.Current.MainPage.DisplayAlert("Error", "Error deleting pet. Please try again.", "OK");
+            }
+        }
+    }
+
+    private void GoBack()
+    {
+        Navigation.NavigateTo("/pets");
+    }
+
+    private void NavigateToEdit()
+    {
+        Navigation.NavigateTo($"/pets/edit/{Id}");
+    }
+
+    private string GetSpeciesIcon(string species)
+    {
+        return species?.ToLower() switch
+        {
+            "dog" or "pies" => "🐶",
+            "cat" or "kot" => "🐱",
+            "rabbit" or "królik" => "🐰",
+            "ptak" or "bird" => "🐦",
+            _ => "🐾"
+        };
+    }
+}

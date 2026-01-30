@@ -1,5 +1,5 @@
 using MediatR;
-using PetCare.Application.Features.Appointments.Dto;
+using PetCare.Application.Features.Appointments.Dtos;
 using PetCare.Core.Models;
 using PetCare.Application.Exceptions;
 using PetCare.Application.Interfaces;

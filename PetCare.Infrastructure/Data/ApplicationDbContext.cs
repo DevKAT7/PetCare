@@ -32,6 +32,7 @@ namespace PetCare.Infrastructure.Data
         public DbSet<StockItem> StockItems { get; set; }
         public DbSet<StockTransaction> StockTransactions { get; set; }
         public DbSet<PageText> PageTexts { get; set; }
+        public DbSet<AppointmentSummaryView> AppointmentSummaryViews { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -214,6 +215,13 @@ namespace PetCare.Infrastructure.Data
                     .WithMany(m => m.StockTransactions)
                     .HasForeignKey(st => st.MedicationId)
                     .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            //rejestracja widoku
+            builder.Entity<AppointmentSummaryView>(e =>
+            {
+                e.HasNoKey();
+                e.ToView("View_AppointmentDetails");
             });
         }
     }

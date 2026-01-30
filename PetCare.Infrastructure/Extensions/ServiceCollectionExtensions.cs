@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using PetCare.Application.Interfaces;
 using PetCare.Core.Models;
 using PetCare.Infrastructure.Data;
 
@@ -15,6 +16,8 @@ namespace PetCare.Infrastructure.Extensions
 
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(connectionString));
+
+            services.AddScoped<IApplicationDbContext>(provider => provider.GetRequiredService<ApplicationDbContext>());
 
             // Rejestracja Identity (Wspólna baza)
             // WAŻNE: Tutaj konfigurujemy tylko "wnętrze" Identity (Stores, Managers).

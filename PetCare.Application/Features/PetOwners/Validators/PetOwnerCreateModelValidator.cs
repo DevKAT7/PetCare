@@ -13,10 +13,13 @@ namespace PetCare.Application.Features.PetOwners.Validators
 
             RuleFor(x => x.Password)
                 .NotEmpty().WithMessage("Password is required.")
-                .MinimumLength(8).WithMessage("Password must be at least 8 characters long.");
+                .MinimumLength(8).WithMessage("Password must be at least 8 characters long.")
+                .Matches(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W]).+$")
+                .WithMessage("Password must contain at least one uppercase letter, one lowercase letter, one digit and one special character.");
 
             RuleFor(x => x.PhoneNumber)
                 .NotEmpty().WithMessage("Phone number is required.")
+                .MinimumLength(9).WithMessage("Phone number must be at least 9 characters long.")
                 .Matches("^[0-9+() -]*$").WithMessage("Invalid phone number format.")
                 .MaximumLength(20).WithMessage("Phone number cannot be longer than 20 characters.");
 
