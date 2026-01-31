@@ -22,7 +22,6 @@ namespace PetCare.MobileApp.Models.Pets
 
         public bool IsMale { get; set; }
 
-        [Url(ErrorMessage = "Invalid image URL.")]
         public string? ImageUrl { get; set; }
 
         public int PetOwnerId { get; set; }

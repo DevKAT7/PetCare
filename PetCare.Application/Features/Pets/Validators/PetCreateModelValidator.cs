@@ -27,7 +27,9 @@ namespace PetCare.Application.Features.Pets.Validators
                 .GreaterThan(0).WithMessage("Pet Owner is required.");
 
             RuleFor(x => x.ImageUrl)
-                .Must(uri => string.IsNullOrEmpty(uri) || Uri.IsWellFormedUriString(uri, UriKind.Absolute))
+                .Must(uri => string.IsNullOrEmpty(uri)
+                             || uri.StartsWith("data:")
+                             || Uri.IsWellFormedUriString(uri, UriKind.Absolute))
                 .WithMessage("Invalid image URL.");
         }
 

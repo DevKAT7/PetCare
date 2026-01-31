@@ -80,23 +80,33 @@ namespace PetCare.MobileApp.Services
 
                 var jsonString = await response.Content.ReadAsStringAsync();
 
+                try
+                {
+                    var result = JsonSerializer.Deserialize<TResponse>(jsonString, _jsonOptions);
+
+                    if (!response.IsSuccessStatusCode && result != null)
+                    {
+                        _logger.LogWarning("API returned logical error {Status}: {Content}", response.StatusCode, jsonString);
+                        return result;
+                    }
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        _logger.LogDebug("API Success: {Content}", jsonString);
+                        return result;
+                    }
+                }
+                catch (Exception)
+                {
+                }
+
                 if (!response.IsSuccessStatusCode)
                 {
                     _logger.LogWarning("API Error {Status}: {Content}", response.StatusCode, jsonString);
                     throw new HttpRequestException($"Request failed: {response.StatusCode}. {jsonString}");
                 }
 
-                try
-                {
-                    _logger.LogDebug("API Success: {Content}", jsonString);
-
-                    return JsonSerializer.Deserialize<TResponse>(jsonString, _jsonOptions);
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "JSON Deserialization error. Raw content: {Content}", jsonString);
-                    throw new Exception("Error parsing API response", ex);
-                }
+                return default;
             }
             catch (Exception ex)
             {

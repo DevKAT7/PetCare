@@ -89,7 +89,7 @@
         @if (!invoice.IsPaid)
         {
             <div class="d-grid">
-                <button class="btn btn-primary btn-lg shadow fw-bold py-3" @onclick="MarkPaid" disabled="@isPaying">
+                <button class="btn btn-primary btn-lg shadow fw-bold py-3" @onclick="ConfirmPayment" disabled="@isPaying">
                     @if (isPaying)
                     {
                         <span class="spinner-border spinner-border-sm me-2"></span> <span>Processing...</span>
@@ -147,19 +147,36 @@
         }
     }
 
-    private async Task MarkPaid()
+        private async Task ConfirmPayment()
     {
         if (invoice == null) return;
 
+        bool confirm = await Application.Current.MainPage.DisplayAlert(
+            "Confirm Payment", 
+            $"Are you sure you want to mark this invoice as PAID?\nTotal Amount: {invoice.TotalAmount.ToString("C")}", 
+            "Yes, Pay", 
+            "Cancel");
+
+        if (confirm)
+        {
+            await MarkPaid();
+        }
+    }
+
+    private async Task MarkPaid()
+    {
+        if (invoice == null) return;
+        isPaying = true;
+
         try
         {
-            isPaying = true;
             await ApiService.MarkInvoicePaidAsync(invoice.InvoiceId, DateTime.Now);
+            await Application.Current.MainPage.DisplayAlert("Success", "Invoice marked as PAID.", "OK");
             await LoadInvoice();
         }
         catch (Exception ex)
         {
-            Logger.LogError(ex, "Failed to mark invoice as paid");
+            Logger.LogError(ex, "Failed to pay");
             await Application.Current.MainPage.DisplayAlert("Error", "Payment failed.", "OK");
         }
         finally

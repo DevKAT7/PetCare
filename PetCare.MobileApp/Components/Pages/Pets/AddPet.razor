@@ -41,6 +41,9 @@
                         <InputFile OnChange="HandleImageUpload" accept=".png,.jpg,.jpeg" hidden />
                     </label>
                 </div>
+                <div class="mt-2">
+                    <ValidationMessage For="@(() => petModel.ImageUrl)" class="text-danger small" />
+                </div>
                 <div class="small text-muted mt-2">Tap + to add photo</div>
             </div>
 
