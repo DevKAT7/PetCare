@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using PetCare.Application.Features.Prescriptions.Commands;
 using PetCare.Application.Features.Prescriptions.Dtos;
 using PetCare.Application.Features.Prescriptions.Queries;
+using PetCare.Application.Interfaces;
 
 namespace PetCare.Api.Controllers
 {
@@ -11,10 +12,12 @@ namespace PetCare.Api.Controllers
     public class PrescriptionsController : ControllerBase
     {
         private readonly IMediator _mediator;
+        private readonly IDocumentGenerator _documentGenerator;
 
-        public PrescriptionsController(IMediator mediator)
+        public PrescriptionsController(IMediator mediator, IDocumentGenerator documentGenerator)
         {
             _mediator = mediator;
+            _documentGenerator = documentGenerator;
         }
 
         [HttpGet]
@@ -54,6 +57,19 @@ namespace PetCare.Api.Controllers
             var command = new DeletePrescriptionCommand(id);
             await _mediator.Send(command);
             return NoContent();
+        }
+
+        [HttpGet("{id}/pdf")]
+        public async Task<IActionResult> GetPdf(int id)
+        {
+            var query = new GetPrescriptionQuery { Id = id };
+            var prescription = await _mediator.Send(query);
+
+            if (prescription == null) return NotFound();
+
+            var document = _documentGenerator.GeneratePrescription(prescription, "standard_pdf");
+
+            return File(document.Content, "application/pdf", document.FileName);
         }
     }
 }
