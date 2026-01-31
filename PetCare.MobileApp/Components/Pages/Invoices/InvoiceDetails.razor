@@ -11,11 +11,25 @@
 @inject ILogger<InvoiceDetails> Logger
 
 <div class="details-page pb-5">
-    <div class="d-flex align-items-center mb-4">
-        <button class="btn btn-link text-dark p-0 me-3" @onclick="GoBack">
-            <i class="bi bi-arrow-left fs-4"></i>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        
+        <div class="d-flex align-items-center">
+            <button class="btn btn-link text-dark p-0 me-3" @onclick="GoBack">
+                <i class="bi bi-arrow-left fs-4"></i>
+            </button>
+            <h4 class="mb-0 fw-bold">Invoice Details</h4>
+        </div>
+
+        <button class="btn btn-outline-secondary btn-sm shadow-sm" @onclick="DownloadPdf" disabled="@isDownloading">
+            @if (isDownloading)
+            {
+                <span class="spinner-border spinner-border-sm"></span>
+            }
+            else
+            {
+                <i class="bi bi-download me-1"></i> <span>PDF</span>
+            }
         </button>
-        <h4 class="mb-0 fw-bold">Invoice Details</h4>
     </div>
 
     @if (isLoading)
@@ -118,6 +132,7 @@
     private InvoiceReadModel? invoice;
     private bool isLoading = true;
     private bool isPaying = false;
+    private bool isDownloading = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -182,6 +197,35 @@
         finally
         {
             isPaying = false;
+        }
+    }
+
+    private async Task DownloadPdf()
+    {
+        isDownloading = true;
+        try
+        {
+            var pdfBytes = await ApiService.GetInvoicePdfAsync(InvoiceId);
+
+            var fileName = $"Invoice-{invoice?.InvoiceNumber ?? InvoiceId.ToString()}.pdf";
+            var filePath = Path.Combine(FileSystem.CacheDirectory, fileName);
+
+            await File.WriteAllBytesAsync(filePath, pdfBytes);
+
+            await Launcher.Default.OpenAsync(new OpenFileRequest
+            {
+                Title = "Invoice PDF",
+                File = new ReadOnlyFile(filePath)
+            });
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to download PDF");
+            await Application.Current.MainPage.DisplayAlert("Error", "Could not download invoice.", "OK");
+        }
+        finally
+        {
+            isDownloading = false;
         }
     }
 

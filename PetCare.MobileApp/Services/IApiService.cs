@@ -30,5 +30,6 @@ namespace PetCare.MobileApp.Services
         Task<List<InvoiceReadModel>> GetMyInvoicesAsync(int ownerId);
         Task<InvoiceReadModel?> GetInvoiceAsync(int invoiceId);
         Task MarkInvoicePaidAsync(int invoiceId, DateTime paymentDate);
+        Task<byte[]> GetInvoicePdfAsync(int invoiceId);
     }
 }

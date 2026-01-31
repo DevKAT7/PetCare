@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using PetCare.Application.Features.Invoices.Commands;
 using PetCare.Application.Features.Invoices.Dtos;
 using PetCare.Application.Features.Invoices.Queries;
+using PetCare.Application.Interfaces;
 
 namespace PetCare.Api.Controllers
 {
@@ -11,10 +12,12 @@ namespace PetCare.Api.Controllers
     public class InvoicesController : ControllerBase
     {
         private readonly IMediator _mediator;
+        private readonly IDocumentGenerator _documentGenerator;
 
-        public InvoicesController(IMediator mediator)
+        public InvoicesController(IMediator mediator, IDocumentGenerator documentGenerator)
         {
             _mediator = mediator;
+            _documentGenerator = documentGenerator;
         }
 
         [HttpGet("{id}")]
@@ -46,6 +49,19 @@ namespace PetCare.Api.Controllers
             var command = new MarkInvoicePaidCommand(id, paymentDate);
             var invoiceId = await _mediator.Send(command);
             return Ok(invoiceId);
+        }
+
+        [HttpGet("{id}/pdf")]
+        public async Task<IActionResult> GetPdf(int id)
+        {
+            var invoiceQuery = new GetInvoiceQuery(id);
+            var invoice = await _mediator.Send(invoiceQuery);
+
+            if (invoice == null) return NotFound();
+
+            var document = _documentGenerator.GenerateInvoice(invoice);
+
+            return File(document.Content, "application/pdf", document.FileName);
         }
     }
 }

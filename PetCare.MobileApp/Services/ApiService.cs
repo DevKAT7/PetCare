@@ -284,5 +284,13 @@ namespace PetCare.MobileApp.Services
         {
             await PostAsync($"api/invoices/{invoiceId}/pay", paymentDate);
         }
+
+        public async Task<byte[]> GetInvoicePdfAsync(int invoiceId)
+        {
+            await AddAuthorizationHeaderAsync();
+
+            var bytes = await _httpClient.GetByteArrayAsync($"api/invoices/{invoiceId}/pdf");
+            return bytes;
+        }
     }
 }

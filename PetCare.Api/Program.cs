@@ -5,8 +5,10 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 using PetCare.Api.Extensions;
 using PetCare.Application.Extensions;
+using PetCare.Application.Interfaces;
 using PetCare.Infrastructure.Data;
 using PetCare.Infrastructure.Extensions;
+using PetCare.Infrastructure.Services;
 using Serilog;
 using System.Text;
 
@@ -38,6 +40,7 @@ namespace PetCare.Api
                 builder.Host.UseSerilog();
 
                 // Add services to the container.
+                builder.Services.AddScoped<IDocumentGenerator, DocumentGenerator>();
                 builder.Services.AddApplicationLayer();
                 builder.Services.AddInfrastructureLayer(builder.Configuration);
                 builder.Services.AddControllers()
