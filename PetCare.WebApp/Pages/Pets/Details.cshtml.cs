@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using PetCare.Application.Exceptions;
 using PetCare.Application.Features.Pets.Queries;
-using PetCare.Shared.Dtos;
+using PetCare.Application.Features.Pets.Dtos;
 
 namespace PetCare.WebApp.Pages.Pets
 {
