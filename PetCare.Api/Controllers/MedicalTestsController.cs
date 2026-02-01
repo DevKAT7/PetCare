@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using PetCare.Application.Features.MedicalTests.Commands;
 using PetCare.Application.Features.MedicalTests.Dtos;
 using PetCare.Application.Features.MedicalTests.Queries;
+using PetCare.Application.Interfaces;
 
 namespace PetCare.Api.Controllers
 {
@@ -11,10 +12,12 @@ namespace PetCare.Api.Controllers
     public class MedicalTestsController : ControllerBase
     {
         private readonly IMediator _mediator;
+        private readonly IFileStorageService _fileStorage;
 
-        public MedicalTestsController(IMediator mediator)
+        public MedicalTestsController(IMediator mediator, IFileStorageService fileStorage)
         {
             _mediator = mediator;
+            _fileStorage = fileStorage;
         }
 
         [HttpGet]
@@ -54,6 +57,24 @@ namespace PetCare.Api.Controllers
             var command = new DeleteMedicalTestCommand(id);
             await _mediator.Send(command);
             return NoContent();
+        }
+
+        [HttpGet("{id}/download")]
+        public async Task<IActionResult> DownloadResult(int id)
+        {
+            var test = await _mediator.Send(new GetMedicalTestQuery { MedicalTestId = id });
+
+            if (test == null || string.IsNullOrEmpty(test.AttachmentUrl))
+                return NotFound();
+
+            var fileBytes = await _fileStorage.GetFileAsync(test.AttachmentUrl, "medicaltests");
+
+            if (fileBytes == null) return NotFound("File missing on server.");
+
+            var contentType = "application/pdf";
+            if (test.AttachmentUrl.EndsWith(".jpg")) contentType = "image/jpeg";
+
+            return File(fileBytes, contentType, test.AttachmentUrl);
         }
     }
 }

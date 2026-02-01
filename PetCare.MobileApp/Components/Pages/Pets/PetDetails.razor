@@ -260,9 +260,11 @@ else
                         {
                             <div class="card item-card mb-3 border-0 shadow-sm">
                                 <div class="card-body p-3 d-flex align-items-center">
+
                                     <div class="icon-square bg-warning-subtle text-dark me-3 rounded-circle">
                                         <i class="bi bi-clipboard2-pulse fs-5"></i>
                                     </div>
+
                                     <div class="flex-grow-1">
                                         <div class="d-flex justify-content-between align-items-start">
                                             <h6 class="fw-bold text-dark mb-0">@item.TestName</h6>
@@ -280,6 +282,30 @@ else
                                             <span class="badge bg-warning text-dark mt-1">Waiting for result</span>
                                         }
                                     </div>
+
+                                    <div class="ms-2">
+                                        @{
+                                            var isDownloading = downloadingTestIds.Contains(item.MedicalTestId);
+                                        }
+
+                                        @if (!string.IsNullOrEmpty(item.AttachmentUrl))
+                                        {
+                                            <button class="btn btn-sm btn-outline-secondary rounded-circle shadow-sm d-flex align-items-center justify-content-center"
+                                                    style="width: 40px; height: 40px;"
+                                                    @onclick="@(() => DownloadTestAttachment(item.MedicalTestId, item.AttachmentUrl, item.TestName))"
+                                                    disabled="@isDownloading">
+                                                @if (isDownloading)
+                                                {
+                                                    <span class="spinner-border spinner-border-sm" style="width: 1rem; height: 1rem;"></span>
+                                                }
+                                                else
+                                                {
+                                                    <i class="bi bi-paperclip text-dark"></i>
+                                                }
+                                            </button>
+                                        }
+                                    </div>
+
                                 </div>
                             </div>
                         }
@@ -307,6 +333,7 @@ else
     private string activeTab = "visits";
 
     private HashSet<int> downloadingPrescriptionIds = new();
+    private HashSet<int> downloadingTestIds = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -382,6 +409,46 @@ else
         finally
         {
             downloadingPrescriptionIds.Remove(prescriptionId);
+            StateHasChanged();
+        }
+    }
+
+    private async Task DownloadTestAttachment(int testId, string? originalUrl, string testName)
+    {
+        if (string.IsNullOrEmpty(originalUrl)) return;
+
+        if (downloadingTestIds.Contains(testId)) return;
+
+        downloadingTestIds.Add(testId);
+        StateHasChanged();
+
+        try
+        {
+            var fileBytes = await ApiService.GetMedicalTestAttachmentAsync(testId);
+
+            var extension = Path.GetExtension(originalUrl);
+            if (string.IsNullOrEmpty(extension)) extension = ".pdf";
+
+            var safeName = testName.Replace(" ", "_").Replace("/", "-");
+            var fileName = $"Test_{safeName}_{testId}{extension}";
+            var filePath = Path.Combine(FileSystem.CacheDirectory, fileName);
+
+            await File.WriteAllBytesAsync(filePath, fileBytes);
+
+            await Launcher.Default.OpenAsync(new OpenFileRequest
+            {
+                Title = "Medical Test Result",
+                File = new ReadOnlyFile(filePath)
+            });
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to download attachment");
+            await Application.Current.MainPage.DisplayAlert("Error", "Could not download file.", "OK");
+        }
+        finally
+        {
+            downloadingTestIds.Remove(testId);
             StateHasChanged();
         }
     }

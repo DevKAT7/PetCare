@@ -32,5 +32,6 @@ namespace PetCare.MobileApp.Services
         Task MarkInvoicePaidAsync(int invoiceId, DateTime paymentDate);
         Task<byte[]> GetInvoicePdfAsync(int invoiceId);
         Task<byte[]> GetPrescriptionPdfAsync(int prescriptionId);
+        Task<byte[]> GetMedicalTestAttachmentAsync(int testId);
     }
 }

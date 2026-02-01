@@ -296,5 +296,11 @@ namespace PetCare.MobileApp.Services
             await AddAuthorizationHeaderAsync();
             return await _httpClient.GetByteArrayAsync($"api/prescriptions/{prescriptionId}/pdf");
         }
+
+        public async Task<byte[]> GetMedicalTestAttachmentAsync(int testId)
+        {
+            await AddAuthorizationHeaderAsync();
+            return await _httpClient.GetByteArrayAsync($"api/medicaltests/{testId}/download");
+        }
     }
 }

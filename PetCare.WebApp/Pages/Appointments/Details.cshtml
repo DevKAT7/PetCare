@@ -201,7 +201,7 @@
                                                 <div class="fw-bold text-dark">@test.TestName</div>
                                                 @if (!string.IsNullOrEmpty(test.AttachmentUrl))
                                                 {
-                                                    <a href="@test.AttachmentUrl" target="_blank" class="small text-decoration-none mt-1 d-inline-block">
+                                                    <a asp-page="/DownloadFile" asp-route-fileId="@test.MedicalTestId" target="_blank" class="...">
                                                         <i class="bi bi-paperclip me-1"></i>View Attachment
                                                     </a>
                                                 }
@@ -375,7 +375,7 @@
 
 @section Scripts {
     <script>
-        //alert (Toast) po wystawieniu recepty
+        //alert (Toast)
         @if (TempData["SuccessMessage"] != null)
         {
                             <text>
@@ -387,7 +387,7 @@
                                     <strong><i class="bi bi-check-circle-fill me-2"></i>Success!</strong> ${msg}
                                     <hr>
 
-                                    <p class="mb-0 small">Find the prescription in the list below and click the download icon.</p>
+                                    <p class="mb-0 small">Find the details below</p>
                                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                                 </div>
                             `;

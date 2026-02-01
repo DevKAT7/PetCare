@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using PetCare.Application.Interfaces;
 using PetCare.Core.Models;
 using PetCare.Infrastructure.Data;
+using PetCare.Infrastructure.Services;
 
 namespace PetCare.Infrastructure.Extensions
 {
@@ -30,7 +31,8 @@ namespace PetCare.Infrastructure.Extensions
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddDefaultTokenProviders();
 
-            services.AddHostedService<Services.NotificationBackgroundService>();
+            services.AddHostedService<NotificationBackgroundService>();
+            services.AddScoped<IFileStorageService, FileStorageService>();
 
             return services;
         }

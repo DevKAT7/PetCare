@@ -15,7 +15,7 @@
 
     <div class="card shadow-sm border-0">
         <div class="card-body">
-            <form method="post" asp-page-handler="Edit">
+            <form method="post" asp-page-handler="Edit" enctype="multipart/form-data">
 
                 <input type="hidden" asp-for="MedicalTestId" />
                 <input type="hidden" asp-for="AppointmentId" />
@@ -38,12 +38,31 @@
                 </div>
 
                 <div class="mb-3">
-                    <label asp-for="Input.AttachmentUrl" class="form-label">Attachment URL (Optional)</label>
+                    <label asp-for="Input.AttachmentFile" class="form-label fw-bold">Attachment (PDF/Image)</label>
+
                     <div class="input-group">
-                        <span class="input-group-text"><i class="bi bi-link-45deg"></i></span>
-                        <input asp-for="Input.AttachmentUrl" class="form-control" placeholder="https://..." />
+                        <button class="btn btn-outline-secondary" type="button" onclick="document.getElementById('customFile').click()">
+                            <i class="bi bi-folder2-open me-2"></i>Choose File
+                        </button>
+
+                        <input type="text" class="form-control" id="fileNameDisplay" placeholder="No file selected" readonly style="background-color: white;">
                     </div>
-                    <div class="form-text">Link to external file or cloud storage.</div>
+
+                    <input asp-for="Input.AttachmentFile" type="file" id="customFile" style="display: none;"
+                           accept=".pdf,.jpg,.jpeg,.png" onchange="updateFileName(this)" />
+
+                    <div class="form-text">Upload a new file to replace the current one.</div>
+
+                    @if (!string.IsNullOrEmpty(Model.Input.AttachmentUrl))
+                    {
+                        <div class="mt-2 text-muted small">
+                            Current file:
+                            <a asp-page="/DownloadFile" asp-route-fileId="@Model.MedicalTestId" target="_blank">
+                                View Attachment
+                            </a>
+                        </div>
+                    }
+                    <span asp-validation-for="Input.AttachmentUrl" class="text-danger"></span>
                 </div>
 
                 <div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top">
@@ -85,4 +104,15 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    @* ten skrypt jest do wyswietlania angielskich nazw No file selected itd, zastąpienie systemowych *@
+    <script>
+        function updateFileName(input) {
+            var fileNameDisplay = document.getElementById('fileNameDisplay');
+            if (input.files && input.files.length > 0) {
+                fileNameDisplay.value = input.files[0].name;
+            } else {
+                fileNameDisplay.value = "";
+            }
+        }
+    </script>
 }
