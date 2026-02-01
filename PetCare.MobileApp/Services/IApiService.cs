@@ -1,9 +1,10 @@
 ﻿using PetCare.MobileApp.Common;
-using PetCare.MobileApp.Models.Appointments;
-using PetCare.MobileApp.Models.Vets;
-using PetCare.MobileApp.Models.Pets;
-using PetCare.MobileApp.Models.Invoices;
 using PetCare.MobileApp.Enums;
+using PetCare.MobileApp.Models.Appointments;
+using PetCare.MobileApp.Models.Invoices;
+using PetCare.MobileApp.Models.Pets;
+using PetCare.MobileApp.Models.Vets;
+using PetCare.Shared.Dtos;
 
 namespace PetCare.MobileApp.Services
 {
@@ -15,6 +16,9 @@ namespace PetCare.MobileApp.Services
         Task PostAsync<TRequest>(string endpoint, TRequest data);
         Task PutAsync<TRequest>(string endpoint, TRequest data);
         Task DeleteAsync(string endpoint);
+        Task<UserProfileDto?> GetProfileAsync();
+        Task<bool> UpdateProfileAsync(EditProfileDto model);
+        Task<bool> ChangePasswordAsync(ChangePasswordDto model);
         Task<List<PetReadModel>> GetPetsAsync(int? ownerId = null);
         Task<PetDetailDto?> GetPetDetailsAsync(int petId);
         Task AddPetAsync(PetCreateModel petModel);

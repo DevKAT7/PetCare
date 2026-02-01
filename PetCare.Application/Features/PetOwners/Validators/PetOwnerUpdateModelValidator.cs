@@ -7,12 +7,6 @@ namespace PetCare.Application.Features.PetOwners.Validators
     {
         public PetOwnerUpdateModelValidator()
         {
-            When(x => !string.IsNullOrEmpty(x.Email), () =>
-            {
-                RuleFor(x => x.Email)
-                    .EmailAddress().WithMessage("Invalid email address format.");
-            });
-
             When(x => !string.IsNullOrEmpty(x.PhoneNumber), () =>
             {
                 RuleFor(x => x.PhoneNumber)

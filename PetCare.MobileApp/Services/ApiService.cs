@@ -1,14 +1,15 @@
 ﻿using Microsoft.Extensions.Logging;
-using PetCare.MobileApp.Models.Appointments;
 using PetCare.MobileApp.Common;
-using PetCare.MobileApp.Models.Pets;
 using PetCare.MobileApp.Enums;
+using PetCare.MobileApp.Models.Appointments;
+using PetCare.MobileApp.Models.Invoices;
+using PetCare.MobileApp.Models.Pets;
+using PetCare.MobileApp.Models.Vets;
+using PetCare.Shared.Dtos;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using PetCare.MobileApp.Models.Vets;
-using PetCare.MobileApp.Models.Invoices;
 
 namespace PetCare.MobileApp.Services
 {
@@ -181,6 +182,39 @@ namespace PetCare.MobileApp.Services
             {
                 _logger.LogError(ex, "Error in DELETE {Endpoint}", endpoint);
                 throw;
+            }
+        }
+
+        public async Task<UserProfileDto?> GetProfileAsync()
+        {
+            return await GetAsync<UserProfileDto>("api/account/profile");
+        }
+
+        public async Task<bool> UpdateProfileAsync(EditProfileDto model)
+        {
+            try
+            {
+                await PutAsync("api/account/profile", model);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to update profile");
+                return false;
+            }
+        }
+
+        public async Task<bool> ChangePasswordAsync(ChangePasswordDto model)
+        {
+            try
+            {
+                await PostAsync("api/account/change-password", model);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to change password");
+                return false;
             }
         }
 
