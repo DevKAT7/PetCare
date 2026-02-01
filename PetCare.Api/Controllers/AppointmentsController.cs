@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using PetCare.Application.Features.Appointments.Commands;
 using PetCare.Application.Features.Appointments.Dtos;
 using PetCare.Application.Features.Appointments.Queries;
+using PetCare.Core.Enums;
 
 namespace PetCare.Api.Controllers
 {
@@ -23,8 +24,8 @@ namespace PetCare.Api.Controllers
             [FromQuery] string sortColumn = "Date", [FromQuery] string sortDirection = "desc", [FromQuery] int pageIndex = 1,
             [FromQuery] int pageSize = 14)
         {
-            Core.Enums.AppointmentStatus? parsedStatus = null;
-            if (!string.IsNullOrEmpty(status) && Enum.TryParse<Core.Enums.AppointmentStatus>(status, true, out var s)) parsedStatus = s;
+            AppointmentStatus? parsedStatus = null;
+            if (!string.IsNullOrEmpty(status) && Enum.TryParse<AppointmentStatus>(status, true, out var s)) parsedStatus = s;
 
             var query = new GetAllAppointmentsQuery(
                     petName: petName,

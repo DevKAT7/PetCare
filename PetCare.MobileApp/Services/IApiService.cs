@@ -3,6 +3,7 @@ using PetCare.MobileApp.Models.Appointments;
 using PetCare.MobileApp.Models.Vets;
 using PetCare.MobileApp.Models.Pets;
 using PetCare.MobileApp.Models.Invoices;
+using PetCare.MobileApp.Enums;
 
 namespace PetCare.MobileApp.Services
 {
@@ -20,7 +21,8 @@ namespace PetCare.MobileApp.Services
         Task UpdatePetAsync(int petId, PetUpdateModel petModel);
         Task DeletePetAsync(int petId);
         Task<PaginatedResult<AppointmentReadModel>> GetMyAppointmentsAsync
-            (int ownerId, bool upcomingOnly, int page = 1, int pageSize = 10);
+            (int ownerId, bool upcomingOnly, int page = 1, int pageSize = 10,
+             int? petId = null, DateTime? from = null, DateTime? to = null, AppointmentStatus? status = null);
         Task<List<VetLookupDto>> GetVetsForLookupAsync();
         Task<List<TimeSpan>> GetVetAvailabilityAsync(int vetId, DateTime date);
         Task CreateAppointmentAsync(AppointmentCreateModel model);

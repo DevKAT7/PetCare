@@ -2,6 +2,7 @@
 using PetCare.MobileApp.Models.Appointments;
 using PetCare.MobileApp.Common;
 using PetCare.MobileApp.Models.Pets;
+using PetCare.MobileApp.Enums;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json;
@@ -217,22 +218,48 @@ namespace PetCare.MobileApp.Services
         }
 
         public async Task<PaginatedResult<AppointmentReadModel>> GetMyAppointmentsAsync
-            (int ownerId, bool upcomingOnly, int page = 1, int pageSize = 10)
+            (int ownerId, bool upcomingOnly, int page = 1, int pageSize = 10, int? petId = null,
+            DateTime? from = null, DateTime? to = null, AppointmentStatus? status = null)
         {
             var url = $"api/appointments?petOwnerId={ownerId}&pageIndex={page}&pageSize={pageSize}";
 
-            if (upcomingOnly)
+            if (from.HasValue)
+            {
+                url += $"&from={from.Value:yyyy-MM-dd}";
+            }
+            else if (upcomingOnly)
             {
                 url += $"&from={DateTime.Today:yyyy-MM-dd}&sortColumn=Date&sortDirection=asc";
             }
-            else
+
+            if (to.HasValue)
+            {
+                url += $"&to={to.Value:yyyy-MM-dd}";
+            }
+            else if (!upcomingOnly)
             {
                 url += $"&to={DateTime.Today.AddDays(-1):yyyy-MM-dd}&sortColumn=Date&sortDirection=desc";
             }
 
+            if (status.HasValue)
+            {
+                url += $"&status={status.Value}";
+            }
+
             var result = await GetAsync<PaginatedResult<AppointmentReadModel>>(url);
 
-            return result ?? new PaginatedResult<AppointmentReadModel>();
+            if (result == null)
+            {
+                return new PaginatedResult<AppointmentReadModel>();
+            }
+
+            if (petId.HasValue && result.Items != null)
+            {
+                var filtered = result.Items.Where(x => x.PetId == petId.Value).ToList();
+                return new PaginatedResult<AppointmentReadModel>(filtered, filtered.Count, page, pageSize);
+            }
+
+            return result;
         }
 
         public async Task<List<VetLookupDto>> GetVetsForLookupAsync()

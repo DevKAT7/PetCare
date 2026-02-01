@@ -4,13 +4,58 @@
 @using PetCare.MobileApp.Models.Appointments
 @using PetCare.Shared.Dtos
 @using PetCare.MobileApp.Services
+@using PetCare.MobileApp.Models.Pets
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Components.Forms
 @attribute [Authorize]
 @inject IApiService ApiService
 @inject NavigationManager Navigation
 @inject AuthenticationStateProvider AuthStateProvider
 @inject ILogger<Appointments> Logger
+
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-body p-2 bg-light rounded-3">
+        <div class="row g-2 align-items-end">
+            <div class="col-auto">
+                <label class="form-label small mb-1">Pet</label>
+                <select class="form-select form-select-sm" @bind="selectedPetId">
+                    <option value="">All pets</option>
+                    @foreach (var p in pets)
+                    {
+                        <option value="@p.PetId">@p.Name</option>
+                    }
+                </select>
+            </div>
+
+            <div class="col-auto">
+                <label class="form-label small mb-1">From</label>
+                <InputDate class="form-control form-control-sm" TValue="DateTime?" @bind-Value="selectedFrom" />
+            </div>
+
+            <div class="col-auto">
+                <label class="form-label small mb-1">To</label>
+                <InputDate class="form-control form-control-sm" TValue="DateTime?" @bind-Value="selectedTo" />
+            </div>
+
+            <div class="col-auto">
+                <label class="form-label small mb-1">Status</label>
+                <select class="form-select form-select-sm" @bind="selectedStatusString">
+                    <option value="">All</option>
+                    @foreach (var s in Enum.GetValues(typeof(AppointmentStatus)).Cast<AppointmentStatus>())
+                    {
+                        <option value="@s">@s</option>
+                    }
+                </select>
+            </div>
+
+            <div class="col-auto">
+                <button class="btn btn-primary btn-sm me-2" @onclick="ApplyFilters">Apply</button>
+                <button class="btn btn-link btn-sm text-decoration-none" @onclick="ClearFilters">Clear</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <div class="details-page pb-5">
     <div class="d-flex justify-content-between align-items-center mb-3">
@@ -114,12 +159,18 @@
 
 @code {
     private List<AppointmentReadModel> appointments = new();
+    private List<PetReadModel> pets = new();
     private string activeTab = "upcoming";
     private bool isLoading = true;
     private bool isLoadingMore = false;
     private int currentPage = 1;
     private bool hasNextPage = false;
     private int ownerId;
+
+    private int? selectedPetId;
+    private DateTime? selectedFrom;
+    private DateTime? selectedTo;
+    private string? selectedStatusString;
 
     protected override async Task OnInitializedAsync()
     {
@@ -132,6 +183,16 @@
             if (claim != null && int.TryParse(claim.Value, out int id))
             {
                 ownerId = id;
+                try
+                {
+                    pets = await ApiService.GetPetsAsync(ownerId);
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogWarning(ex, "Failed to load pets for filter");
+                    pets = new List<PetReadModel>();
+                }
+
                 await LoadAppointments();
             }
         }
@@ -162,7 +223,18 @@
         try
         {
             bool upcoming = activeTab == "upcoming";
-            var result = await ApiService.GetMyAppointmentsAsync(ownerId, upcoming, currentPage);
+            var from = selectedFrom;
+            var to = selectedTo;
+            AppointmentStatus? status = null;
+
+            if (!string.IsNullOrWhiteSpace(selectedStatusString) 
+                && Enum.TryParse<AppointmentStatus>(selectedStatusString, out var parsed))
+            {
+                status = parsed;
+            }
+
+            var result = await ApiService.GetMyAppointmentsAsync(ownerId, upcoming, currentPage, pageSize: 10,
+                petId: selectedPetId, from: from, to: to, status: status);
 
             if (currentPage == 1)
             {
@@ -190,6 +262,24 @@
         currentPage++;
         await LoadAppointments();
         isLoadingMore = false;
+    }
+
+    private async Task ApplyFilters()
+    {
+        currentPage = 1;
+        appointments.Clear();
+        isLoading = true;
+        await LoadAppointments();
+        isLoading = false;
+    }
+
+    private async Task ClearFilters()
+    {
+        selectedPetId = null;
+        selectedFrom = null;
+        selectedTo = null;
+        selectedStatusString = null;
+        await ApplyFilters();
     }
 
     private void GoToDetails(int id)
