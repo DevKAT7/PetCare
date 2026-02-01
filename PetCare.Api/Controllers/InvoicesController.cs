@@ -29,9 +29,9 @@ namespace PetCare.Api.Controllers
         }
 
         [HttpGet("by-owner/{ownerId}")]
-        public async Task<IActionResult> GetByOwner(int ownerId)
+        public async Task<IActionResult> GetByOwner(int ownerId, [FromQuery] string? status = null)
         {
-            var query = new GetInvoicesByOwnerQuery(ownerId);
+            var query = new GetInvoicesByOwnerQuery(ownerId, status);
             var result = await _mediator.Send(query);
             return Ok(result);
         }

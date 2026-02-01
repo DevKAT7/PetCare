@@ -296,9 +296,17 @@ namespace PetCare.MobileApp.Services
             await DeleteAsync($"api/appointments/{appointmentId}");
         }
 
-        public async Task<List<InvoiceReadModel>> GetMyInvoicesAsync(int ownerId)
+        public async Task<List<InvoiceReadModel>> GetMyInvoicesAsync(int ownerId,
+            InvoiceStatusFilter? status = null)
         {
-            var result = await GetAsync<List<InvoiceReadModel>>($"api/invoices/by-owner/{ownerId}");
+            var url = $"api/invoices/by-owner/{ownerId}";
+
+            if (status.HasValue)
+            {
+                url += $"?status={status.Value.ToString().ToLower()}";
+            }
+
+            var result = await GetAsync<List<InvoiceReadModel>>(url);
             return result ?? new List<InvoiceReadModel>();
         }
 

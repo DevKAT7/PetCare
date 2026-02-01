@@ -3,6 +3,7 @@
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Components.Authorization
 @using PetCare.MobileApp.Models.Invoices
+@using PetCare.MobileApp.Enums
 @using PetCare.MobileApp.Services
 @attribute [Authorize]
 @inject IApiService ApiService
@@ -13,6 +14,16 @@
 <div class="details-page pb-5">
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h4 class="mb-0 fw-bold">My Bills</h4>
+    </div>
+
+    <div class="mb-3 d-flex gap-2 align-items-center">
+        <label class="small mb-0">Filter:</label>
+        <select class="form-select w-auto" @onchange="OnFilterChanged">
+            <option value="">All</option>
+            <option value="Paid">Paid</option>
+            <option value="Unpaid">Unpaid</option>
+            <option value="Overdue">Overdue</option>
+        </select>
     </div>
 
     @if (isLoading)
@@ -75,6 +86,7 @@
     private List<InvoiceReadModel> invoices = new();
     private bool isLoading = true;
     private int ownerId;
+    private string selectedStatus = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
@@ -104,7 +116,16 @@
     {
         try
         {
-            var result = await ApiService.GetMyInvoicesAsync(ownerId);
+            InvoiceStatusFilter? filter = null;
+            if (!string.IsNullOrWhiteSpace(selectedStatus))
+            {
+                if (Enum.TryParse<InvoiceStatusFilter>(selectedStatus, true, out var parsed))
+                {
+                    filter = parsed;
+                }
+            }
+
+            var result = await ApiService.GetMyInvoicesAsync(ownerId, filter);
             invoices = result ?? new List<InvoiceReadModel>();
         }
         catch (Exception ex)
@@ -116,6 +137,20 @@
     private void GoToDetails(int id)
     {
         Navigation.NavigateTo($"/invoices/{id}");
+    }
+
+    private async Task OnFilterChanged(ChangeEventArgs e)
+    {
+        selectedStatus = e.Value?.ToString() ?? string.Empty;
+        isLoading = true;
+        try
+        {
+            await LoadInvoices();
+        }
+        finally
+        {
+            isLoading = false;
+        }
     }
 
     private (string BorderColor, string BadgeClass, string TextClass, string Text) GetStatusInfo(InvoiceReadModel inv)

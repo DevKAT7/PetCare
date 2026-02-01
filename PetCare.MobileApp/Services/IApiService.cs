@@ -29,7 +29,7 @@ namespace PetCare.MobileApp.Services
         Task<AppointmentReadModel?> GetAppointmentDetailsAsync(int appointmentId);
         Task ConfirmAppointmentAsync(int appointmentId);
         Task CancelAppointmentAsync(int appointmentId);
-        Task<List<InvoiceReadModel>> GetMyInvoicesAsync(int ownerId);
+        Task<List<InvoiceReadModel>> GetMyInvoicesAsync(int ownerId, InvoiceStatusFilter? status = null);
         Task<InvoiceReadModel?> GetInvoiceAsync(int invoiceId);
         Task MarkInvoicePaidAsync(int invoiceId, DateTime paymentDate);
         Task<byte[]> GetInvoicePdfAsync(int invoiceId);
