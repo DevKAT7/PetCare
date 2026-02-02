@@ -1,10 +1,13 @@
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PetCare.Application.Features.Notifications.Commands;
 using PetCare.Application.Features.Notifications.Queries;
+using System.Security.Claims;
 
 namespace PetCare.Api.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class NotificationsController : ControllerBase
@@ -19,7 +22,9 @@ namespace PetCare.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var result = await _mediator.Send(new GetNotificationsQuery());
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var result = await _mediator.Send(new GetNotificationsQuery { UserId = userId });
             return Ok(result);
         }
 

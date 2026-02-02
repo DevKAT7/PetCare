@@ -3,6 +3,7 @@ using PetCare.MobileApp.Common;
 using PetCare.MobileApp.Enums;
 using PetCare.MobileApp.Models.Appointments;
 using PetCare.MobileApp.Models.Invoices;
+using PetCare.MobileApp.Models.Notifications;
 using PetCare.MobileApp.Models.Pets;
 using PetCare.MobileApp.Models.Vets;
 using PetCare.Shared.Dtos;
@@ -370,6 +371,17 @@ namespace PetCare.MobileApp.Services
         {
             await AddAuthorizationHeaderAsync();
             return await _httpClient.GetByteArrayAsync($"api/medicaltests/{testId}/download");
+        }
+
+        public async Task<List<NotificationReadModel>> GetNotificationsAsync()
+        {
+            var result = await GetAsync<List<NotificationReadModel>>("api/notifications");
+            return result ?? new List<NotificationReadModel>();
+        }
+
+        public async Task MarkNotificationAsReadAsync(int id)
+        {
+            await PutAsync<object>($"api/notifications/{id}/read", new { });
         }
     }
 }

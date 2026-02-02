@@ -1,0 +1,50 @@
+.notification-dropdown {
+    position: absolute;
+    top: 45px;
+    right: -10px;
+    width: 300px;
+    max-height: 70vh;
+    z-index: 2000;
+    overflow: hidden;
+    border: 1px solid #ddd;
+}
+
+.notification-list {
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+.notification-item {
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+    .notification-item:hover {
+        background-color: #f8f9fa;
+    }
+
+.bg-light-blue {
+    background-color: #eaf6f7;
+}
+
+.x-small {
+    font-size: 0.75rem;
+    line-height: 1.2;
+}
+
+.notification-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.notification-list::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.notification-list::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 3px;
+}
+
+    .notification-list::-webkit-scrollbar-thumb:hover {
+        background: var(--petcare-primary);
+    }

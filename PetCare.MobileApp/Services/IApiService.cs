@@ -2,6 +2,7 @@
 using PetCare.MobileApp.Enums;
 using PetCare.MobileApp.Models.Appointments;
 using PetCare.MobileApp.Models.Invoices;
+using PetCare.MobileApp.Models.Notifications;
 using PetCare.MobileApp.Models.Pets;
 using PetCare.MobileApp.Models.Vets;
 using PetCare.Shared.Dtos;
@@ -39,5 +40,7 @@ namespace PetCare.MobileApp.Services
         Task<byte[]> GetInvoicePdfAsync(int invoiceId);
         Task<byte[]> GetPrescriptionPdfAsync(int prescriptionId);
         Task<byte[]> GetMedicalTestAttachmentAsync(int testId);
+        Task<List<NotificationReadModel>> GetNotificationsAsync();
+        Task MarkNotificationAsReadAsync(int id);
     }
 }

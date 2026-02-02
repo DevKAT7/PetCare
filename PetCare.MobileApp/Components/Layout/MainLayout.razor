@@ -1,12 +1,79 @@
 ﻿@inherits LayoutComponentBase
+@using PetCare.MobileApp.Enums
+@using PetCare.MobileApp.Models.Notifications
+@using PetCare.MobileApp.Services
+@inject IApiService ApiService
+@inject NavigationManager Navigation
 
 <div class="page">
-<header class="top-header">
+    <header class="top-header d-flex justify-content-between align-items-center px-3">
         <a href="" class="d-flex align-items-center text-decoration-none">
-            <img src="images/logo-petcare-white2.png" 
-                 alt="PetCare Logo" 
+            <img src="images/logo-petcare-white2.png"
+                 alt="PetCare Logo"
                  style="height: 40px; width: auto;" />
         </a>
+
+        <div class="position-relative">
+            <button class="btn btn-link text-white position-relative p-0 me-2" @onclick="ToggleNotifications">
+                <i class="bi bi-bell-fill fs-4"></i> @if (unreadCount > 0)
+                                {
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger border border-white"
+                          style="font-size: 0.6rem;">
+                        @unreadCount
+                    </span>
+                }
+            </button>
+
+            @if (showNotifications)
+            {
+                <div class="notification-dropdown shadow rounded bg-white text-dark">
+                    <div class="d-flex justify-content-between align-items-center p-2 border-bottom bg-light rounded-top">
+                        <span class="fw-bold small text-muted">Notifications</span>
+                        <button class="btn btn-sm btn-link text-decoration-none p-0" style="font-size: 0.8rem" @onclick="MarkAllRead">
+                            Read all
+                        </button>
+                    </div>
+
+                    <div class="notification-list">
+                        @if (isLoading)
+                        {
+                            <div class="text-center p-3">
+                                <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
+                            </div>
+                        }
+                        else if (notifications == null || !notifications.Any())
+                        {
+                            <div class="text-center p-4 text-muted small">
+                                <i class="bi bi-bell-slash d-block fs-4 mb-2"></i>
+                                No new notifications
+                            </div>
+                        }
+                        else
+                        {
+                            @foreach (var note in notifications)
+                            {
+                                <div class="p-2 border-bottom notification-item @(note.IsRead ? "bg-white" : "bg-light-blue")"
+                                     @onclick="() => HandleClick(note)">
+
+                                    <div class="d-flex align-items-start text-start">
+                                        <div class="me-2 mt-1">
+                                            @GetIcon(note.Type)
+                                        </div>
+                                        <div>
+                                            <div class="d-flex justify-content-between w-100">
+                                                <p class="mb-0 small fw-bold @GetColorClass(note.Type)">@GetTypeName(note.Type)</p>
+                                                <small class="text-muted ms-2" style="font-size: 0.65rem;">@note.CreatedAt.ToString("dd.MM")</small>
+                                            </div>
+                                            <p class="mb-0 x-small text-dark text-wrap">@note.Message</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        }
+                    </div>
+                </div>
+            }
+        </div>
     </header>
 
     <main class="content px-3 py-3">
@@ -31,3 +98,117 @@
         </NavLink>
     </nav>
 </div>
+
+@code {
+    private bool showNotifications = false;
+    private List<NotificationReadModel> notifications = new();
+    private int unreadCount = 0;
+    private bool isLoading = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            await UpdateUnreadCount();
+        }
+        catch (Exception)
+        {
+            //ignorujemy błąd braku połączenia przy starcie layoutu
+        }
+    }
+
+    private async Task ToggleNotifications()
+    {
+        showNotifications = !showNotifications;
+
+        if (showNotifications)
+        {
+            await LoadNotifications();
+        }
+    }
+
+    private async Task LoadNotifications()
+    {
+        isLoading = true;
+        try
+        {
+            notifications = await ApiService.GetNotificationsAsync();
+
+            notifications = notifications.OrderBy(n => n.IsRead).ThenByDescending(n => n.CreatedAt).ToList();
+            unreadCount = notifications.Count(n => !n.IsRead);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading notifications: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task HandleClick(NotificationReadModel note)
+    {
+        if (!note.IsRead)
+        {
+            note.IsRead = true;
+            unreadCount = Math.Max(0, unreadCount - 1);
+            await ApiService.MarkNotificationAsReadAsync(note.NotificationId);
+        }
+    }
+
+    private async Task MarkAllRead()
+    {
+        foreach (var n in notifications.Where(x => !x.IsRead))
+        {
+            n.IsRead = true;
+            await ApiService.MarkNotificationAsReadAsync(n.NotificationId);
+        }
+        unreadCount = 0;
+    }
+
+    private async Task UpdateUnreadCount()
+    {
+        var all = await ApiService.GetNotificationsAsync();
+        unreadCount = all.Count(n => !n.IsRead);
+    }
+
+    private RenderFragment GetIcon(NotificationType type) => builder =>
+    {
+        string iconClass = type switch
+        {
+            NotificationType.AppointmentReminder => "bi-calendar-event text-primary",
+            NotificationType.AppointmentCancelled => "bi-calendar-x text-danger",
+            NotificationType.InvoiceReady => "bi-receipt text-success",
+            NotificationType.InvoiceDue => "bi-cash-coin text-warning",
+            NotificationType.InvoiceOverdue => "bi-exclamation-triangle-fill text-danger",
+            NotificationType.VaccineDue => "bi-bandaid text-info",
+            NotificationType.MedicalTestResultReady => "bi-file-earmark-medical text-primary",
+            _ => "bi-info-circle text-secondary"
+        };
+        builder.OpenElement(0, "i");
+        builder.AddAttribute(1, "class", $"bi {iconClass} fs-5");
+        builder.CloseElement();
+    };
+
+    private string GetTypeName(NotificationType type) => type switch
+    {
+        NotificationType.AppointmentReminder => "Appointment",
+        NotificationType.AppointmentCancelled => "Cancelled",
+        NotificationType.InvoiceReady => "Invoice",
+        NotificationType.InvoiceDue => "Payment",
+        NotificationType.InvoiceOverdue => "Overdue",
+        NotificationType.VaccineDue => "Vaccination",
+        NotificationType.MedicalTestResultReady => "Test results",
+        _ => "Info"
+    };
+
+    private string GetColorClass(NotificationType type) => type switch
+    {
+        NotificationType.AppointmentCancelled or NotificationType.InvoiceOverdue => "text-danger",
+        NotificationType.InvoiceReady => "text-success",
+        NotificationType.InvoiceDue => "text-warning",
+        NotificationType.VaccineDue => "text-info",
+        _ => "text-primary"
+    };
+}
