@@ -15,7 +15,7 @@ namespace PetCare.Core.Models
         public string FullName => $"{FirstName} {LastName}";
         [MaxLength(500)]
         public string Address { get; set; } = null!;
-        [Phone(ErrorMessage = "Niepoprawny format numeru telefonu.")]
+        [Phone(ErrorMessage = "Invalid phone number format.")]
         [MaxLength(20)]
         public string PhoneNumber { get; set; } = null!;
         public bool IsActive { get; set; } = true;

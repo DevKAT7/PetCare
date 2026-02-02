@@ -13,7 +13,7 @@ namespace PetCare.Core.Models
         public string LastName { get; set; } = null!;
         [MaxLength(500)]
         public string Address { get; set; } = null!;
-        [StringLength(11, MinimumLength = 11, ErrorMessage = "PESEL musi mieć 11 cyfr.")]
+        [StringLength(11, MinimumLength = 11, ErrorMessage = "The PESEL number must have 11 digits.")]
         public string Pesel { get; set; } = null!;
         [MaxLength(50)]
         public string LicenseNumber { get; set; } = null!;

@@ -40,25 +40,25 @@
             <div class="mb-3">
                 <label class="form-label fw-bold">First Name</label>
                 <InputText class="form-control" @bind-Value="editModel.FirstName" placeholder="John" />
-                <ValidationMessage For="@(() => editModel.FirstName)" />
+                <ValidationMessage For="@(() => editModel.FirstName)" class="text-danger small"/>
             </div>
 
             <div class="mb-3">
                 <label class="form-label fw-bold">Last Name</label>
                 <InputText class="form-control" @bind-Value="editModel.LastName" placeholder="Doe" />
-                <ValidationMessage For="@(() => editModel.LastName)" />
+                <ValidationMessage For="@(() => editModel.LastName)" class="text-danger small"/>
             </div>
 
             <div class="mb-3">
                 <label class="form-label fw-bold">Phone Number</label>
                 <InputText class="form-control" @bind-Value="editModel.PhoneNumber" placeholder="123 456 789" />
-                <ValidationMessage For="@(() => editModel.PhoneNumber)" />
+                <ValidationMessage For="@(() => editModel.PhoneNumber)" class="text-danger small"/>
             </div>
 
             <div class="mb-4">
                 <label class="form-label fw-bold">Address</label>
                 <InputTextArea class="form-control" @bind-Value="editModel.Address" rows="2" placeholder="Street, City, Zip" />
-                <ValidationMessage For="@(() => editModel.Address)" />
+                <ValidationMessage For="@(() => editModel.Address)" class="text-danger small"/>
             </div>
 
             <button type="submit" class="btn btn-primary w-100 py-3 fw-bold shadow-sm" disabled="@isSaving">

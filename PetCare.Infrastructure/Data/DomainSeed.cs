@@ -14,17 +14,17 @@ namespace PetCare.Infrastructure.Data
 
             var specializations = new List<VetSpecialization>
             {
-                new VetSpecialization { Name = "Ogólna" },
-                new VetSpecialization { Name = "Internista" },
-                new VetSpecialization { Name = "Chirurg" },
-                new VetSpecialization { Name = "Dermatolog" },
-                new VetSpecialization { Name = "Kardiolog" },
-                new VetSpecialization { Name = "Ortopeda" },
-                new VetSpecialization { Name = "Okulista" },
-                new VetSpecialization { Name = "Anestezjolog" },
-                new VetSpecialization { Name = "Radiolog" },
-                new VetSpecialization { Name = "Onkolog" },
-                new VetSpecialization { Name = "Neurolog" }
+                new VetSpecialization { Name = "General Practitioner" },
+                new VetSpecialization { Name = "Internist" },
+                new VetSpecialization { Name = "Surgeon" },
+                new VetSpecialization { Name = "Dermatologist" },
+                new VetSpecialization { Name = "Cardiologist" },
+                new VetSpecialization { Name = "Orthopedist" },
+                new VetSpecialization { Name = "Ophthalmologist" },
+                new VetSpecialization { Name = "Anesthesiologist" },
+                new VetSpecialization { Name = "Radiologist" },
+                new VetSpecialization { Name = "Oncologist" },
+                new VetSpecialization { Name = "Neurologist" }
             };
 
             await context.VetSpecializations.AddRangeAsync(specializations);
