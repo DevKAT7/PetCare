@@ -16,6 +16,8 @@ namespace PetCare.Core.Models
         public decimal TotalAmount { get; set; }
         public bool IsPaid { get; set; } = false;
         public DateOnly? PaymentDate { get; set; }
+        public bool IsDueReminderSent { get; set; } = false;
+        public bool IsOverdueReminderSent { get; set; } = false;
         public int PetOwnerId { get; set; }
         public PetOwner PetOwner { get; set; } = null!;
 

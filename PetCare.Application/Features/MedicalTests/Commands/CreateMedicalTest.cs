@@ -1,9 +1,12 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using PetCare.Application.Features.MedicalTests.Dtos;
 using PetCare.Application.Exceptions;
-using PetCare.Core.Models;
+using PetCare.Application.Features.MedicalTests.Dtos;
+using PetCare.Application.Features.Notifications.Commands;
+using PetCare.Application.Features.Notifications.Dtos;
 using PetCare.Application.Interfaces;
+using PetCare.Core.Enums;
+using PetCare.Core.Models;
 
 namespace PetCare.Application.Features.MedicalTests.Commands
 {
@@ -15,19 +18,23 @@ namespace PetCare.Application.Features.MedicalTests.Commands
     public class CreateMedicalTestHandler : IRequestHandler<CreateMedicalTestCommand, int>
     {
         private readonly IApplicationDbContext _context;
+        private readonly IMediator _mediator;
 
-        public CreateMedicalTestHandler(IApplicationDbContext context)
+        public CreateMedicalTestHandler(IApplicationDbContext context, IMediator mediator)
         {
             _context = context;
+            _mediator = mediator;
         }
 
         public async Task<int> Handle(CreateMedicalTestCommand request, CancellationToken cancellationToken)
         {
             var model = request.MedicalTest;
 
-            var petExists = await _context.Pets.AnyAsync(p => p.PetId == model.PetId, cancellationToken);
+            var pet = await _context.Pets
+                .Include(p => p.PetOwner)
+                .FirstOrDefaultAsync(p => p.PetId == model.PetId, cancellationToken);
 
-            if (!petExists)
+            if (pet == null)
             {
                 throw new NotFoundException("Pet not found.");
             }
@@ -52,6 +59,19 @@ namespace PetCare.Application.Features.MedicalTests.Commands
             _context.MedicalTests.Add(medicalTest);
 
             await _context.SaveChangesAsync(cancellationToken);
+
+            if (pet.PetOwner.UserId != null)
+            {
+                await _mediator.Send(new CreateNotificationCommand
+                {
+                    Notification = new NotificationCreateModel
+                    {
+                        UserId = pet.PetOwner.UserId,
+                        Type = NotificationType.MedicalTestResultReady,
+                        Message = $"Medical test results ({model.TestName}) for {pet.Name} are now available."
+                    }
+                }, cancellationToken);
+            }
 
             return medicalTest.MedicalTestId;
         }
