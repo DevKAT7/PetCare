@@ -51,4 +51,16 @@
         box-shadow: none !important;
     }
 
+.card-custom {
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+    .card-custom:active {
+        transform: scale(0.98);
+    }
+
+.btn:active {
+    transform: scale(0.98);
+}
+
 

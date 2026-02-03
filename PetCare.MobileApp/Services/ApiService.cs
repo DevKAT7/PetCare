@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using PetCare.MobileApp.Common;
 using PetCare.MobileApp.Enums;
+using PetCare.MobileApp.Models;
 using PetCare.MobileApp.Models.Appointments;
 using PetCare.MobileApp.Models.Invoices;
 using PetCare.MobileApp.Models.Notifications;
@@ -311,6 +312,23 @@ namespace PetCare.MobileApp.Services
             return result ?? new List<TimeSpan>();
         }
 
+        public async Task<List<VetReadModel>> GetVetsAsync()
+        {
+            var result = await GetAsync<List<VetReadModel>>("api/vets");
+            return result ?? new List<VetReadModel>();
+        }
+
+        public async Task<VetReadModel?> GetVetDetailsAsync(int vetId)
+        {
+            return await GetAsync<VetReadModel>($"api/vets/{vetId}");
+        }
+
+        public async Task<List<VetScheduleReadModel>> GetVetScheduleAsync(int vetId)
+        {
+            var result = await GetAsync<List<VetScheduleReadModel>>($"api/vetschedules/vet/{vetId}");
+            return result ?? new List<VetScheduleReadModel>();
+        }
+
         public async Task CreateAppointmentAsync(AppointmentCreateModel model)
         {
             await PostAsync("api/appointments", model);
@@ -382,6 +400,26 @@ namespace PetCare.MobileApp.Services
         public async Task MarkNotificationAsReadAsync(int id)
         {
             await PutAsync<object>($"api/notifications/{id}/read", new { });
+        }
+
+        public async Task<Dictionary<string, string>> GetPageTextsAsync()
+        {
+            try
+            {
+                var result = await GetAsync<Dictionary<string, string>>("api/pagetexts");
+                return result ?? new Dictionary<string, string>();
+            }
+            catch
+            {
+                _logger.LogWarning("Could not load PageTexts. Application will use keys as fallback.");
+                return new Dictionary<string, string>();
+            }
+        }
+
+        public async Task<List<ProcedureReadModel>> GetProceduresAsync()
+        {
+            var result = await GetAsync<List<ProcedureReadModel>>("api/procedures?isActive=true");
+            return result ?? new List<ProcedureReadModel>();
         }
     }
 }

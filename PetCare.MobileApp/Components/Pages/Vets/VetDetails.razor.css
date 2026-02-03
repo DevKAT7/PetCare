@@ -1,0 +1,52 @@
+﻿.profile-img {
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid white;
+}
+
+.profile-placeholder {
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    color: #adb5bd;
+    border: 4px solid white;
+}
+
+.bg-primary-subtle {
+    background-color: rgba(38, 124, 132, 0.1) !important;
+    color: var(--petcare-primary) !important;
+}
+
+.btn-white {
+    background-color: white;
+    border: 1px solid #f0f0f0;
+    transition: transform 0.1s;
+}
+
+    .btn-white:active {
+        transform: scale(0.95);
+    }
+
+.x-small {
+    font-size: 0.65rem;
+    letter-spacing: 0.5px;
+}
+
+.stat-card {
+    border: 1px solid #f0f0f0;
+}
+
+.rounded-4 {
+    border-radius: 1rem !important;
+}
+
+.pulse-on-hover:active {
+    transform: scale(0.98);
+}

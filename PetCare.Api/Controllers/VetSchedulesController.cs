@@ -17,8 +17,8 @@ namespace PetCare.Api.Controllers
             _mediator = mediator;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetByVet([FromQuery] int vetId)
+        [HttpGet("vet/{vetId}")]
+        public async Task<IActionResult> GetByVet(int vetId)
         {
             var query = new GetVetSchedulesByVetIdQuery { VetId = vetId };
             var result = await _mediator.Send(query);

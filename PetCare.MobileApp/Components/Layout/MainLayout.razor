@@ -4,6 +4,7 @@
 @using PetCare.MobileApp.Services
 @inject IApiService ApiService
 @inject NavigationManager Navigation
+@inject TextService Text
 
 <div class="page">
     <header class="top-header d-flex justify-content-between align-items-center px-3">
@@ -107,6 +108,12 @@
 
     protected override async Task OnInitializedAsync()
     {
+        if (!Text.IsLoaded)
+        {
+            await Text.LoadTextsAsync();
+            StateHasChanged();
+        }
+
         try
         {
             await UpdateUnreadCount();

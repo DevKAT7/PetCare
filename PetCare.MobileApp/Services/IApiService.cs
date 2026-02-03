@@ -1,5 +1,6 @@
 ﻿using PetCare.MobileApp.Common;
 using PetCare.MobileApp.Enums;
+using PetCare.MobileApp.Models;
 using PetCare.MobileApp.Models.Appointments;
 using PetCare.MobileApp.Models.Invoices;
 using PetCare.MobileApp.Models.Notifications;
@@ -30,6 +31,9 @@ namespace PetCare.MobileApp.Services
              int? petId = null, DateTime? from = null, DateTime? to = null, AppointmentStatus? status = null);
         Task<List<VetLookupDto>> GetVetsForLookupAsync();
         Task<List<TimeSpan>> GetVetAvailabilityAsync(int vetId, DateTime date);
+        Task<List<VetReadModel>> GetVetsAsync();
+        Task<VetReadModel?> GetVetDetailsAsync(int vetId);
+        Task<List<VetScheduleReadModel>> GetVetScheduleAsync(int vetId);
         Task CreateAppointmentAsync(AppointmentCreateModel model);
         Task<AppointmentReadModel?> GetAppointmentDetailsAsync(int appointmentId);
         Task ConfirmAppointmentAsync(int appointmentId);
@@ -42,5 +46,7 @@ namespace PetCare.MobileApp.Services
         Task<byte[]> GetMedicalTestAttachmentAsync(int testId);
         Task<List<NotificationReadModel>> GetNotificationsAsync();
         Task MarkNotificationAsReadAsync(int id);
+        Task<Dictionary<string, string>> GetPageTextsAsync();
+        Task<List<ProcedureReadModel>> GetProceduresAsync();
     }
 }

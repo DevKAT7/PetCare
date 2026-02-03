@@ -100,10 +100,31 @@ else if (!isLoading)
     </div>
 }
 
-<button class="btn w-100 text-white mb-4 py-3 shadow-sm d-flex align-items-center justify-content-center cta-button"
-        @onclick="GoToBookAppointment">
-    <i class="bi bi-plus me-2 fs-4"></i> Book new appointment
-</button>
+<div class="row g-3 mb-4">
+    <div class="col-6">
+        <button class="btn btn-primary w-100 h-100 p-3 shadow-sm d-flex flex-column align-items-center justify-content-center border-0"
+                style="border-radius: 15px; min-height: 110px; background: linear-gradient(135deg, var(--petcare-primary), var(--petcare-dark));"
+                @onclick="GoToBookAppointment">
+            <div class="mb-2 bg-white bg-opacity-25 rounded-circle d-flex align-items-center justify-content-center" style="width: 45px; height: 45px;">
+                <i class="bi bi-calendar-plus-fill fs-4 text-white"></i>
+            </div>
+            <span class="fw-bold small text-white">Book Visit</span>
+        </button>
+    </div>
+
+    <div class="col-6">
+        <a href="clinic-offer" class="text-decoration-none">
+            <div class="card-custom h-100 p-3 shadow-sm d-flex flex-column align-items-center justify-content-center text-center border-0 mb-0"
+                 style="border-radius: 15px; min-height: 110px;">
+                <div class="mb-2 bg-light rounded-circle d-flex align-items-center justify-content-center" style="width: 45px; height: 45px;">
+                    <i class="bi bi-hospital-fill fs-4" style="color: var(--petcare-primary);"></i>
+                </div>
+                <h6 class="fw-bold text-dark small mb-0">Our Clinic</h6>
+                <small class="text-muted" style="font-size: 0.7rem;">Team & Prices</small>
+            </div>
+        </a>
+    </div>
+</div>
 
 <h5 class="mb-3 fw-bold">Your Pets</h5>
 

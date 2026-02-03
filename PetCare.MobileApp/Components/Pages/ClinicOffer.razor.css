@@ -1,0 +1,145 @@
+﻿.custom-pills {
+    background-color: var(--petcare-light);
+    padding: 5px;
+    border-radius: 16px;
+    display: flex;
+    gap: 5px;
+}
+
+    .custom-pills .nav-link {
+        flex: 1;
+        text-align: center;
+        border-radius: 12px;
+        color: #6c757d;
+        font-weight: 600;
+        font-size: 0.9rem;
+        padding: 10px 0;
+        border: none;
+        transition: all 0.2s ease;
+        background: transparent;
+    }
+
+        .custom-pills .nav-link:hover {
+            color: var(--petcare-primary);
+        }
+
+        .custom-pills .nav-link.active {
+            background-color: var(--petcare-primary);
+            color: white;
+            box-shadow: 0 4px 10px rgba(38, 124, 132, 0.25);
+            transform: translateY(-1px);
+        }
+
+.animate-fade-in {
+    animation: fadeIn 0.4s ease-out forwards;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.vet-card {
+    border-radius: 20px;
+    transition: transform 0.2s, box-shadow 0.2s;
+    background: white;
+}
+
+    .vet-card:active {
+        transform: scale(0.97);
+    }
+
+.info-row {
+    display: flex;
+    align-items: center;
+}
+
+.icon-box {
+    width: 45px;
+    height: 45px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 15px;
+    flex-shrink: 0;
+}
+
+.bg-gradient-fade {
+    background: linear-gradient(to top, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 100%);
+}
+
+.bg-primary-subtle {
+    background-color: #e7f1ff;
+    color: var(--petcare-primary);
+}
+
+.bg-danger-subtle {
+    background-color: #f8d7da;
+    color: #dc3545;
+}
+
+.bg-success-subtle {
+    background-color: #d1e7dd;
+    color: #198754;
+}
+
+.bg-warning-subtle {
+    background-color: #fff3cd;
+    color: #ffc107;
+}
+
+.bg-info-subtle {
+    background-color: #cff4fc;
+    color: #0dcaf0;
+}
+
+.bg-secondary-subtle {
+    background-color: #e2e3e5;
+    color: #41464b;
+}
+
+.bg-dark-subtle {
+    background-color: #ced4da;
+    color: #1a1d20;
+}
+
+.x-small {
+    font-size: 0.75rem;
+}
+
+.transition-icon {
+    transition: transform 0.3s ease;
+}
+
+.rotate-180 {
+    transform: rotate(180deg);
+}
+
+.animate-slide-down {
+    animation: slideDown 0.3s ease-out forwards;
+    transform-origin: top;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: scaleY(0.9);
+    }
+
+    to {
+        opacity: 1;
+        transform: scaleY(1);
+    }
+}
+
+.text-secondary {
+    color: #6c757d;
+}
