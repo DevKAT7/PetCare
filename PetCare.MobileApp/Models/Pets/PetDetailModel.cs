@@ -56,6 +56,7 @@
         public DateOnly Date { get; set; }
         public string TestName { get; set; } = string.Empty;
         public string? Result { get; set; } = string.Empty;
+        public string? AttachmentUrl { get; set; }
     }
 
     public class PetVaccinationDto

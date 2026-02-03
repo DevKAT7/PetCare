@@ -8,7 +8,9 @@ namespace PetCare.Application.Features.Invoices.Queries
     public class GetInvoicesByOwnerQuery : IRequest<List<InvoiceReadModel>>
     {
         public int PetOwnerId { get; }
-        public GetInvoicesByOwnerQuery(int petOwnerId) => PetOwnerId = petOwnerId;
+        public string? Status { get; }
+        public GetInvoicesByOwnerQuery(int petOwnerId, string? status = null) 
+            => (PetOwnerId, Status) = (petOwnerId, status?.ToLower());
     }
 
     public class GetInvoicesByOwnerHandler : IRequestHandler<GetInvoicesByOwnerQuery, List<InvoiceReadModel>>
@@ -22,11 +24,29 @@ namespace PetCare.Application.Features.Invoices.Queries
 
         public async Task<List<InvoiceReadModel>> Handle(GetInvoicesByOwnerQuery request, CancellationToken cancellationToken)
         {
-            var list = await _context.Invoices
+            var query = _context.Invoices
                 .Include(i => i.InvoiceItems)
                 .Include(i => i.PetOwner)
-                .Where(i => i.PetOwnerId == request.PetOwnerId)
-                .Select(inv => new InvoiceReadModel
+                .Where(i => i.PetOwnerId == request.PetOwnerId);
+
+            if (!string.IsNullOrEmpty(request.Status))
+            {
+                switch (request.Status)
+                {
+                    case "paid":
+                        query = query.Where(i => i.IsPaid);
+                        break;
+                    case "unpaid":
+                        query = query.Where(i => !i.IsPaid);
+                        break;
+                    case "overdue":
+                        var today = DateOnly.FromDateTime(DateTime.UtcNow);
+                        query = query.Where(i => !i.IsPaid && i.DueDate < today);
+                        break;
+                }
+            }
+
+            var list = await query.Select(inv => new InvoiceReadModel
                 {
                     InvoiceId = inv.InvoiceId,
                     InvoiceNumber = inv.InvoiceNumber,

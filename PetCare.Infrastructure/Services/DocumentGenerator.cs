@@ -1,10 +1,13 @@
 ﻿using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
+using Microsoft.AspNetCore.Hosting;
+using PetCare.Application.Features.Invoices.Dtos;
 using PetCare.Application.Features.Prescriptions.Dtos;
 using PetCare.Application.Interfaces;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
+using System;
 
 namespace PetCare.Infrastructure.Services
 {
@@ -12,8 +15,9 @@ namespace PetCare.Infrastructure.Services
     {
         private readonly string _webRootPath;
 
-        public DocumentGenerator()
+        public DocumentGenerator(IWebHostEnvironment environment)
         {
+            _webRootPath = environment.WebRootPath ?? Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
             QuestPDF.Settings.License = LicenseType.Community;
         }
 
@@ -53,7 +57,7 @@ namespace PetCare.Infrastructure.Services
 
                     page.Header().Row(row =>
                     {
-                        var logoPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "logo-petcare-transparent3.png");
+                        var logoPath = Path.Combine(_webRootPath, "images", "logo-petcare-transparent3.png");
 
                         if (File.Exists(logoPath))
                         {
@@ -112,7 +116,7 @@ namespace PetCare.Infrastructure.Services
 
         private byte[] GenerateWordFromTemplate(PrescriptionReadModel data, string templateRelativePath)
         {
-            var templatePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", templateRelativePath);
+            var templatePath = Path.Combine(_webRootPath, templateRelativePath);
 
             if (!File.Exists(templatePath))
                 throw new FileNotFoundException($"Template not found at {templatePath}");
@@ -160,6 +164,111 @@ namespace PetCare.Infrastructure.Services
 
                 return stream.ToArray();
             }
+        }
+
+        public (byte[] Content, string ContentType, string FileName) GenerateInvoice(InvoiceReadModel data)
+        {
+            var pdfBytes = GenerateInvoicePdf(data);
+            return (pdfBytes, "application/pdf", $"Invoice_{data.InvoiceNumber}.pdf");
+        }
+
+        private byte[] GenerateInvoicePdf(InvoiceReadModel data)
+        {
+            var document = QuestPDF.Fluent.Document.Create(container =>
+            {
+                container.Page(page =>
+                {
+                    page.Size(PageSizes.A4);
+                    page.Margin(2, Unit.Centimetre);
+                    page.DefaultTextStyle(x => x.FontSize(10));
+
+                    page.Header().Element(header =>
+                    {
+                        header.Row(row =>
+                        {
+                            row.RelativeItem().Column(column =>
+                            {
+                                var logoPath = Path.Combine(_webRootPath, "images", "logo-petcare-transparent3.png");
+                                if (File.Exists(logoPath))
+                                {
+                                    column.Item().Height(60).Image(logoPath);
+                                }
+                                column.Item().Text("PetCare Clinic").SemiBold().FontSize(14).FontColor(Colors.Blue.Medium);
+                                column.Item().Text("123 Vet Street, Animal City");
+                            });
+
+                            row.RelativeItem().AlignRight().Column(column =>
+                            {
+                                column.Item().Text("INVOICE").FontSize(24).SemiBold().FontColor(Colors.Grey.Darken3);
+                                column.Item().Text($"#{data.InvoiceNumber}").FontSize(14);
+
+                                var statusColor = data.IsPaid ? Colors.Green.Medium : Colors.Red.Medium;
+                                var statusText = data.IsPaid ? "PAID" : "UNPAID";
+                                column.Item().PaddingTop(5).Text(statusText).FontColor(statusColor).SemiBold();
+                            });
+                        });
+                    });
+
+                    page.Content().PaddingVertical(20).Column(column =>
+                    {
+                        column.Item().Row(row =>
+                        {
+                            row.RelativeItem().Column(c => {
+                                c.Item().Text("Bill To:").FontColor(Colors.Grey.Medium);
+                                c.Item().Text(data.PetOwnerName).SemiBold();
+                            });
+                            row.RelativeItem().AlignRight().Column(c => {
+                                c.Item().Text($"Issue Date: {data.InvoiceDate:dd MMM yyyy}");
+                                c.Item().Text($"Due Date: {data.DueDate:dd MMM yyyy}");
+                            });
+                        });
+
+                        column.Item().PaddingTop(20).LineHorizontal(1).LineColor(Colors.Grey.Lighten2);
+
+                        column.Item().Table(table =>
+                        {
+                            table.ColumnsDefinition(columns =>
+                            {
+                                columns.RelativeColumn(3);
+                                columns.RelativeColumn();
+                                columns.RelativeColumn();
+                                columns.RelativeColumn();
+                            });
+
+                            table.Header(header =>
+                            {
+                                header.Cell().Text("Description").SemiBold();
+                                header.Cell().AlignRight().Text("Qty").SemiBold();
+                                header.Cell().AlignRight().Text("Price").SemiBold();
+                                header.Cell().AlignRight().Text("Total").SemiBold();
+                            });
+
+                            foreach (var item in data.Items)
+                            {
+                                table.Cell().BorderBottom(1).BorderColor(Colors.Grey.Lighten4).PaddingVertical(5).Text(item.Description);
+                                table.Cell().BorderBottom(1).BorderColor(Colors.Grey.Lighten4).PaddingVertical(5).AlignRight().Text(item.Quantity.ToString());
+                                table.Cell().BorderBottom(1).BorderColor(Colors.Grey.Lighten4).PaddingVertical(5).AlignRight().Text($"{item.UnitPrice:C}");
+                                table.Cell().BorderBottom(1).BorderColor(Colors.Grey.Lighten4).PaddingVertical(5).AlignRight().Text($"{item.Total:C}");
+                            }
+                        });
+
+                        column.Item().PaddingTop(10).AlignRight().Text(text =>
+                        {
+                            text.Span("Total: ").FontSize(14);
+                            text.Span($"{data.TotalAmount:C}").FontSize(14).SemiBold().FontColor(Colors.Blue.Darken2);
+                        });
+                    });
+
+                    page.Footer().AlignCenter().Text(x =>
+                    {
+                        x.CurrentPageNumber();
+                        x.Span(" / ");
+                        x.TotalPages();
+                    });
+                });
+            });
+
+            return document.GeneratePdf();
         }
     }
 }

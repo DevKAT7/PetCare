@@ -9,71 +9,66 @@
 
 @if (isLoading)
 {
-    <div class="d-flex justify-content-center mt-5">
+    <div class="d-flex justify-content-center align-items-center vh-50 mt-5">
         <div class="spinner-border text-primary" role="status"></div>
     </div>
 }
 else if (pet == null)
 {
-    <div class="text-center mt-5">
+    <div class="text-center mt-5 pt-5">
+        <div class="mb-3">
+            <i class="bi bi-search display-1 text-muted opacity-25"></i>
+        </div>
         <h3>Pet not found</h3>
-        <button class="btn btn-secondary" @onclick="GoBack">Go Back</button>
+        <button class="btn btn-outline-primary mt-3 px-4" @onclick="GoBack">Go Back</button>
     </div>
 }
 else
 {
     <div class="details-page pb-5">
-        <div class="d-flex align-items-center mb-3">
+        <div class="d-flex align-items-center mb-4">
             <button class="btn btn-link text-dark p-0 me-3" @onclick="GoBack">
                 <i class="bi bi-arrow-left fs-4"></i>
             </button>
             <h4 class="mb-0 fw-bold">Pet Profile</h4>
             <div class="ms-auto d-flex gap-2">
-                <button class="btn btn-light text-danger rounded-circle shadow-sm"
-                        style="width: 40px; height: 40px;"
+                <button class="btn btn-light text-danger rounded-circle shadow-sm action-btn"
                         @onclick="DeletePet">
                     <i class="bi bi-trash"></i>
                 </button>
-                <button class="btn btn-light text-primary rounded-circle shadow-sm"
-                        style="width: 40px; height: 40px;"
+                <button class="btn btn-light text-primary rounded-circle shadow-sm action-btn"
                         @onclick="NavigateToEdit">
                     <i class="bi bi-pencil-fill"></i>
                 </button>
             </div>
         </div>
 
-        <div class="card border-0 shadow-sm mb-4 text-center p-3" style="border-radius: 20px;">
+        <div class="card border-0 shadow-sm mb-4 text-center p-4 main-card">
             <div class="d-flex justify-content-center mb-3">
-                @if (!string.IsNullOrEmpty(pet.ImageUrl))
-                {
-                    <img src="@pet.ImageUrl" class="profile-img shadow-sm" />
-                }
-                else
-                {
-                    <div class="profile-placeholder shadow-sm">
-                        @GetSpeciesIcon(pet.Species)
-                    </div>
-                }
+                <div class="position-relative">
+                    @if (!string.IsNullOrEmpty(pet.ImageUrl))
+                    {
+                        <img src="@pet.ImageUrl" class="profile-img shadow-sm" />
+                    }
+                    else
+                    {
+                        <div class="profile-placeholder shadow-sm">
+                            @GetSpeciesIcon(pet.Species)
+                        </div>
+                    }
+                </div>
             </div>
 
             <h2 class="fw-bold mb-1">@pet.Name</h2>
-            <p class="text-muted mb-2">@pet.Species • @(pet.Breed ?? "Mixed")</p>
+            <p class="text-muted mb-3">@pet.Species • @(pet.Breed ?? "Mixed")</p>
 
-            <div class="d-flex justify-content-center gap-2">
-                @if (pet.IsMale)
-                {
-                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-2 rounded-pill">
-                        <i class="bi bi-gender-male me-1"></i> Male
-                    </span>
-                }
-                else
-                {
-                    <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-3 py-2 rounded-pill">
-                        <i class="bi bi-gender-female me-1"></i> Female
-                    </span>
-                }
-                <span class="badge bg-light text-dark border px-3 py-2 rounded-pill">
-                    <i class="bi bi-cake2 me-1"></i> @pet.Age years
+            <div class="d-flex justify-content-center gap-2 flex-wrap">
+                <span class="badge @(pet.IsMale ? "bg-blue-subtle text-blue" : "bg-pink-subtle text-pink") px-3 py-2 rounded-pill d-flex align-items-center">
+                    <i class="bi @(pet.IsMale ? "bi-gender-male" : "bi-gender-female") me-2"></i>
+                    @(pet.IsMale ? "Male" : "Female")
+                </span>
+                <span class="badge bg-light text-dark border px-3 py-2 rounded-pill d-flex align-items-center">
+                    <i class="bi bi-cake2 me-2 text-warning"></i> @pet.Age years
                 </span>
             </div>
         </div>
@@ -111,7 +106,7 @@ else
                             </div>
                             <div>
                                 <div class="fw-bold small">Vaccine Due</div>
-                                <div class="text-muted small">@vax.VaccineName • @vax.NextDueDate?.ToString("yyyy-MM-dd")</div>
+                                <div class="text-muted small">@vax.VaccineName • @vax.NextDueDate?.ToString("dd MMM yy")</div>
                             </div>
                         </div>
                     }
@@ -119,161 +114,210 @@ else
             </div>
         }
 
-        <div class="card border-0 shadow-sm">
-            <div class="card-header bg-white p-0 border-bottom-0">
-                <ul class="nav nav-pills nav-fill p-2 bg-light rounded-top">
-                    <li class="nav-item">
-                        <button class="nav-link small fw-bold @(activeTab == "visits" ? "active" : "")"
-                                @onclick="@(() => activeTab = "visits")">
-                            Visits
-                        </button>
-                    </li>
-                    <li class="nav-item">
-                        <button class="nav-link small fw-bold @(activeTab == "meds" ? "active" : "")"
-                                @onclick="@(() => activeTab = "meds")">
-                            Prescriptions
-                        </button>
-                    </li>
-                    <li class="nav-item">
-                        <button class="nav-link small fw-bold @(activeTab == "vax" ? "active" : "")"
-                                @onclick="@(() => activeTab = "vax")">
-                            Vaccinations
-                        </button>
-                    </li>
-                    <li class="nav-item">
-                        <button class="nav-link small fw-bold @(activeTab == "tests" ? "active" : "")"
-                                @onclick="@(() => activeTab = "tests")">
-                            Medical tests
-                        </button>
-                    </li>
-                </ul>
+        <div class="mb-5">
+            <div class="nav nav-pills custom-pills mb-3" role="tablist">
+                <button class="nav-link @(activeTab == "visits" ? "active" : "")" @onclick="@(() => activeTab = "visits")">Visits</button>
+                <button class="nav-link @(activeTab == "meds" ? "active" : "")" @onclick="@(() => activeTab = "meds")">Meds</button>
+                <button class="nav-link @(activeTab == "vax" ? "active" : "")" @onclick="@(() => activeTab = "vax")">Vaccine</button>
+                <button class="nav-link @(activeTab == "tests" ? "active" : "")" @onclick="@(() => activeTab = "tests")">Tests</button>
             </div>
 
-            <div class="card-body p-0">
-                <div class="tab-content">
-
-                    @if (activeTab == "visits")
+            <div class="tab-content">
+                @if (activeTab == "visits")
+                {
+                    @if (pet.Appointments.Any())
                     {
-                        @if (pet.Appointments.Any())
+                        @foreach (var item in pet.Appointments.OrderByDescending(a => a.Date))
                         {
-                            <div class="list-group list-group-flush">
-                                @foreach (var item in pet.Appointments.OrderByDescending(a => a.Date))
-                                {
-                                    <div class="list-group-item p-3">
-                                        <div class="d-flex justify-content-between">
-                                            <span class="fw-bold text-dark">@item.Date.ToString("yyyy-MM-dd")</span>
-                                            <span class="badge bg-light text-dark border">@item.VetName</span>
+                            <div class="card item-card mb-3 border-0 shadow-sm">
+                                <div class="card-body p-3 d-flex align-items-center">
+                                    <div class="calendar-icon me-3 text-center bg-light rounded p-1" style="min-width: 50px;">
+                                        <small class="d-block text-uppercase text-muted" style="font-size: 0.65rem;">@item.Date.ToString("MMM")</small>
+                                        <span class="d-block fs-5 fw-bold text-dark lh-1">@item.Date.Day</span>
+                                        <small class="d-block text-muted" style="font-size: 0.65rem;">@item.Date.Year</small>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <div class="d-flex justify-content-between align-items-start">
+                                            <h6 class="fw-bold text-dark mb-0">@item.VetName</h6>
+                                            <span class="badge bg-light text-secondary border">@item.Date.ToShortTimeString()</span>
                                         </div>
-                                        <div class="mt-1 text-secondary small">
+                                        <div class="text-secondary small mt-1">
                                             @(string.IsNullOrEmpty(item.Diagnosis) ? item.Status : item.Diagnosis)
                                         </div>
                                     </div>
-                                }
+                                </div>
                             </div>
                         }
-                        else
-                        {
-                            <div class="text-center py-4 text-muted small">No visit history.</div>
-                        }
                     }
-
-                    @if (activeTab == "meds")
+                    else
                     {
-                        @if (pet.Prescriptions.Any())
+                        <div class="empty-state">
+                            <i class="bi bi-calendar-x display-4 text-muted opacity-25 mb-2"></i>
+                            <p class="text-muted small">No visit history found.</p>
+                        </div>
+                    }
+                }
+
+                @if (activeTab == "meds")
+                {
+                    @if (pet.Prescriptions.Any())
+                    {
+                        @foreach (var item in pet.Prescriptions.OrderByDescending(p => p.Date))
                         {
-                            <div class="list-group list-group-flush">
-                                @foreach (var item in pet.Prescriptions.OrderByDescending(p => p.Date))
-                                {
-                                    <div class="list-group-item p-3">
-                                        <div class="d-flex justify-content-between">
-                                            <span class="fw-bold text-primary">@item.MedicationName</span>
-                                            <span class="text-muted small">@item.Date.ToString("yyyy-MM-dd")</span>
-                                        </div>
-                                        <div class="small text-muted">@item.Dosage</div>
+                            <div class="card item-card mb-3 border-0 shadow-sm">
+                                <div class="card-body p-3 d-flex align-items-center">
+                                    <div class="icon-square bg-primary-subtle text-primary me-3 rounded-circle">
+                                        <i class="bi bi-capsule fs-5"></i>
                                     </div>
-                                }
+                                    <div class="flex-grow-1">
+                                        <h6 class="fw-bold text-dark mb-0">@item.MedicationName</h6>
+                                        <div class="text-muted small">@item.Dosage</div>
+                                        <div class="text-muted small" style="font-size: 0.75rem;">
+                                            <i class="bi bi-calendar3 me-1"></i> @item.Date.ToString("dd MMM yyyy")
+                                        </div>
+                                    </div>
+
+                                    <div class="ms-2">
+                                        @{
+                                            var isDownloading = downloadingPrescriptionIds.Contains(item.PrescriptionId);
+                                        }
+                                        <button class="btn btn-sm btn-outline-secondary rounded-circle shadow-sm d-flex align-items-center justify-content-center"
+                                                style="width: 40px; height: 40px;"
+                                                @onclick="@(() => DownloadPrescriptionPdf(item.PrescriptionId, item.MedicationName))"
+                                                disabled="@isDownloading">
+                                            @if (isDownloading)
+                                            {
+                                                <span class="spinner-border spinner-border-sm" style="width: 1rem; height: 1rem;"></span>
+                                            }
+                                            else
+                                            {
+                                                <i class="bi bi-download text-dark"></i>
+                                            }
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
                         }
-                        else
-                        {
-                            <div class="text-center py-4 text-muted small">No prescriptions.</div>
-                        }
                     }
-
-                    @if (activeTab == "vax")
+                    else
                     {
-                        @if (pet.Vaccinations.Any())
+                        <div class="empty-state">
+                            <i class="bi bi-prescription2 display-4 text-muted opacity-25 mb-2"></i>
+                            <p class="text-muted small">No prescriptions found.</p>
+                        </div>
+                    }
+                }
+
+                @if (activeTab == "vax")
+                {
+                    @if (pet.Vaccinations.Any())
+                    {
+                        @foreach (var item in pet.Vaccinations.OrderByDescending(v => v.DateAdministered))
                         {
-                            <div class="list-group list-group-flush">
-                                @foreach (var item in pet.Vaccinations.OrderByDescending(v => v.DateAdministered))
-                                {
-                                    var isOverdue = item.NextDueDate.HasValue && item.NextDueDate < DateOnly.FromDateTime(DateTime.Now);
-                                    <div class="list-group-item p-3">
-                                        <div class="d-flex justify-content-between align-items-center">
-                                            <div>
-                                                <div class="fw-bold">@item.VaccineName</div>
-                                                <div class="text-muted small">Given: @item.DateAdministered.ToString("yyyy-MM-dd")</div>
-                                            </div>
+                            var isOverdue = item.NextDueDate.HasValue && item.NextDueDate < DateOnly.FromDateTime(DateTime.Now);
+
+                            <div class="card item-card mb-3 border-0 shadow-sm @(isOverdue ? "border-start border-3 border-danger" : "")">
+                                <div class="card-body p-3 d-flex align-items-center">
+                                    <div class="icon-square @(isOverdue ? "bg-danger-subtle text-danger" : "bg-success-subtle text-success") me-3 rounded-circle">
+                                        <i class="bi bi-shield-check fs-5"></i>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <div class="d-flex justify-content-between">
+                                            <h6 class="fw-bold text-dark mb-0">@item.VaccineName</h6>
                                             @if (isOverdue)
                                             {
                                                 <span class="badge bg-danger">Overdue</span>
                                             }
-                                            else if (item.NextDueDate.HasValue && item.NextDueDate > DateOnly.FromDateTime(DateTime.Now))
-                                            {
-                                                <span class="badge bg-success">Valid</span>
-                                            }
+                                        </div>
+                                        <div class="text-muted small mt-1">
+                                            Given: @item.DateAdministered.ToString("yyyy-MM-dd")
                                         </div>
                                         @if (item.NextDueDate.HasValue)
                                         {
-                                            <div class="text-end mt-1">
-                                                <small class="text-muted d-block" style="font-size: 0.75rem;">Next Due:</small>
-                                                <small class="fw-bold text-dark">@item.NextDueDate?.ToString("yyyy-MM-dd")</small>
+                                            <div class="small fw-bold @(isOverdue ? "text-danger" : "text-success")">
+                                                Next: @item.NextDueDate?.ToString("yyyy-MM-dd")
                                             </div>
                                         }
                                     </div>
-                                }
+                                </div>
                             </div>
                         }
-                        else
-                        {
-                            <div class="text-center py-4 text-muted small">No vaccinations.</div>
-                        }
                     }
-
-                    @if (activeTab == "tests")
+                    else
                     {
-                        @if (pet.MedicalTests.Any())
+                        <div class="empty-state">
+                            <i class="bi bi-shield-x display-4 text-muted opacity-25 mb-2"></i>
+                            <p class="text-muted small">No vaccinations recorded.</p>
+                        </div>
+                    }
+                }
+
+                @if (activeTab == "tests")
+                {
+                    @if (pet.MedicalTests.Any())
+                    {
+                        @foreach (var item in pet.MedicalTests.OrderByDescending(t => t.Date))
                         {
-                            <div class="list-group list-group-flush">
-                                @foreach (var item in pet.MedicalTests.OrderByDescending(t => t.Date))
-                                {
-                                    <div class="list-group-item p-3">
-                                        <div class="d-flex justify-content-between">
-                                            <span class="fw-bold text-dark">@item.TestName</span>
-                                            <span class="text-muted small">@item.Date.ToString("yyyy-MM-dd")</span>
-                                        </div>
-                                        <div class="mt-1 small">
-                                            <span class="text-muted">Result: </span>
-                                            @if (!string.IsNullOrEmpty(item.Result))
-                                            {
-                                                <span class="fw-medium text-dark">@item.Result</span>
-                                            }
-                                            else
-                                            {
-                                                <span class="badge bg-warning text-dark border border-warning-subtle">Waiting for result</span>
-                                            }
-                                        </div>
+                            <div class="card item-card mb-3 border-0 shadow-sm">
+                                <div class="card-body p-3 d-flex align-items-center">
+
+                                    <div class="icon-square bg-warning-subtle text-dark me-3 rounded-circle">
+                                        <i class="bi bi-clipboard2-pulse fs-5"></i>
                                     </div>
-                                }
+
+                                    <div class="flex-grow-1">
+                                        <div class="d-flex justify-content-between align-items-start">
+                                            <h6 class="fw-bold text-dark mb-0">@item.TestName</h6>
+                                            <small class="text-muted">@item.Date.ToString("MMM dd")</small>
+                                        </div>
+
+                                        @if (!string.IsNullOrEmpty(item.Result))
+                                        {
+                                            <div class="mt-1 p-2 bg-light rounded border border-light-subtle small text-dark fw-medium">
+                                                <i class="bi bi-activity me-1 text-primary"></i> @item.Result
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-warning text-dark mt-1">Waiting for result</span>
+                                        }
+                                    </div>
+
+                                    <div class="ms-2">
+                                        @{
+                                            var isDownloading = downloadingTestIds.Contains(item.MedicalTestId);
+                                        }
+
+                                        @if (!string.IsNullOrEmpty(item.AttachmentUrl))
+                                        {
+                                            <button class="btn btn-sm btn-outline-secondary rounded-circle shadow-sm d-flex align-items-center justify-content-center"
+                                                    style="width: 40px; height: 40px;"
+                                                    @onclick="@(() => DownloadTestAttachment(item.MedicalTestId, item.AttachmentUrl, item.TestName))"
+                                                    disabled="@isDownloading">
+                                                @if (isDownloading)
+                                                {
+                                                    <span class="spinner-border spinner-border-sm" style="width: 1rem; height: 1rem;"></span>
+                                                }
+                                                else
+                                                {
+                                                    <i class="bi bi-paperclip text-dark"></i>
+                                                }
+                                            </button>
+                                        }
+                                    </div>
+
+                                </div>
                             </div>
                         }
-                        else
-                        {
-                            <div class="text-center py-4 text-muted small">No medical tests recorded.</div>
-                        }
                     }
-
-                </div>
+                    else
+                    {
+                        <div class="empty-state">
+                            <i class="bi bi-clipboard-x display-4 text-muted opacity-25 mb-2"></i>
+                            <p class="text-muted small">No medical tests recorded.</p>
+                        </div>
+                    }
+                }
             </div>
         </div>
     </div>
@@ -287,6 +331,9 @@ else
     private bool isLoading = true;
 
     private string activeTab = "visits";
+
+    private HashSet<int> downloadingPrescriptionIds = new();
+    private HashSet<int> downloadingTestIds = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -329,6 +376,80 @@ else
 
                 await Application.Current.MainPage.DisplayAlert("Error", "Error deleting pet. Please try again.", "OK");
             }
+        }
+    }
+
+    private async Task DownloadPrescriptionPdf(int prescriptionId, string medName)
+    {
+        if (downloadingPrescriptionIds.Contains(prescriptionId)) return;
+
+        downloadingPrescriptionIds.Add(prescriptionId);
+        StateHasChanged();
+
+        try
+        {
+            var pdfBytes = await ApiService.GetPrescriptionPdfAsync(prescriptionId);
+
+            var fileName = $"Prescription_{prescriptionId}.pdf";
+            var filePath = Path.Combine(FileSystem.CacheDirectory, fileName);
+
+            await File.WriteAllBytesAsync(filePath, pdfBytes);
+
+            await Launcher.Default.OpenAsync(new OpenFileRequest
+            {
+                Title = "Prescription PDF",
+                File = new ReadOnlyFile(filePath)
+            });
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to download PDF");
+            await Application.Current.MainPage.DisplayAlert("Error", "Could not download prescription.", "OK");
+        }
+        finally
+        {
+            downloadingPrescriptionIds.Remove(prescriptionId);
+            StateHasChanged();
+        }
+    }
+
+    private async Task DownloadTestAttachment(int testId, string? originalUrl, string testName)
+    {
+        if (string.IsNullOrEmpty(originalUrl)) return;
+
+        if (downloadingTestIds.Contains(testId)) return;
+
+        downloadingTestIds.Add(testId);
+        StateHasChanged();
+
+        try
+        {
+            var fileBytes = await ApiService.GetMedicalTestAttachmentAsync(testId);
+
+            var extension = Path.GetExtension(originalUrl);
+            if (string.IsNullOrEmpty(extension)) extension = ".pdf";
+
+            var safeName = testName.Replace(" ", "_").Replace("/", "-");
+            var fileName = $"Test_{safeName}_{testId}{extension}";
+            var filePath = Path.Combine(FileSystem.CacheDirectory, fileName);
+
+            await File.WriteAllBytesAsync(filePath, fileBytes);
+
+            await Launcher.Default.OpenAsync(new OpenFileRequest
+            {
+                Title = "Medical Test Result",
+                File = new ReadOnlyFile(filePath)
+            });
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to download attachment");
+            await Application.Current.MainPage.DisplayAlert("Error", "Could not download file.", "OK");
+        }
+        finally
+        {
+            downloadingTestIds.Remove(testId);
+            StateHasChanged();
         }
     }
 

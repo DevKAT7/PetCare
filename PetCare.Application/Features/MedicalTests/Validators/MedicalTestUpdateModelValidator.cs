@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using PetCare.Application.Features.MedicalTests.Dtos;
+using System;
 
 namespace PetCare.Application.Features.MedicalTests.Validators
 {
@@ -16,8 +17,12 @@ namespace PetCare.Application.Features.MedicalTests.Validators
                 .MaximumLength(2000).WithMessage("Result can have a maximum of 2000 characters.");
 
             RuleFor(x => x.AttachmentUrl)
-                .Must(uri => string.IsNullOrEmpty(uri) || Uri.IsWellFormedUriString(uri, UriKind.Absolute))
-                .WithMessage("Incorrect attachment URL.");
+                .Must(uri => string.IsNullOrEmpty(uri)
+                            || uri.StartsWith("/")
+                            || uri.StartsWith("http")
+                            || (!uri.Contains("/") && !uri.Contains("\\") && uri.Contains("."))
+                            || Uri.IsWellFormedUriString(uri, UriKind.Absolute))
+                .WithMessage("Incorrect attachment URL. Must be a valid link or a filename.");
         }
     }
 }

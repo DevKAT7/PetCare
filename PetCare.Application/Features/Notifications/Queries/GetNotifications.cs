@@ -5,7 +5,10 @@ using PetCare.Application.Interfaces;
 
 namespace PetCare.Application.Features.Notifications.Queries
 {
-    public class GetNotificationsQuery : IRequest<List<NotificationReadModel>> { }
+    public class GetNotificationsQuery : IRequest<List<NotificationReadModel>> 
+    {
+        public string? UserId { get; set; }
+    }
 
     public class GetNotificationsHandler : IRequestHandler<GetNotificationsQuery, List<NotificationReadModel>>
     {
@@ -19,6 +22,9 @@ namespace PetCare.Application.Features.Notifications.Queries
         public async Task<List<NotificationReadModel>> Handle(GetNotificationsQuery request, CancellationToken cancellationToken)
         {
             return await _context.Notifications
+                .AsNoTracking()
+                .Where(n => n.UserId == request.UserId)
+                .OrderByDescending(n => n.CreatedAt)
                 .Select(n => new NotificationReadModel
                 {
                     NotificationId = n.NotificationId,

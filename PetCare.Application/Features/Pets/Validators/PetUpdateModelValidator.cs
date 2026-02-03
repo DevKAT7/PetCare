@@ -1,5 +1,5 @@
 using FluentValidation;
-using PetCare.Shared.Dtos;
+using PetCare.Application.Features.Pets.Dtos;
 
 namespace PetCare.Application.Features.Pets.Validators
 {
@@ -24,7 +24,9 @@ namespace PetCare.Application.Features.Pets.Validators
                 .WithMessage("Date of birth cannot be in the future.");
 
             RuleFor(x => x.ImageUrl)
-                .Must(uri => string.IsNullOrEmpty(uri) || Uri.IsWellFormedUriString(uri, UriKind.Absolute))
+                .Must(uri => string.IsNullOrEmpty(uri)
+                             || uri.StartsWith("data:")
+                             || Uri.IsWellFormedUriString(uri, UriKind.Absolute))
                 .WithMessage("Invalid image URL.");
         }
 

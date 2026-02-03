@@ -1,8 +1,8 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
 using PetCare.Application.Exceptions;
+using PetCare.Application.Features.Pets.Dtos;
 using PetCare.Application.Interfaces;
-using PetCare.Shared.Dtos;
 
 namespace PetCare.Application.Features.Pets.Queries
 {
@@ -58,7 +58,8 @@ namespace PetCare.Application.Features.Pets.Queries
                     MedicalTestId = t.MedicalTestId,
                     Date = t.TestDate,
                     TestName = t.TestName,
-                    Result = t.Result
+                    Result = t.Result,
+                    AttachmentUrl = t.AttachmentUrl
                 }).ToList(),
 
                 Vaccinations = pet.Vaccinations.OrderByDescending(v => v.VaccinationDate).Select(v => new PetVaccinationDto

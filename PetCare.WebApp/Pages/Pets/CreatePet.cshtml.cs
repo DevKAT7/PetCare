@@ -7,7 +7,7 @@ using PetCare.Application.Exceptions;
 using PetCare.Application.Features.PetOwners.Queries;
 using PetCare.Application.Features.Pets.Commands;
 using PetCare.Application.Features.Pets.Queries;
-using PetCare.Shared.Dtos;
+using PetCare.Application.Features.Pets.Dtos;
 using ValidationException = PetCare.Application.Exceptions.ValidationException;
 
 namespace PetCare.WebApp.Pages.Pets

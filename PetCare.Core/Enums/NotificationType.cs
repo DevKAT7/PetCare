@@ -3,7 +3,7 @@
     public enum NotificationType
     {
         General = 1,
-        AppointmentReminder ,
+        AppointmentReminder,
         AppointmentCancelled,
         InvoiceReady,
         InvoiceDue,
@@ -11,6 +11,8 @@
         LowStock,
         VacationRequest,
         VacationApproved,
-        VacationRejected
+        VacationRejected,
+        MedicalTestResultReady,
+        InvoiceOverdue
     }
 }

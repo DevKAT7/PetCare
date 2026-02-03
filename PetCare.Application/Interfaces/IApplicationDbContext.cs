@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using PetCare.Core.Models;
 
 namespace PetCare.Application.Interfaces
@@ -28,5 +29,7 @@ namespace PetCare.Application.Interfaces
         public DbSet<AppointmentSummaryView> AppointmentSummaryViews { get; set; }
 
         Task<int> SaveChangesAsync(CancellationToken cancellationToken);
+
+        DatabaseFacade Database { get; }
     }
 }

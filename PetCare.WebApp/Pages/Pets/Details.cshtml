@@ -233,7 +233,17 @@
                                             {
                                                 <tr>
                                                     <td class="ps-4">@item.Date.ToString("yyyy-MM-dd")</td>
-                                                    <td class="fw-bold">@item.TestName</td>
+                                                    <td>
+                                                        <div class="fw-bold">@item.TestName</div>
+
+                                                        @if (!string.IsNullOrEmpty(item.AttachmentUrl))
+                                                        {
+                                                            <a asp-page="/DownloadFile" asp-route-fileId="@item.MedicalTestId" target="_blank" 
+                                                                class="small text-decoration-none text-primary d-inline-block mt-1">
+                                                                <i class="bi bi-paperclip"></i> View File
+                                                            </a>
+                                                        }
+                                                    </td>
                                                     <td>@item.Result</td>
                                                 </tr>
                                             }

@@ -1,8 +1,12 @@
 ﻿using PetCare.MobileApp.Common;
+using PetCare.MobileApp.Enums;
+using PetCare.MobileApp.Models;
 using PetCare.MobileApp.Models.Appointments;
-using PetCare.MobileApp.Models.Vets;
-using PetCare.MobileApp.Models.Pets;
 using PetCare.MobileApp.Models.Invoices;
+using PetCare.MobileApp.Models.Notifications;
+using PetCare.MobileApp.Models.Pets;
+using PetCare.MobileApp.Models.Vets;
+using PetCare.Shared.Dtos;
 
 namespace PetCare.MobileApp.Services
 {
@@ -14,21 +18,35 @@ namespace PetCare.MobileApp.Services
         Task PostAsync<TRequest>(string endpoint, TRequest data);
         Task PutAsync<TRequest>(string endpoint, TRequest data);
         Task DeleteAsync(string endpoint);
+        Task<UserProfileDto?> GetProfileAsync();
+        Task<bool> UpdateProfileAsync(EditProfileDto model);
+        Task<bool> ChangePasswordAsync(ChangePasswordDto model);
         Task<List<PetReadModel>> GetPetsAsync(int? ownerId = null);
         Task<PetDetailDto?> GetPetDetailsAsync(int petId);
         Task AddPetAsync(PetCreateModel petModel);
         Task UpdatePetAsync(int petId, PetUpdateModel petModel);
         Task DeletePetAsync(int petId);
         Task<PaginatedResult<AppointmentReadModel>> GetMyAppointmentsAsync
-            (int ownerId, bool upcomingOnly, int page = 1, int pageSize = 10);
+            (int ownerId, bool upcomingOnly, int page = 1, int pageSize = 10,
+             int? petId = null, DateTime? from = null, DateTime? to = null, AppointmentStatus? status = null);
         Task<List<VetLookupDto>> GetVetsForLookupAsync();
         Task<List<TimeSpan>> GetVetAvailabilityAsync(int vetId, DateTime date);
+        Task<List<VetReadModel>> GetVetsAsync();
+        Task<VetReadModel?> GetVetDetailsAsync(int vetId);
+        Task<List<VetScheduleReadModel>> GetVetScheduleAsync(int vetId);
         Task CreateAppointmentAsync(AppointmentCreateModel model);
         Task<AppointmentReadModel?> GetAppointmentDetailsAsync(int appointmentId);
         Task ConfirmAppointmentAsync(int appointmentId);
         Task CancelAppointmentAsync(int appointmentId);
-        Task<List<InvoiceReadModel>> GetMyInvoicesAsync(int ownerId);
+        Task<List<InvoiceReadModel>> GetMyInvoicesAsync(int ownerId, InvoiceStatusFilter? status = null);
         Task<InvoiceReadModel?> GetInvoiceAsync(int invoiceId);
         Task MarkInvoicePaidAsync(int invoiceId, DateTime paymentDate);
+        Task<byte[]> GetInvoicePdfAsync(int invoiceId);
+        Task<byte[]> GetPrescriptionPdfAsync(int prescriptionId);
+        Task<byte[]> GetMedicalTestAttachmentAsync(int testId);
+        Task<List<NotificationReadModel>> GetNotificationsAsync();
+        Task MarkNotificationAsReadAsync(int id);
+        Task<Dictionary<string, string>> GetPageTextsAsync();
+        Task<List<ProcedureReadModel>> GetProceduresAsync();
     }
 }

@@ -45,6 +45,7 @@ namespace PetCare.MobileApp
             builder.Services.AddAuthorizationCore();
             builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();
             builder.Services.AddLogging(logging => logging.AddSerilog());
+            builder.Services.AddSingleton<TextService>();
 
 #if DEBUG
             builder.Services.AddBlazorWebViewDeveloperTools();

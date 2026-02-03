@@ -1,13 +1,17 @@
 ﻿using Microsoft.Extensions.Logging;
-using PetCare.MobileApp.Models.Appointments;
 using PetCare.MobileApp.Common;
+using PetCare.MobileApp.Enums;
+using PetCare.MobileApp.Models;
+using PetCare.MobileApp.Models.Appointments;
+using PetCare.MobileApp.Models.Invoices;
+using PetCare.MobileApp.Models.Notifications;
 using PetCare.MobileApp.Models.Pets;
+using PetCare.MobileApp.Models.Vets;
+using PetCare.Shared.Dtos;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using PetCare.MobileApp.Models.Vets;
-using PetCare.MobileApp.Models.Invoices;
 
 namespace PetCare.MobileApp.Services
 {
@@ -80,23 +84,33 @@ namespace PetCare.MobileApp.Services
 
                 var jsonString = await response.Content.ReadAsStringAsync();
 
+                try
+                {
+                    var result = JsonSerializer.Deserialize<TResponse>(jsonString, _jsonOptions);
+
+                    if (!response.IsSuccessStatusCode && result != null)
+                    {
+                        _logger.LogWarning("API returned logical error {Status}: {Content}", response.StatusCode, jsonString);
+                        return result;
+                    }
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        _logger.LogDebug("API Success: {Content}", jsonString);
+                        return result;
+                    }
+                }
+                catch (Exception)
+                {
+                }
+
                 if (!response.IsSuccessStatusCode)
                 {
                     _logger.LogWarning("API Error {Status}: {Content}", response.StatusCode, jsonString);
                     throw new HttpRequestException($"Request failed: {response.StatusCode}. {jsonString}");
                 }
 
-                try
-                {
-                    _logger.LogDebug("API Success: {Content}", jsonString);
-
-                    return JsonSerializer.Deserialize<TResponse>(jsonString, _jsonOptions);
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "JSON Deserialization error. Raw content: {Content}", jsonString);
-                    throw new Exception("Error parsing API response", ex);
-                }
+                return default;
             }
             catch (Exception ex)
             {
@@ -173,6 +187,39 @@ namespace PetCare.MobileApp.Services
             }
         }
 
+        public async Task<UserProfileDto?> GetProfileAsync()
+        {
+            return await GetAsync<UserProfileDto>("api/account/profile");
+        }
+
+        public async Task<bool> UpdateProfileAsync(EditProfileDto model)
+        {
+            try
+            {
+                await PutAsync("api/account/profile", model);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to update profile");
+                return false;
+            }
+        }
+
+        public async Task<bool> ChangePasswordAsync(ChangePasswordDto model)
+        {
+            try
+            {
+                await PostAsync("api/account/change-password", model);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to change password");
+                return false;
+            }
+        }
+
         public async Task<List<PetReadModel>> GetPetsAsync(int? ownerId = null)
         {
             var url = "api/pets";
@@ -207,22 +254,48 @@ namespace PetCare.MobileApp.Services
         }
 
         public async Task<PaginatedResult<AppointmentReadModel>> GetMyAppointmentsAsync
-            (int ownerId, bool upcomingOnly, int page = 1, int pageSize = 10)
+            (int ownerId, bool upcomingOnly, int page = 1, int pageSize = 10, int? petId = null,
+            DateTime? from = null, DateTime? to = null, AppointmentStatus? status = null)
         {
             var url = $"api/appointments?petOwnerId={ownerId}&pageIndex={page}&pageSize={pageSize}";
 
-            if (upcomingOnly)
+            if (from.HasValue)
+            {
+                url += $"&from={from.Value:yyyy-MM-dd}";
+            }
+            else if (upcomingOnly)
             {
                 url += $"&from={DateTime.Today:yyyy-MM-dd}&sortColumn=Date&sortDirection=asc";
             }
-            else
+
+            if (to.HasValue)
+            {
+                url += $"&to={to.Value:yyyy-MM-dd}";
+            }
+            else if (!upcomingOnly)
             {
                 url += $"&to={DateTime.Today.AddDays(-1):yyyy-MM-dd}&sortColumn=Date&sortDirection=desc";
             }
 
+            if (status.HasValue)
+            {
+                url += $"&status={status.Value}";
+            }
+
             var result = await GetAsync<PaginatedResult<AppointmentReadModel>>(url);
 
-            return result ?? new PaginatedResult<AppointmentReadModel>();
+            if (result == null)
+            {
+                return new PaginatedResult<AppointmentReadModel>();
+            }
+
+            if (petId.HasValue && result.Items != null)
+            {
+                var filtered = result.Items.Where(x => x.PetId == petId.Value).ToList();
+                return new PaginatedResult<AppointmentReadModel>(filtered, filtered.Count, page, pageSize);
+            }
+
+            return result;
         }
 
         public async Task<List<VetLookupDto>> GetVetsForLookupAsync()
@@ -237,6 +310,23 @@ namespace PetCare.MobileApp.Services
 
             var result = await GetAsync<List<TimeSpan>>(url);
             return result ?? new List<TimeSpan>();
+        }
+
+        public async Task<List<VetReadModel>> GetVetsAsync()
+        {
+            var result = await GetAsync<List<VetReadModel>>("api/vets");
+            return result ?? new List<VetReadModel>();
+        }
+
+        public async Task<VetReadModel?> GetVetDetailsAsync(int vetId)
+        {
+            return await GetAsync<VetReadModel>($"api/vets/{vetId}");
+        }
+
+        public async Task<List<VetScheduleReadModel>> GetVetScheduleAsync(int vetId)
+        {
+            var result = await GetAsync<List<VetScheduleReadModel>>($"api/vetschedules/vet/{vetId}");
+            return result ?? new List<VetScheduleReadModel>();
         }
 
         public async Task CreateAppointmentAsync(AppointmentCreateModel model)
@@ -259,9 +349,17 @@ namespace PetCare.MobileApp.Services
             await DeleteAsync($"api/appointments/{appointmentId}");
         }
 
-        public async Task<List<InvoiceReadModel>> GetMyInvoicesAsync(int ownerId)
+        public async Task<List<InvoiceReadModel>> GetMyInvoicesAsync(int ownerId,
+            InvoiceStatusFilter? status = null)
         {
-            var result = await GetAsync<List<InvoiceReadModel>>($"api/invoices/by-owner/{ownerId}");
+            var url = $"api/invoices/by-owner/{ownerId}";
+
+            if (status.HasValue)
+            {
+                url += $"?status={status.Value.ToString().ToLower()}";
+            }
+
+            var result = await GetAsync<List<InvoiceReadModel>>(url);
             return result ?? new List<InvoiceReadModel>();
         }
 
@@ -273,6 +371,55 @@ namespace PetCare.MobileApp.Services
         public async Task MarkInvoicePaidAsync(int invoiceId, DateTime paymentDate)
         {
             await PostAsync($"api/invoices/{invoiceId}/pay", paymentDate);
+        }
+
+        public async Task<byte[]> GetInvoicePdfAsync(int invoiceId)
+        {
+            await AddAuthorizationHeaderAsync();
+            return await _httpClient.GetByteArrayAsync($"api/invoices/{invoiceId}/pdf");
+        }
+
+        public async Task<byte[]> GetPrescriptionPdfAsync(int prescriptionId)
+        {
+            await AddAuthorizationHeaderAsync();
+            return await _httpClient.GetByteArrayAsync($"api/prescriptions/{prescriptionId}/pdf");
+        }
+
+        public async Task<byte[]> GetMedicalTestAttachmentAsync(int testId)
+        {
+            await AddAuthorizationHeaderAsync();
+            return await _httpClient.GetByteArrayAsync($"api/medicaltests/{testId}/download");
+        }
+
+        public async Task<List<NotificationReadModel>> GetNotificationsAsync()
+        {
+            var result = await GetAsync<List<NotificationReadModel>>("api/notifications");
+            return result ?? new List<NotificationReadModel>();
+        }
+
+        public async Task MarkNotificationAsReadAsync(int id)
+        {
+            await PutAsync<object>($"api/notifications/{id}/read", new { });
+        }
+
+        public async Task<Dictionary<string, string>> GetPageTextsAsync()
+        {
+            try
+            {
+                var result = await GetAsync<Dictionary<string, string>>("api/pagetexts");
+                return result ?? new Dictionary<string, string>();
+            }
+            catch
+            {
+                _logger.LogWarning("Could not load PageTexts. Application will use keys as fallback.");
+                return new Dictionary<string, string>();
+            }
+        }
+
+        public async Task<List<ProcedureReadModel>> GetProceduresAsync()
+        {
+            var result = await GetAsync<List<ProcedureReadModel>>("api/procedures?isActive=true");
+            return result ?? new List<ProcedureReadModel>();
         }
     }
 }

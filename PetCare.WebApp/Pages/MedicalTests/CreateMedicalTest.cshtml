@@ -26,11 +26,6 @@
                     <span asp-validation-for="Input.TestDate" class="text-danger"></span>
                 </div>
 
-                <div class="mb-3">
-                    <label asp-for="Input.AttachmentUrl" class="form-label">Attachment URL (Optional)</label>
-                    <input asp-for="Input.AttachmentUrl" class="form-control" placeholder="Link to file..." />
-                </div>
-
                 <div class="d-flex justify-content-between">
                     <a asp-page="/Appointments/Details" asp-route-id="@Model.Input.AppointmentId" class="btn btn-secondary">Cancel</a>
                     <button type="submit" class="btn btn-primary">Save Test</button>

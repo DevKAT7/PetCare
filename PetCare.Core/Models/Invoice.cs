@@ -12,10 +12,12 @@ namespace PetCare.Core.Models
         public DateOnly InvoiceDate { get; set; }
         public DateOnly DueDate { get; set; }
         [Column(TypeName = "decimal(18,2)")]
-        [Range(0, double.MaxValue, ErrorMessage = "Kwota nie może być ujemna.")]
+        [Range(0, double.MaxValue, ErrorMessage = "Total amount cannot be negative.")]
         public decimal TotalAmount { get; set; }
         public bool IsPaid { get; set; } = false;
         public DateOnly? PaymentDate { get; set; }
+        public bool IsDueReminderSent { get; set; } = false;
+        public bool IsOverdueReminderSent { get; set; } = false;
         public int PetOwnerId { get; set; }
         public PetOwner PetOwner { get; set; } = null!;
 

@@ -6,7 +6,7 @@ namespace PetCare.Core.Models
     {
         [Key]
         public int StockItemId { get; set; }
-        [Range(0, int.MaxValue, ErrorMessage = "Stan magazynowy nie może być ujemny.")]
+        [Range(0, int.MaxValue, ErrorMessage = "The current stock cannot be negative.")]
         public int CurrentStock { get; set; }
         [Range(0, int.MaxValue)]
         public int ReorderLevel { get; set; }

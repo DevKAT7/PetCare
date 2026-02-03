@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using PetCare.Application.Features.MedicalTests.Commands;
 using PetCare.Application.Features.MedicalTests.Dtos;
 using PetCare.Application.Features.MedicalTests.Queries;
+using PetCare.Application.Interfaces;
 using ValidationException = PetCare.Application.Exceptions.ValidationException;
 
 namespace PetCare.WebApp.Pages.MedicalTests
@@ -13,10 +14,12 @@ namespace PetCare.WebApp.Pages.MedicalTests
     public class EditMedicalTestModel : PageModel
     {
         private readonly IMediator _mediator;
+        private readonly IFileStorageService _fileStorage;
 
-        public EditMedicalTestModel(IMediator mediator)
+        public EditMedicalTestModel(IMediator mediator, IFileStorageService fileStorageService)
         {
             _mediator = mediator;
+            _fileStorage = fileStorageService;
         }
 
         [BindProperty]
@@ -64,6 +67,11 @@ namespace PetCare.WebApp.Pages.MedicalTests
 
             try
             {
+                if (Input.AttachmentFile != null && Input.AttachmentFile.Length > 0)
+                {
+                    Input.AttachmentUrl = await _fileStorage.SaveFileAsync(Input.AttachmentFile, "medicaltests");
+                }
+
                 var command = new UpdateMedicalTestCommand(MedicalTestId, Input);
                 await _mediator.Send(command);
 

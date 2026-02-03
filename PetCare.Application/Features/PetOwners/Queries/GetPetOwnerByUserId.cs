@@ -27,11 +27,14 @@ namespace PetCare.Application.Features.PetOwners.Queries
         public async Task<PetOwnerAuthDto?> Handle(GetPetOwnerByUserIdQuery request, CancellationToken cancellationToken)
         {
             var petOwner = await _context.PetOwners
+                .Include(p => p.User)
                 .Where(p => p.UserId == request.UserId)
                 .Select(p => new PetOwnerAuthDto
                 {
                     PetOwnerId = p.PetOwnerId,
-                    FirstName = p.FirstName
+                    FirstName = p.FirstName,
+                    LastName = p.LastName,
+                    Address = p.Address
                 })
                 .FirstOrDefaultAsync(cancellationToken);
 
