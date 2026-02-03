@@ -1,11 +1,13 @@
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 using PetCare.Api.Extensions;
 using PetCare.Application.Extensions;
 using PetCare.Application.Interfaces;
+using PetCare.Core.Models;
 using PetCare.Infrastructure.Data;
 using PetCare.Infrastructure.Extensions;
 using PetCare.Infrastructure.Services;
@@ -16,7 +18,7 @@ namespace PetCare.Api
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var configuration = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
@@ -96,18 +98,22 @@ namespace PetCare.Api
                 {
                     var services = scope.ServiceProvider;
                     var logger = services.GetRequiredService<ILogger<Program>>();
+
                     try
                     {
                         logger.LogInformation("Starting database initialization...");
 
                         var context = services.GetRequiredService<ApplicationDbContext>();
+                        var userManager = services.GetRequiredService<UserManager<User>>();
 
-                        DomainSeed.SeedSpecializationsAsync(context).Wait();
-                        logger.LogInformation("Specializations initialized.");
+                        await context.Database.MigrateAsync();
+                        logger.LogInformation("Database migrated successfully.");
 
-                        var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
-                        IdentitySeed.SeedAsync(services).Wait();
+                        await IdentitySeed.SeedAsync(services);
                         logger.LogInformation("System roles initialized.");
+
+                        await DomainSeed.SeedAsync(context, userManager);
+                        logger.LogInformation("Domain seed (Vets, Procedures, Scenarios) initialized.");
                     }
                     catch (Exception ex)
                     {
