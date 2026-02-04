@@ -1,4 +1,5 @@
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PetCare.Application.Features.MedicalTests.Commands;
 using PetCare.Application.Features.MedicalTests.Dtos;
@@ -9,6 +10,7 @@ namespace PetCare.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class MedicalTestsController : ControllerBase
     {
         private readonly IMediator _mediator;

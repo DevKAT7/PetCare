@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PetCare.Application.Features.VetSpecializations.Commands;
 using PetCare.Application.Features.VetSpecializations.Dtos;
@@ -8,6 +9,7 @@ namespace PetCare.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class VetSpecializationsController : ControllerBase
     {
         private readonly IMediator _mediator;
