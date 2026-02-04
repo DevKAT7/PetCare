@@ -1,20 +1,21 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using PetCare.Application.Exceptions;
 using PetCare.Application.Features.Invoices.Commands;
 using PetCare.Application.Features.Invoices.Dtos;
 using PetCare.Application.Features.Invoices.Queries;
+using PetCare.WebApp.Pages.Shared;
 
 namespace PetCare.WebApp.Pages.Invoices
 {
     [Authorize(Roles = "Admin, Employee")]
-    public class DetailsModel : PageModel
+    public class DetailsModel : BasePageModel
     {
-        private readonly IMediator _mediator;
 
-        public DetailsModel(IMediator mediator) => _mediator = mediator;
+        public DetailsModel(IMediator mediator) : base(mediator)
+        {
+        }
 
         public InvoiceReadModel Invoice { get; set; } = default!;
 
@@ -22,6 +23,7 @@ namespace PetCare.WebApp.Pages.Invoices
         {
             try
             {
+                await LoadPageTextsAsync();
                 Invoice = await _mediator.Send(new GetInvoiceQuery(id));
                 return Page();
             }

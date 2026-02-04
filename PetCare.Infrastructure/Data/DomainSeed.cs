@@ -9,6 +9,7 @@ namespace PetCare.Infrastructure.Data
     {
         public static async Task SeedAsync(ApplicationDbContext context, UserManager<User> userManager)
         {
+            await SeedPageTextsAsync(context);
             await SeedSpecializationsAsync(context);
             await SeedProceduresAsync(context);
             await SeedVetsAsync(context, userManager);
@@ -16,6 +17,28 @@ namespace PetCare.Infrastructure.Data
             await SeedMedicationsAsync(context);
             await SeedClientsAndPetsAsync(context, userManager);
             await SeedScenariosAsync(context);
+        }
+
+        private static async Task SeedPageTextsAsync(ApplicationDbContext context)
+        {
+            if (await context.PageTexts.AnyAsync()) return;
+
+            var texts = new List<PageText>
+            {
+                new() { Key = "Dashboard_Title", Value = "Dashboard" },
+                new() { Key = "Dashboard_AppointmentsCard", Value = "Appointments Today" },
+                new() { Key = "Dashboard_RevenueCard", Value = "Today's Revenue" },
+                new() { Key = "Dashboard_NewPatientsCard", Value = "New Patients (Month)" },
+
+                new() { Key = "Clinic_Name", Value = "PetCare Veterinary Clinic" },
+                new() { Key = "Clinic_Address", Value = "123 Vet Street, Animal City" },
+                new() { Key = "Clinic_Phone", Value = "+44 123 456 789" },
+                new() { Key = "Clinic_Email", Value = "contact@petcare.com" },
+                new() { Key = "Opening_Hours", Value = "Mon-Fri: 9:00 - 17:00" }
+            };
+
+            await context.PageTexts.AddRangeAsync(texts);
+            await context.SaveChangesAsync();
         }
 
         public static async Task SeedSpecializationsAsync(ApplicationDbContext context)
@@ -287,7 +310,8 @@ namespace PetCare.Infrastructure.Data
                 IsMale = true, 
                 IsActive = true, 
                 PetOwnerId = alice.PetOwnerId, 
-                ImageUrl = "https://images.pexels.com/photos/2253275/pexels-photo-2253275.jpeg" 
+                ImageUrl = "https://images.pexels.com/photos/2253275/pexels-photo-2253275.jpeg",
+                CreatedDate = DateTime.Now
             });
 
             var bob = await CreateClient(context, userManager, "bob@petcare.com", "Bob", "Builder", "837884992");
@@ -300,7 +324,8 @@ namespace PetCare.Infrastructure.Data
                 IsMale = false, 
                 IsActive = true, 
                 PetOwnerId = bob.PetOwnerId, 
-                ImageUrl = "https://images.pexels.com/photos/45201/kitty-cat-kitten-pet-45201.jpeg" 
+                ImageUrl = "https://images.pexels.com/photos/45201/kitty-cat-kitten-pet-45201.jpeg",
+                CreatedDate = DateTime.Now
             });
 
             await context.SaveChangesAsync();
