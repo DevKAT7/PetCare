@@ -1,4 +1,5 @@
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PetCare.Application.Features.StockTransactions.Commands;
 using PetCare.Application.Features.StockTransactions.Queries;
@@ -7,6 +8,7 @@ namespace PetCare.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class StockTransactionsController : ControllerBase
     {
         private readonly IMediator _mediator;

@@ -40,7 +40,7 @@ namespace PetCare.Infrastructure.Data
 
         private static async Task SeedAdminAsync(UserManager<User> userManager)
         {
-            var adminEmail = "admin@petcare.pl"; // Można pobrać z konfiguracji
+            var adminEmail = "admin@petcare.pl";
 
             if (await userManager.FindByEmailAsync(adminEmail) == null)
             {
@@ -52,8 +52,6 @@ namespace PetCare.Infrastructure.Data
                     IsActive = true,
                 };
 
-                // UWAGA: W pracy inżynierskiej zostawiłam to hasło w kodzie
-                // ale wiem, że na produkcji robi się to inaczej i dałabym je do sekretów
                 string adminPassword = "StrongPassword123!";
 
                 var result = await userManager.CreateAsync(adminUser, adminPassword);
