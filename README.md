@@ -17,6 +17,7 @@ It includes modules for appointments, pets, owners, vets, medical records, inven
 - Containerization: Docker / Docker Compose
 
 **Default Credentials (Demo Data)**
+
 The system initializes with the following demo accounts. Password for all member accounts: Pass123!
 - Admin: admin@petcare.pl, Password: StrongPassword123!, Full access to web app
 - Vet (Surgeon): john.doe@petcare.com, Staff member (Web Panel access)
@@ -30,7 +31,7 @@ The system initializes with the following demo accounts. Password for all member
 - Docker & Docker Compose (for containerized run)
 - Visual Studio 2022 (recommended for MAUI development)
 
-Getting started
+**Getting started**
 
 Option 1: Run with Docker Compose (Recommended)
 This will spin up the SQL Server, API, and Web App automatically.
@@ -47,6 +48,7 @@ cd PetCare
 docker-compose up --build
 ```
 3. Access the services:
+   
 Web App (Clinic Panel): http://localhost:5001
 API (Swagger UI): http://localhost:5084/swagger
 
