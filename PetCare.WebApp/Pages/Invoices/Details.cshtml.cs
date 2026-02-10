@@ -5,6 +5,7 @@ using PetCare.Application.Exceptions;
 using PetCare.Application.Features.Invoices.Commands;
 using PetCare.Application.Features.Invoices.Dtos;
 using PetCare.Application.Features.Invoices.Queries;
+using PetCare.Application.Interfaces;
 using PetCare.WebApp.Pages.Shared;
 
 namespace PetCare.WebApp.Pages.Invoices
@@ -12,9 +13,11 @@ namespace PetCare.WebApp.Pages.Invoices
     [Authorize(Roles = "Admin, Employee")]
     public class DetailsModel : BasePageModel
     {
+        private readonly IDocumentGenerator _documentGenerator;
 
-        public DetailsModel(IMediator mediator) : base(mediator)
+        public DetailsModel(IMediator mediator, IDocumentGenerator documentGenerator) : base(mediator)
         {
+            _documentGenerator = documentGenerator;
         }
 
         public InvoiceReadModel Invoice { get; set; } = default!;
@@ -46,6 +49,21 @@ namespace PetCare.WebApp.Pages.Invoices
             {
                 return NotFound();
             }
+        }
+
+        public async Task<IActionResult> OnGetDownloadPdfAsync(int id)
+        {
+            var invoiceQuery = new GetInvoiceQuery(id);
+            var invoice = await _mediator.Send(invoiceQuery);
+
+            if (invoice == null)
+            {
+                return NotFound();
+            }
+
+            var document = _documentGenerator.GenerateInvoice(invoice);
+
+            return File(document.Content, document.ContentType, document.FileName);
         }
     }
 }
