@@ -111,6 +111,18 @@
                             </a>
                         </li>
                         <li>
+                            <a asp-area="" asp-page="/Admin/Users/Index"
+                               class="@(ViewContext.RouteData.Values["page"]?.ToString()?.StartsWith("/Admin/Users") == true ? "active" : "")">
+                                <i class="bi bi-people-fill"></i> Users & Access
+                            </a>
+                        </li>
+                        <li>
+                            <a asp-area="" asp-page="/Admin/Roles/Index"
+                               class="@(ViewContext.RouteData.Values["page"]?.ToString()?.StartsWith("/Admin/Roles") == true ? "active" : "")">
+                                <i class="bi bi-shield-lock"></i> Permission Groups (Roles)
+                            </a>
+                        </li>
+                        <li>
                             <a asp-area="" asp-page="/Admin/Content/Index"
                                class="@(ViewContext.RouteData.Values["page"]?.ToString() == "/Admin/Content" ? "active" : "")">
                                 <i class="bi bi-layout-text-window-reverse"></i> CMS Dictionary

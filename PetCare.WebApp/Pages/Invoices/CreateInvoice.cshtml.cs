@@ -43,11 +43,18 @@ namespace PetCare.WebApp.Pages.Invoices
             {
                 var item = Input.Items[i];
 
-                //dajê tutaj dodatkow¹ walidacjê, aby pomin¹æ weryfikacjê usuniêtych wierszy
-                //musia³am usunaæ walidacjê po stronie klienta, poniewa¿ nie dzia³a³a poprawnie z dynamicznie dodawanymi/usuwanymi wierszami
-                bool isDeletedRow = item.Description == "DELETED" && item.Quantity == 0;
+                //daje tutaj dodatkowa walidacje, aby pominac weryfikacje usunietych wierszy
+                //musiaÅ‚am usunac walidacje po stronie klienta, poniewaz nie dzialala poprawnie z dynamicznie dodawanymi/usuwanymi wierszami
+                bool isDeletedRow = item.Quantity == 0 || string.IsNullOrWhiteSpace(item.Description);
 
-                if (!isDeletedRow)
+                if (isDeletedRow)
+                {
+                    ModelState.Keys
+                        .Where(k => k.StartsWith($"Input.Items[{i}]."))
+                        .ToList()
+                        .ForEach(k => ModelState.Remove(k));
+                }
+                else
                 {
 
                     if (string.IsNullOrWhiteSpace(item.Description))
@@ -60,9 +67,9 @@ namespace PetCare.WebApp.Pages.Invoices
                         ModelState.AddModelError($"Input.Items[{i}].Quantity", "Quantity must be at least 1.");
                     }
 
-                    if (item.UnitPrice < 0)
+                    if (item.UnitPrice <= 0)
                     {
-                        ModelState.AddModelError($"Input.Items[{i}].UnitPrice", "Price cannot be negative.");
+                        ModelState.AddModelError($"Input.Items[{i}].UnitPrice", "Price cannot be negative or zero.");
                     }
                 }
             }

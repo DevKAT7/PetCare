@@ -45,6 +45,13 @@ namespace PetCare.Infrastructure.Services
 
                         foreach (var appt in appointments)
                         {
+                            var freshAppt = await context.Appointments
+                                .FirstOrDefaultAsync(a => a.AppointmentId == appt.AppointmentId && !a.IsReminderSent, stoppingToken);
+
+                            if (freshAppt == null) continue;
+
+                            freshAppt.IsReminderSent = true;
+
                             // powiadomienie dla właściciela
                             await mediator.Send(new CreateNotificationCommand
                             {
@@ -66,8 +73,6 @@ namespace PetCare.Infrastructure.Services
                                     Message = $"Reminder: Appointment tomorrow at {appt.AppointmentDateTime:HH:mm} (Patient: {appt.Pet.Name})."
                                 }
                             });
-
-                            appt.IsReminderSent = true;
                         }
 
                         var tomorrowInvoice = DateOnly.FromDateTime(DateTime.Today.AddDays(1));

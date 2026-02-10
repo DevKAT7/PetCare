@@ -28,5 +28,11 @@ namespace PetCare.WebApp.Pages
             await _mediator.Send(new MarkAsReadNotificationCommand(id));
             return new JsonResult(new { success = true });
         }
+
+        public async Task<IActionResult> OnPostMarkAllReadAsync()
+        {
+            await _mediator.Send(new MarkAllNotificationsAsReadCommand());
+            return new JsonResult(new { success = true });
+        }
     }
 }
