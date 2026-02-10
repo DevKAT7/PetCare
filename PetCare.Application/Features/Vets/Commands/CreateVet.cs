@@ -28,6 +28,23 @@ namespace PetCare.Application.Features.Vets.Commands
         {
             var request = command.Vet;
 
+            var validationErrors = new Dictionary<string, string[]>();
+
+            if (await _context.Vets.AnyAsync(v => v.Pesel == request.Pesel, cancellationToken))
+            {
+                validationErrors.Add("Vet.Pesel", new[] { "PESEL is already in use by another vet." });
+            }
+
+            if (await _context.Vets.AnyAsync(v => v.LicenseNumber == request.LicenseNumber, cancellationToken))
+            {
+                validationErrors.Add("Vet.LicenseNumber", new[] { "License number is already registered in the system." });
+            }
+
+            if (validationErrors.Any())
+            {
+                throw new ValidationException(validationErrors);
+            }
+
             var user = new User
             {
                 UserName = request.Email,
@@ -42,9 +59,9 @@ namespace PetCare.Application.Features.Vets.Commands
 
             if (!identityResult.Succeeded)
             {
-                var errors = identityResult.Errors.Select(e => e.Description).ToList();
+                var identityErrors = identityResult.Errors.Select(e => e.Description).ToList();
 
-                throw new BadRequestException("Unable to create user account.", errors);
+                throw new BadRequestException("Unable to create user account.", identityErrors);
             }
 
             await _userManager.AddToRoleAsync(user, "Employee");
