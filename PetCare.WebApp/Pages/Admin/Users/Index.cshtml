@@ -1,0 +1,48 @@
+﻿@page
+@model PetCare.WebApp.Pages.Admin.Users.IndexModel
+@{
+    ViewData["Title"] = "User Management";
+}
+
+<h2><i class="bi bi-people-fill"></i> User Management</h2>
+
+<table class="table table-striped mt-4">
+    <thead>
+        <tr>
+            <th>Email / Username</th>
+            <th>Roles</th>
+            <th>Active</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model.UsersWithRoles)
+        {
+            <tr>
+                <td>@user.User.Email</td>
+                <td>
+                    @foreach (var role in user.Roles)
+                    {
+                        <span class="badge bg-primary">@role</span>
+                    }
+                </td>
+                <td>
+                    @if (user.User.IsActive)
+                    {
+                        <span class="text-success">Yes</span>
+                    }
+                    else
+                    {
+
+                        <span class="text-danger">No</span>
+                    }
+                </td>
+                <td>
+                    <a asp-page="./ManageRoles" asp-route-userId="@user.User.Id" class="btn btn-sm btn-outline-dark">
+                        <i class="bi bi-gear"></i> Manage Access
+                    </a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
