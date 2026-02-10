@@ -55,12 +55,10 @@ namespace PetCare.WebApp.Pages.Admin.Users
 
             var userRoles = await _userManager.GetRolesAsync(user);
 
-            // 1. Dodaj nowo zaznaczone
             var rolesToAdd = RolesList.Where(x => x.IsSelected && !userRoles.Contains(x.RoleName))
                                       .Select(x => x.RoleName);
             if (rolesToAdd.Any()) await _userManager.AddToRolesAsync(user, rolesToAdd);
 
-            // 2. Usuñ odznaczone
             var rolesToRemove = RolesList.Where(x => !x.IsSelected && userRoles.Contains(x.RoleName))
                                          .Select(x => x.RoleName);
             if (rolesToRemove.Any()) await _userManager.RemoveFromRolesAsync(user, rolesToRemove);
