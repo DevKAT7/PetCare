@@ -74,50 +74,65 @@
             </li>
         }
 
-        <li><a class="dropdown-item text-center small text-primary fw-bold py-2 mt-1" href="#">Read all</a></li>
+        <li>
+            <a class="dropdown-item text-center small text-primary fw-bold py-2 mt-1"
+               href="#"
+               onclick="markAsRead(null, null, event)">
+                Read all
+            </a>
+        </li>
     </ul>
 </li>
 
 <script>
     function markAsRead(id, element, event) {
-        //zatrzymujemy domyślne zachowanie (np. przekierowanie, jeśli href miałby link)
-        event.preventDefault();
-
-
-        //wyszarzanie klikniętego elementu
-        const itemContainer = element.closest('a');
-        itemContainer.style.opacity = '0.5';
-        itemContainer.style.backgroundColor = '#f8f9fa';
-        itemContainer.style.pointerEvents = 'none';//blokada ponownego kliknięcia
+        if (event) {
+            //zatrzymujemy domyślne zachowanie (np. przekierowanie, jeśli href miałby link)
+            event.preventDefault();
+             if (!id) event.stopPropagation();
+        }
 
         const badge = document.getElementById('notification-badge');
-
-        if (badge) {
-            let currentCount = parseInt(badge.innerText);
-
-            if (currentCount > 1) {
-                badge.innerText = currentCount - 1;
-            } else {
-                badge.style.display = 'none';
-            }
-        }
 
         //pobieram token Antiforgery (wymagany w Razor Pages)
         //szukamy go w dowolnym formularzu na stronie lub tworzymy fallback
         let tokenElement = document.querySelector('input[name="__RequestVerificationToken"]');
         let token = tokenElement ? tokenElement.value : '';
 
-        fetch(`/Notifications?handler=MarkRead`, {
+        // Określamy URL i body w zależności od tego, czy mamy konkretne ID
+        const url = id ? `/Notifications?handler=MarkRead` : `/Notifications?handler=MarkAllRead`;
+        const body = id ? `id=${id}` : '';
+
+        if (id && element) {
+            //pojedyncze powiadomienie
+            element.style.opacity = '0.5';
+            element.style.backgroundColor = '#f8f9fa';
+            element.style.pointerEvents = 'none';
+
+            if (badge) {
+                let count = parseInt(badge.innerText);
+                count > 1 ? badge.innerText = count - 1 : badge.style.display = 'none';
+            }
+        } else {
+            //wszystkie powiadomienia
+            document.querySelectorAll('.notification-item').forEach(item => {
+                item.style.opacity = '0.5';
+                item.style.backgroundColor = '#f8f9fa';
+                item.style.pointerEvents = 'none';
+            });
+            if (badge) badge.style.display = 'none';
+        }
+
+        //wywołanie do serwera
+        fetch(url, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
                 'RequestVerificationToken': token
             },
-            body: `id=${id}`
+            body: body
         }).then(response => {
-            if (!response.ok) {
-                console.error("Notification status saving error.");
-            }
+            if (!response.ok) console.error("Error updating notification status.");
         });
     }
 </script>
