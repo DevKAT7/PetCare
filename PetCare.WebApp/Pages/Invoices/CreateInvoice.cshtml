@@ -53,9 +53,11 @@
                             </td>
                             <td>
                                 <input asp-for="Input.Items[i].UnitPrice" class="form-control text-end unit-price" type="number" step="0.01" />
+                                <span asp-validation-for="Input.Items[i].UnitPrice" class="text-danger small"></span>
                             </td>
                             <td>
                                 <input asp-for="Input.Items[i].Quantity" class="form-control text-center quantity" type="number" min="1" />
+                                <span asp-validation-for="Input.Items[i].Quantity" class="text-danger small"></span>
                             </td>
                             <td class="text-end fw-bold line-total">
                                 0.00
@@ -102,7 +104,13 @@
             const newRow = `
             <tr>
                 <td>
-                    <input name="Input.Items[${itemIndex}].Description" class="form-control" placeholder="New Service / Item" required />
+                    <input name="Input.Items[${itemIndex}].Description" 
+                           class="form-control" 
+                           placeholder="New Service / Item"
+                           data-val="true"
+                           data-val-required="Description is required."
+                           required />
+                    <span class="text-danger small field-validation-valid" data-valmsg-for="Input.Items[${itemIndex}].Description" data-valmsg-replace="true"></span>
                 </td>
                 <td>
                     <input name="Input.Items[${itemIndex}].UnitPrice"
@@ -111,9 +119,11 @@
                            lang="en-US"
                            class="form-control text-end unit-price"
                            placeholder="0.00" />
+                           <span class="text-danger small field-validation-valid" data-valmsg-for="Input.Items[${itemIndex}].UnitPrice" data-valmsg-replace="true"></span>
                 </td>
                 <td>
                     <input name="Input.Items[${itemIndex}].Quantity" type="number" class="form-control text-center quantity" value="1" min="1" />
+                    <span class="text-danger small field-validation-valid" data-valmsg-for="Input.Items[${itemIndex}].Quantity" data-valmsg-replace="true"></span>
                 </td>
                 <td class="text-end fw-bold line-total">0.00</td>
                 <td class="text-center">
@@ -123,6 +133,12 @@
 
             tbody.insertAdjacentHTML('beforeend', newRow);
             itemIndex++; //zwiększam indeks dla następnego elementu
+            
+            // Przeładuj walidację dla nowego wiersza
+            if (typeof $ !== 'undefined' && $.validator) {
+                $.validator.unobtrusive.parse(document.body);
+            }
+            
             calculateTotals(); //przeliczam sumy (nowy wiersz to 0.00)
         }
 
@@ -134,14 +150,28 @@
             if(qtyInput) qtyInput.value = 0;
 
             const priceInput = row.querySelector('.unit-price');
-            if(priceInput) priceInput.value = 0;
+            if(priceInput) priceInput.value = '';
 
             const descInput = row.querySelector('input[type="text"]');
             if(descInput) {
-                descInput.value = "DELETED";
+                descInput.value = '';
             }
 
             row.style.display = 'none';
+            
+            // Wyczyść błędy walidacji dla tego wiersza
+            const inputs = row.querySelectorAll('input');
+            inputs.forEach(input => {
+                const fieldName = input.getAttribute('name');
+                if (fieldName) {
+                    document.querySelectorAll(`[data-valmsg-for="${fieldName}"]`).forEach(span => {
+                        span.innerText = '';
+                        span.classList.remove('field-validation-error');
+                        span.classList.add('field-validation-valid');
+                    });
+                }
+            });
+            
             calculateTotals();
         }
 
