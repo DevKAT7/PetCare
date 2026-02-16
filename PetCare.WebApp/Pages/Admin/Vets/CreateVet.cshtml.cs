@@ -1,23 +1,20 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using PetCare.Application.Exceptions;
 using PetCare.Application.Features.Vets.Commands;
 using PetCare.Application.Features.VetSpecializations.Queries;
+using PetCare.WebApp.Pages.Shared;
 using ValidationException = PetCare.Application.Exceptions.ValidationException;
 
 namespace PetCare.WebApp.Pages.Admin.Vets
 {
     [Authorize(Roles = "Admin")]
-    public class CreateVetModel : PageModel
+    public class CreateVetModel : BasePageModel
     {
-        private readonly IMediator _mediator;
-
-        public CreateVetModel(IMediator mediator)
+        public CreateVetModel(IMediator mediator) : base(mediator)
         {
-            _mediator = mediator;
         }
 
         [BindProperty]
@@ -25,6 +22,7 @@ namespace PetCare.WebApp.Pages.Admin.Vets
 
         public async Task OnGetAsync()
         {
+            await LoadPageTextsAsync();
             await LoadSpec();
         }
 
@@ -32,7 +30,7 @@ namespace PetCare.WebApp.Pages.Admin.Vets
         {
             var query = new GetAllVetSpecializationsQuery();
             var result = await _mediator.Send(query);
-            
+
             ViewData["Specializations"] = new SelectList(result, "VetSpecializationId", "Name");
         }
 

@@ -1,4 +1,5 @@
 @page
+@using PetCare.WebApp.Helpers
 @model PetCare.WebApp.Pages.Invoices.IndexModel
 @{
     ViewData["Title"] = "Invoices List";
@@ -43,12 +44,12 @@
                 <button type="submit"
                         class="btn btn-secondary btn-sm flex-grow-1 d-flex align-items-center justify-content-center"
                         title="Apply filters">
-                    <i class="bi bi-funnel me-2"></i> Filter
+                    <i class="bi bi-funnel me-2"></i> @Html.T("Filter_Button")
                 </button>
                 <a asp-page="./Index"
                    class="btn btn-outline-secondary btn-sm flex-grow-1 d-flex align-items-center justify-content-center"
                    title="Clear filters">
-                    Clear
+                    @Html.T("Clear_Button")
                 </a>
             </div>
         </form>

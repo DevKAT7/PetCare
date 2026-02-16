@@ -5,16 +5,17 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using PetCare.Application.Features.PageTexts.Commands;
 using PetCare.Application.Features.PageTexts.Queries;
 using PetCare.Core.Models;
+using PetCare.WebApp.Pages.Shared;
 using ValidationException = PetCare.Application.Exceptions.ValidationException;
 
 namespace PetCare.WebApp.Pages.Admin.Content
 {
     [Authorize(Roles = "Admin")]
-    public class IndexModel : PageModel
+    public class IndexModel : BasePageModel
     {
-        private readonly IMediator _mediator;
-
-        public IndexModel(IMediator mediator) => _mediator = mediator;
+        public IndexModel(IMediator mediator) : base(mediator)
+        {
+        }
 
         public List<PageText> PageTexts { get; set; }
 
@@ -32,6 +33,8 @@ namespace PetCare.WebApp.Pages.Admin.Content
 
         public async Task OnGetAsync()
         {
+            await LoadPageTextsAsync();
+
             PageTexts = await _mediator.Send(new GetAllPageTextsForAdminQuery());
         }
 

@@ -6,6 +6,7 @@
 @using PetCare.MobileApp.Services
 @using Microsoft.AspNetCore.Components.Authorization
 @inject AuthenticationStateProvider AuthStateProvider
+@inject TextService Text
 @inject IApiService ApiService
 @inject NavigationManager Navigation
 
@@ -77,7 +78,7 @@
             @if (nextAppointment.AppointmentDateTime > DateTime.Now.AddHours(2))
             {
                 <button class="btn btn-outline-danger btn-sm flex-grow-1" @onclick="CancelAppointment">
-                    Cancel
+                    @Text["Cancel_Button"]
                 </button>
             }
             else

@@ -6,17 +6,15 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using PetCare.Application.Features.Appointments.Dtos;
 using PetCare.Application.Features.Appointments.Queries;
 using PetCare.Application.Features.Vets.Queries;
+using PetCare.WebApp.Pages.Shared;
 
 namespace PetCare.WebApp.Pages
 {
     [Authorize(Roles = "Admin, Employee")]
-    public class CalendarModel : PageModel
+    public class CalendarModel : BasePageModel
     {
-        private readonly IMediator _mediator;
-
-        public CalendarModel(IMediator mediator)
+        public CalendarModel(IMediator mediator) : base(mediator)
         {
-            _mediator = mediator;
         }
 
         public List<AppointmentReadModel> Appointments { get; set; } = new();
@@ -33,6 +31,8 @@ namespace PetCare.WebApp.Pages
 
         public async Task OnGetAsync()
         {
+            await LoadPageTextsAsync();
+
             //Calculate Date Range (Monday to Friday)
             var anchorDate = CurrentDate ?? DateTime.Today;
             //Calculate offset to get to Monday

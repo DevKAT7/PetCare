@@ -1,4 +1,5 @@
 ﻿@page
+@using PetCare.WebApp.Helpers
 @model PetCare.WebApp.Pages.Invoices.CreateInvoiceModel
 @{
     ViewData["Title"] = "Create Invoice";
@@ -85,8 +86,8 @@
             </table>
         </div>
 
-        <div class="d-flex justify-content-end gap-2 mt-3">
-            <a asp-page="/Appointments/Details" asp-route-id="@Model.Input.AppointmentId" class="btn btn-secondary">Cancel</a>
+        <div class="d-flex justify-content-end align-items-center gap-2 mt-3">
+            <a asp-page="/Appointments/Details" asp-route-id="@Model.Input.AppointmentId" class="btn btn-secondary btn-lg">@Html.T("Cancel_Button")</a>
             <button type="submit" class="btn btn-success btn-lg"><i class="bi bi-check-lg me-2"></i>Issue Invoice</button>
         </div>
     </form>

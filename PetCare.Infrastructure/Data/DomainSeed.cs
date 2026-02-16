@@ -34,7 +34,23 @@ namespace PetCare.Infrastructure.Data
                 new() { Key = "Clinic_Address", Value = "123 Vet Street, Animal City" },
                 new() { Key = "Clinic_Phone", Value = "+44 123 456 789" },
                 new() { Key = "Clinic_Email", Value = "contact@petcare.com" },
-                new() { Key = "Opening_Hours", Value = "Mon-Fri: 9:00 - 17:00" }
+                new() { Key = "Opening_Hours", Value = "Mon-Fri: 9:00 - 16:30" },
+
+                new() { Key = "Filter_Button", Value = "Filter" },
+                new() { Key = "Clear_Button", Value = "Clear" },
+                new() { Key = "Cancel_Button", Value = "Cancel" },
+                new() { Key = "Save_Button", Value = "Save" },
+                new() { Key = "BookAppointment_Button", Value = "Book Appointment" },
+        
+                new() { Key = "AppointmentStatus_Scheduled", Value = "Scheduled" },
+                new() { Key = "AppointmentStatus_Confirmed", Value = "Confirmed" },
+                new() { Key = "AppointmentStatus_Cancelled", Value = "Cancelled" },
+                new() { Key = "AppointmentStatus_NoShow", Value = "No Show" },
+                new() { Key = "AppointmentStatus_Completed", Value = "Completed" },
+
+                new() { Key = "ConfirmBooking_Button", Value = "Confirm Booking" },
+                new() { Key = "AddNewText_Button", Value = "Add New Text" },
+                new() { Key = "Delete_Button", Value = "Delete" }
             };
 
             await context.PageTexts.AddRangeAsync(texts);
@@ -252,24 +268,24 @@ namespace PetCare.Infrastructure.Data
 
             if (john != null)
             {
-                schedules.Add(new VetSchedule { VetId = john.VetId, DayOfWeek = DayOfWeek.Monday, StartTime = new TimeOnly(9, 0), EndTime = new TimeOnly(17, 0) });
-                schedules.Add(new VetSchedule { VetId = john.VetId, DayOfWeek = DayOfWeek.Tuesday, StartTime = new TimeOnly(9, 0), EndTime = new TimeOnly(17, 0) });
+                schedules.Add(new VetSchedule { VetId = john.VetId, DayOfWeek = DayOfWeek.Monday, StartTime = new TimeOnly(9, 0), EndTime = new TimeOnly(16, 30) });
+                schedules.Add(new VetSchedule { VetId = john.VetId, DayOfWeek = DayOfWeek.Tuesday, StartTime = new TimeOnly(9, 0), EndTime = new TimeOnly(16, 30) });
                 schedules.Add(new VetSchedule { VetId = john.VetId, DayOfWeek = DayOfWeek.Wednesday, StartTime = new TimeOnly(9, 0), EndTime = new TimeOnly(14, 0) });
-                schedules.Add(new VetSchedule { VetId = john.VetId, DayOfWeek = DayOfWeek.Thursday, StartTime = new TimeOnly(9, 0), EndTime = new TimeOnly(17, 0) });
+                schedules.Add(new VetSchedule { VetId = john.VetId, DayOfWeek = DayOfWeek.Thursday, StartTime = new TimeOnly(9, 0), EndTime = new TimeOnly(16, 30) });
             }
 
             if (sarah != null)
             {
-                schedules.Add(new VetSchedule { VetId = sarah.VetId, DayOfWeek = DayOfWeek.Tuesday, StartTime = new TimeOnly(10, 0), EndTime = new TimeOnly(17, 0) });
-                schedules.Add(new VetSchedule { VetId = sarah.VetId, DayOfWeek = DayOfWeek.Wednesday, StartTime = new TimeOnly(10, 0), EndTime = new TimeOnly(17, 0) });
-                schedules.Add(new VetSchedule { VetId = sarah.VetId, DayOfWeek = DayOfWeek.Thursday, StartTime = new TimeOnly(10, 0), EndTime = new TimeOnly(17, 0) });
+                schedules.Add(new VetSchedule { VetId = sarah.VetId, DayOfWeek = DayOfWeek.Tuesday, StartTime = new TimeOnly(10, 0), EndTime = new TimeOnly(16, 30) });
+                schedules.Add(new VetSchedule { VetId = sarah.VetId, DayOfWeek = DayOfWeek.Wednesday, StartTime = new TimeOnly(10, 0), EndTime = new TimeOnly(16, 30) });
+                schedules.Add(new VetSchedule { VetId = sarah.VetId, DayOfWeek = DayOfWeek.Thursday, StartTime = new TimeOnly(10, 0), EndTime = new TimeOnly(16, 30) });
                 schedules.Add(new VetSchedule { VetId = sarah.VetId, DayOfWeek = DayOfWeek.Friday, StartTime = new TimeOnly(9, 0), EndTime = new TimeOnly(15, 0) });
             }
 
             if (emily != null)
             {
                 schedules.Add(new VetSchedule { VetId = emily.VetId, DayOfWeek = DayOfWeek.Monday, StartTime = new TimeOnly(9, 0), EndTime = new TimeOnly(16, 0) });
-                schedules.Add(new VetSchedule { VetId = emily.VetId, DayOfWeek = DayOfWeek.Wednesday, StartTime = new TimeOnly(9, 0), EndTime = new TimeOnly(17, 0) });
+                schedules.Add(new VetSchedule { VetId = emily.VetId, DayOfWeek = DayOfWeek.Wednesday, StartTime = new TimeOnly(9, 0), EndTime = new TimeOnly(16, 30) });
                 schedules.Add(new VetSchedule { VetId = emily.VetId, DayOfWeek = DayOfWeek.Friday, StartTime = new TimeOnly(10, 0), EndTime = new TimeOnly(16, 0) });
             }
 

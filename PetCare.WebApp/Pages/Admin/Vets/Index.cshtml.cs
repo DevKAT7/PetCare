@@ -1,23 +1,20 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using PetCare.Application.Features.Vets.Commands;
 using PetCare.Application.Features.Vets.Dtos;
 using PetCare.Application.Features.Vets.Queries;
 using PetCare.Application.Features.VetSpecializations.Queries;
+using PetCare.WebApp.Pages.Shared;
 
 namespace PetCare.WebApp.Pages.Admin.Vets
 {
     [Authorize(Roles = "Admin")]
-    public class IndexModel : PageModel
+    public class IndexModel : BasePageModel
     {
-        private readonly IMediator _mediator;
-
-        public IndexModel(IMediator mediator)
+        public IndexModel(IMediator mediator) : base(mediator)
         {
-            _mediator = mediator;
         }
 
         public List<VetReadModel> Vets { get; set; } = new();
@@ -37,6 +34,8 @@ namespace PetCare.WebApp.Pages.Admin.Vets
 
         public async Task OnGetAsync()
         {
+            await LoadPageTextsAsync();
+
             var specs = await _mediator.Send(new GetAllVetSpecializationsQuery());
             SpecializationOptions = specs
                 .Select(s => new SelectListItem

@@ -1,25 +1,22 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using PetCare.Application.Features.Appointments.Commands;
 using PetCare.Application.Features.Appointments.Dtos;
 using PetCare.Application.Features.Appointments.Queries;
 using PetCare.Application.Features.Pets.Queries;
 using PetCare.Application.Features.Vets.Queries;
+using PetCare.WebApp.Pages.Shared;
 using ValidationException = PetCare.Application.Exceptions.ValidationException;
 
 namespace PetCare.WebApp.Pages.Appointments
 {
     [Authorize(Roles = "Admin, Employee")]
-    public class CreateAppointmentModel : PageModel
+    public class CreateAppointmentModel : BasePageModel
     {
-        private readonly IMediator _mediator;
-
-        public CreateAppointmentModel(IMediator mediator)
+        public CreateAppointmentModel(IMediator mediator) : base(mediator)
         {
-            _mediator = mediator;
         }
 
         [BindProperty]
@@ -43,6 +40,8 @@ namespace PetCare.WebApp.Pages.Appointments
 
         public async Task<IActionResult> OnGetAsync()
         {
+            await LoadPageTextsAsync();
+
             NewAppointment.AppointmentDateTime = DateTime.Today.AddDays(1).AddHours(9);
 
             await LoadDropdownsAsync();
