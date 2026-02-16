@@ -1,24 +1,21 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using PetCare.Application.Exceptions;
 using PetCare.Application.Features.Procedures.Commands;
 using PetCare.Application.Features.Procedures.Dtos;
 using PetCare.Application.Features.Procedures.Queries;
 using PetCare.Application.Features.VetSpecializations.Queries;
+using PetCare.WebApp.Pages.Shared;
 
 namespace PetCare.WebApp.Pages.Procedures
 {
     [Authorize(Roles = "Admin, Employee")]
-    public class IndexModel : PageModel
+    public class IndexModel : BasePageModel
     {
-        private readonly IMediator _mediator;
-
-        public IndexModel(IMediator mediator)
+        public IndexModel(IMediator mediator) : base(mediator)
         {
-            _mediator = mediator;
         }
 
         public List<ProcedureReadModel> Procedures { get; set; } = new();
@@ -49,6 +46,8 @@ namespace PetCare.WebApp.Pages.Procedures
 
         public async Task OnGetAsync()
         {
+            await LoadPageTextsAsync();
+
             bool? isActive = FilterStatus switch
             {
                 "active" => true,

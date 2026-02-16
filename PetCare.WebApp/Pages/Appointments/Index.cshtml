@@ -2,6 +2,7 @@
 @model PetCare.WebApp.Pages.Appointments.IndexModel
 @using PetCare.Application.Features.Appointments.Dtos
 @using PetCare.Core.Enums
+@using PetCare.WebApp.Helpers
 @{
     ViewData["Title"] = "Appointments List";
 
@@ -24,7 +25,7 @@
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h2></h2>
     <a asp-page="CreateAppointment" class="btn btn-primary">
-        <i class="bi bi-plus-lg"></i> Book Appointment
+        <i class="bi bi-plus-lg"></i> @Html.T("BookAppointment_Button")
     </a>
 </div>
 
@@ -54,13 +55,13 @@
                 <button type="submit"
                         class="btn btn-secondary btn-sm flex-grow-1 d-flex align-items-center justify-content-center"
                         title="Apply filters">
-                    <i class="bi bi-funnel me-2"></i> Filter
+                    <i class="bi bi-funnel me-2"></i> @Html.T("Filter_Button")
                 </button>
 
                 <a asp-page="./Index"
                    class="btn btn-outline-secondary btn-sm flex-grow-1 d-flex align-items-center justify-content-center"
                    title="Clear filters">
-                    Clear
+                    @Html.T("Cancel_Button")
                 </a>
             </div>
         </form>
@@ -163,19 +164,19 @@
                                     @switch (item.Status)
                                     {
                                         case AppointmentStatus.Scheduled:
-                                            <span class="badge badge-scheduled px-3">Scheduled</span>
+                                            <span class="badge badge-scheduled px-3">@Html.T("AppointmentStatus_Scheduled")</span>
                                             break;
                                         case AppointmentStatus.Confirmed:
-                                            <span class="badge bg-warning bg-opacity-10 text-warning border border-warning px-3">Confirmed</span>
+                                            <span class="badge bg-warning bg-opacity-10 text-warning border border-warning px-3">@Html.T("AppointmentStatus_Confirmed")</span>
                                             break;
                                         case AppointmentStatus.Completed:
-                                            <span class="badge bg-success bg-opacity-10 text-success border border-success px-3">Completed</span>
+                                            <span class="badge bg-success bg-opacity-10 text-success border border-success px-3">@Html.T("AppointmentStatus_Completed")</span>
                                             break;
                                         case AppointmentStatus.Cancelled:
-                                            <span class="badge bg-danger bg-opacity-10 text-danger border border-danger px-3">Cancelled</span>
+                                            <span class="badge bg-danger bg-opacity-10 text-danger border border-danger px-3">@Html.T("AppointmentStatus_Cancelled")</span>
                                             break;
                                         case AppointmentStatus.NoShow:
-                                            <span class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary px-3">No Show</span>
+                                            <span class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary px-3">@Html.T("AppointmentStatus_NoShow")</span>
                                             break;
                                         default:
                                             <span class="badge bg-light text-dark">@item.Status</span>

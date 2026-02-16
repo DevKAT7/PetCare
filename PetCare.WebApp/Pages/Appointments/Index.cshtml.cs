@@ -7,17 +7,15 @@ using PetCare.Application.Features.Appointments.Dtos;
 using PetCare.Application.Features.Appointments.Queries;
 using PetCare.Application.Features.Vets.Queries;
 using PetCare.Core.Enums;
+using PetCare.WebApp.Pages.Shared;
 
 namespace PetCare.WebApp.Pages.Appointments
 {
     [Authorize(Roles = "Admin, Employee")]
-    public class IndexModel : PageModel
+    public class IndexModel : BasePageModel
     {
-        private readonly IMediator _mediator;
-
-        public IndexModel(IMediator mediator)
+        public IndexModel(IMediator mediator) : base(mediator)
         {
-            _mediator = mediator;
         }
 
         public List<AppointmentReadModel> Appointments { get; set; } = new();
@@ -53,6 +51,8 @@ namespace PetCare.WebApp.Pages.Appointments
 
         public async Task OnGetAsync()
         {
+            await LoadPageTextsAsync();
+
             var vets = await _mediator.Send(new GetAllVetsQuery());
             VetOptions = vets.Select(v => new SelectListItem
             {

@@ -1,21 +1,21 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using PetCare.Application.Exceptions;
 using PetCare.Application.Features.Pets.Commands;
 using PetCare.Application.Features.Pets.Dtos;
 using PetCare.Application.Features.Pets.Queries;
+using PetCare.WebApp.Pages.Shared;
 using ValidationException = PetCare.Application.Exceptions.ValidationException;
 
 namespace PetCare.WebApp.Pages.Pets
 {
     [Authorize(Roles = "Admin,Employee")]
-    public class EditPetModel : PageModel
+    public class EditPetModel : BasePageModel
     {
-        private readonly IMediator _mediator;
-
-        public EditPetModel(IMediator mediator) => _mediator = mediator;
+        public EditPetModel(IMediator mediator) : base(mediator)
+        {
+        }
 
         [BindProperty]
         public PetUpdateModel Input { get; set; } = new();
@@ -29,6 +29,8 @@ namespace PetCare.WebApp.Pages.Pets
 
         public async Task<IActionResult> OnGetAsync()
         {
+            await LoadPageTextsAsync();
+
             try
             {
                 var pet = await _mediator.Send(new GetPetQuery(Id));

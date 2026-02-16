@@ -1,24 +1,21 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using PetCare.Application.Exceptions;
 using PetCare.Application.Features.StockItems.Dtos;
 using PetCare.Application.Features.StockItems.Queries;
 using PetCare.Application.Features.StockTransactions.Commands;
 using PetCare.Application.Features.StockTransactions.Dtos;
 using PetCare.Application.Features.StockTransactions.Queries;
+using PetCare.WebApp.Pages.Shared;
 
 namespace PetCare.WebApp.Pages.Storage
 {
     [Authorize(Roles = "Admin,Employee")]
-    public class IndexModel : PageModel
+    public class IndexModel : BasePageModel
     {
-        private readonly IMediator _mediator;
-
-        public IndexModel(IMediator mediator)
+        public IndexModel(IMediator mediator) : base(mediator)
         {
-            _mediator = mediator;
         }
 
         public List<StockItemReadModel> StockItems { get; set; } = new();
@@ -31,6 +28,8 @@ namespace PetCare.WebApp.Pages.Storage
 
         public async Task OnGetAsync()
         {
+            await LoadPageTextsAsync();
+
             StockItems = await _mediator.Send(new GetStockItemsQuery());
         }
 

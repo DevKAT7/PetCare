@@ -1,4 +1,5 @@
 ﻿@page
+@using PetCare.WebApp.Helpers
 @model PetCare.WebApp.Pages.Pets.EditPetModel
 @{
     ViewData["Title"] = "Edit Patient";
@@ -82,7 +83,7 @@
                 </div>
 
                 <div class="d-flex justify-content-between pt-3 border-top">
-                    <a asp-page="./Index" class="btn btn-secondary">Cancel</a>
+                    <a asp-page="./Index" class="btn btn-secondary">@Html.T("Cancel_Button")</a>
                     <button type="submit" class="btn btn-primary px-4 fw-bold">
                         <i class="bi bi-save me-2"></i>Save Changes
                     </button>

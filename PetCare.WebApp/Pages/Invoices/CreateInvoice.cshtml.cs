@@ -1,21 +1,21 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using PetCare.Application.Exceptions;
 using PetCare.Application.Features.Invoices.Commands;
 using PetCare.Application.Features.Invoices.Dtos;
 using PetCare.Application.Features.Invoices.Queries;
+using PetCare.WebApp.Pages.Shared;
 using ValidationException = PetCare.Application.Exceptions.ValidationException;
 
 namespace PetCare.WebApp.Pages.Invoices
 {
     [Authorize(Roles = "Admin, Employee")]
-    public class CreateInvoiceModel : PageModel
+    public class CreateInvoiceModel : BasePageModel
     {
-        private readonly IMediator _mediator;
-
-        public CreateInvoiceModel(IMediator mediator) => _mediator = mediator;
+        public CreateInvoiceModel(IMediator mediator) : base(mediator)
+        {
+        }
 
         [BindProperty]
         public InvoiceCreateModel Input { get; set; } = new();
@@ -24,6 +24,8 @@ namespace PetCare.WebApp.Pages.Invoices
 
         public async Task<IActionResult> OnGetAsync(int appointmentId)
         {
+            await LoadPageTextsAsync();
+
             var prepareData = await _mediator.Send(new GetInvoicePrepareModelQuery(appointmentId));
 
             Input.AppointmentId = prepareData.AppointmentId;

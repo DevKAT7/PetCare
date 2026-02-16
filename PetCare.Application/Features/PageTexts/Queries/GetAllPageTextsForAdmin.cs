@@ -5,7 +5,7 @@ using PetCare.Core.Models;
 
 namespace PetCare.Application.Features.PageTexts.Queries
 {
-    public record GetAllPageTextsForAdminQuery : IRequest<List<PageText>>;
+    public record GetAllPageTextsForAdminQuery(string? SearchTerm = null) : IRequest<List<PageText>>;
 
     public class GetAllPageTextsForAdminHandler : IRequestHandler<GetAllPageTextsForAdminQuery, List<PageText>>
     {
@@ -15,7 +15,17 @@ namespace PetCare.Application.Features.PageTexts.Queries
 
         public async Task<List<PageText>> Handle(GetAllPageTextsForAdminQuery request, CancellationToken cancellationToken)
         {
-            return await _context.PageTexts
+            var query = _context.PageTexts.AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(request.SearchTerm))
+            {
+                var term = request.SearchTerm.ToLower();
+
+                query = query.Where(t => t.Key.ToLower().Contains(term)
+                                      || t.Value.ToLower().Contains(term));
+            }
+
+            return await query
                 .OrderBy(t => t.Key)
                 .ToListAsync(cancellationToken);
         }

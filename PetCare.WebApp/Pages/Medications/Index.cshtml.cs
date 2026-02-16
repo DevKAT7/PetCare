@@ -1,20 +1,20 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using PetCare.Application.Exceptions;
 using PetCare.Application.Features.Medications.Commands;
 using PetCare.Application.Features.Medications.Dtos;
 using PetCare.Application.Features.Medications.Queries;
+using PetCare.WebApp.Pages.Shared;
 
 namespace PetCare.WebApp.Pages.Medications
 {
     [Authorize(Roles = "Admin,Employee")]
-    public class IndexModel : PageModel
+    public class IndexModel : BasePageModel
     {
-        private readonly IMediator _mediator;
-
-        public IndexModel(IMediator mediator) => _mediator = mediator;
+        public IndexModel(IMediator mediator) : base(mediator)
+        {
+        }
 
         public List<MedicationReadModel> Medications { get; set; } = new();
 
@@ -38,16 +38,18 @@ namespace PetCare.WebApp.Pages.Medications
 
         public async Task OnGetAsync()
         {
+            await LoadPageTextsAsync();
+
             await LoadDataAsync();
         }
 
         public async Task<IActionResult> OnPostCreateAsync()
         {
-            if (!ModelState.IsValid) 
-            { 
-                await LoadDataAsync(); 
-                ViewData["ShowCreateModal"] = true; 
-                return Page(); 
+            if (!ModelState.IsValid)
+            {
+                await LoadDataAsync();
+                ViewData["ShowCreateModal"] = true;
+                return Page();
             }
 
             try
@@ -75,11 +77,11 @@ namespace PetCare.WebApp.Pages.Medications
 
         public async Task<IActionResult> OnPostEditAsync()
         {
-            if (!ModelState.IsValid) 
-            { 
-                await LoadDataAsync(); 
-                ViewData["ShowEditModal"] = true; 
-                return Page(); 
+            if (!ModelState.IsValid)
+            {
+                await LoadDataAsync();
+                ViewData["ShowEditModal"] = true;
+                return Page();
             }
 
             try

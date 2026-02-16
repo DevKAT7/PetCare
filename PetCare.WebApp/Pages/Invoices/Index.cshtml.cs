@@ -5,17 +5,15 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using PetCare.Application.Features.Invoices.Dtos;
 using PetCare.Application.Features.Invoices.Queries;
+using PetCare.WebApp.Pages.Shared;
 
 namespace PetCare.WebApp.Pages.Invoices
 {
     [Authorize(Roles = "Admin,Employee")]
-    public class IndexModel : PageModel
+    public class IndexModel : BasePageModel
     {
-        private readonly IMediator _mediator;
-
-        public IndexModel(IMediator mediator)
+        public IndexModel(IMediator mediator) : base(mediator)
         {
-            _mediator = mediator;
         }
 
         public List<InvoiceReadModel> Invoices { get; set; } = new();
@@ -36,6 +34,8 @@ namespace PetCare.WebApp.Pages.Invoices
 
         public async Task OnGetAsync()
         {
+            await LoadPageTextsAsync();
+
             StatusOptions = new SelectList(new[]
             {
                 new { Value = "Paid", Text = "Paid" },

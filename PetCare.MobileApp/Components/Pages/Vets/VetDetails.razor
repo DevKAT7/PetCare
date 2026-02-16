@@ -3,6 +3,7 @@
 @using System.Globalization
 @using PetCare.MobileApp.Services
 @inject IApiService ApiService
+@inject TextService Text
 @inject NavigationManager Navigation
 
 @if (isLoading)
@@ -131,7 +132,7 @@ else
                 <button class="btn btn-primary w-100 py-3 rounded-4 fw-bold shadow-sm d-flex align-items-center justify-content-center pulse-on-hover"
                         @onclick="BookAppointment">
                     <i class="bi bi-calendar-check-fill me-2 fs-5"></i>
-                    Book Appointment
+                    @Text["BookAppointment_Button"]
                 </button>
             </div>
         }

@@ -6,15 +6,16 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using PetCare.Application.Features.Pets.Commands;
 using PetCare.Application.Features.Pets.Dtos;
 using PetCare.Application.Features.Pets.Queries;
+using PetCare.WebApp.Pages.Shared;
 
 namespace PetCare.WebApp.Pages.Pets
 {
     [Authorize(Roles = "Admin,Employee")]
-    public class IndexModel : PageModel
+    public class IndexModel : BasePageModel
     {
-        private readonly IMediator _mediator;
-
-        public IndexModel(IMediator mediator) => _mediator = mediator;
+        public IndexModel(IMediator mediator) : base(mediator)
+        {
+        }
 
         public List<PetReadModel> Pets { get; set; } = new();
 
@@ -38,6 +39,8 @@ namespace PetCare.WebApp.Pages.Pets
 
         public async Task OnGetAsync()
         {
+            await LoadPageTextsAsync();
+
             var speciesList = await _mediator.Send(new GetUniqueSpeciesQuery());
             SpeciesOptions = new SelectList(speciesList);
 
