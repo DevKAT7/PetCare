@@ -16,7 +16,21 @@
                 <div class="card-body p-4">
                     <section>
                         <form id="account" method="post">
-                            <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+                            @if (!ModelState.IsValid)
+                            {
+                                var globalErrors = ViewData.ModelState[string.Empty]?.Errors;
+                                if (globalErrors != null && globalErrors.Count > 0)
+                                {
+                                    <div class="alert alert-danger" role="alert">
+                                        @foreach (var error in globalErrors)
+                                        {
+                                            <span><i class="bi bi-exclamation-triangle-fill me-2"></i>@error.ErrorMessage</span>
+                    
+                                            <br />
+                                        }
+                                    </div>
+                                }
+                            }
 
                             <div class="form-floating mb-3">
                                 <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
