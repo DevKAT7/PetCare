@@ -1,7 +1,6 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using PetCare.Application.Features.PageTexts.Commands;
 using PetCare.Application.Features.PageTexts.Queries;
 using PetCare.Core.Models;
@@ -25,6 +24,9 @@ namespace PetCare.WebApp.Pages.Admin.Content
         [BindProperty]
         public int SelectedId { get; set; }
 
+        [BindProperty(SupportsGet = true)]
+        public string? SearchTerm { get; set; }
+
         public class InputModel
         {
             public string Key { get; set; }
@@ -35,7 +37,7 @@ namespace PetCare.WebApp.Pages.Admin.Content
         {
             await LoadPageTextsAsync();
 
-            PageTexts = await _mediator.Send(new GetAllPageTextsForAdminQuery());
+            PageTexts = await _mediator.Send(new GetAllPageTextsForAdminQuery(SearchTerm));
         }
 
         public async Task<IActionResult> OnPostCreateAsync()
