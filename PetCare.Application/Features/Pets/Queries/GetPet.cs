@@ -43,7 +43,8 @@ namespace PetCare.Application.Features.Pets.Queries
                 ImageUrl = pet.ImageUrl,
                 CreatedDate = pet.CreatedDate,
                 PetOwnerId = pet.PetOwnerId,
-                PetOwnerName = $"{pet.PetOwner.FirstName} {pet.PetOwner.LastName}"
+                PetOwnerName = $"{pet.PetOwner.FirstName} {pet.PetOwner.LastName}",
+                AgeDescription = pet.AgeDescription ?? "Unknown"
             };
         }
     }

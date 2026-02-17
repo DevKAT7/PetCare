@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using PetCare.Application.Features.Vets.Dtos;
 using PetCare.Core.Models;
 
 namespace PetCare.Application.Interfaces
@@ -27,6 +28,7 @@ namespace PetCare.Application.Interfaces
         DbSet<StockTransaction> StockTransactions { get; set; }
         DbSet<PageText> PageTexts { get; set; }
         public DbSet<AppointmentSummaryView> AppointmentSummaryViews { get; set; }
+        public DbSet<VetStatisticsDto> VetStatistics { get; set; }
 
         Task<int> SaveChangesAsync(CancellationToken cancellationToken);
 

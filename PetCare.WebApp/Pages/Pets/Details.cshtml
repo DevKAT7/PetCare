@@ -3,10 +3,6 @@
 @{
     ViewData["Title"] = "Patient Profile";
 
-    var today = DateTime.Today;
-    var age = today.Year - Model.Pet.DateOfBirth.Year;
-    if (Model.Pet.DateOfBirth > today.AddYears(-age)) age--;
-
     var upcomingVisits = Model.Pet.Appointments.Where(a => a.Date > DateTime.Now).OrderBy(a => a.Date).ToList();
     var upcomingVaccines = Model.Pet.Vaccinations.Where(v => v.NextDueDate.HasValue && v.NextDueDate.Value > DateOnly.FromDateTime(DateTime.Now)).OrderBy(v => v.NextDueDate).ToList();
 }
@@ -55,7 +51,7 @@
                         {
                             <span class="badge bg-pink-light text-danger border border-danger-subtle"><i class="bi bi-gender-female"></i> Female</span>
                         }
-                        <span class="badge bg-light text-dark border">@age Years</span>
+                        <span class="badge bg-light text-dark border">@Model.Pet.AgeDescription</span>
                     </div>
                 </div>
                 <div class="card-footer bg-light py-2 text-center small text-muted">

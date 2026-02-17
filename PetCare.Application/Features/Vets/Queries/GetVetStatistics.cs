@@ -21,32 +21,11 @@ namespace PetCare.Application.Features.Vets.Queries
 
         public async Task<VetStatisticsDto> Handle(GetVetStatisticsQuery request, CancellationToken cancellationToken)
         {
-            var today = DateTime.Today;
-            var startOfMonth = new DateTime(today.Year, today.Month, 1);
+            var stats = await _context.VetStatistics
+                .FromSqlInterpolated($"EXEC sp_GetVetStatistics {request.VetId}")
+                .ToListAsync(cancellationToken);
 
-            var totalAppointments = await _context.Appointments
-                .CountAsync(a => a.VetId == request.VetId, cancellationToken);
-
-            var monthAppointments = await _context.Appointments
-                .CountAsync(a => a.VetId == request.VetId && a.AppointmentDateTime >= startOfMonth, cancellationToken);
-
-            var uniquePatients = await _context.Appointments
-                .Where(a => a.VetId == request.VetId)
-                .Select(a => a.PetId)
-                .Distinct()
-                .CountAsync(cancellationToken);
-
-            var revenue = await _context.Invoices
-                .Where(i => i.Appointment.VetId == request.VetId)
-                .SumAsync(i => i.TotalAmount, cancellationToken);
-
-            return new VetStatisticsDto
-            {
-                TotalAppointments = totalAppointments,
-                AppointmentsThisMonth = monthAppointments,
-                UniquePatients = uniquePatients,
-                TotalRevenue = revenue
-            };
+            return stats.FirstOrDefault() ?? new VetStatisticsDto();
         }
     }
 }
