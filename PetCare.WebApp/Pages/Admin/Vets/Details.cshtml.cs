@@ -18,6 +18,7 @@ namespace PetCare.WebApp.Pages.Admin.Vets
         }
 
         public VetReadModel Vet { get; set; } = new();
+        public VetStatisticsDto Stats { get; set; } = new();
 
         public async Task<IActionResult> OnGetAsync(int id)
         {
@@ -29,6 +30,9 @@ namespace PetCare.WebApp.Pages.Admin.Vets
             }
 
             Vet = vet;
+
+            Stats = await _mediator.Send(new GetVetStatisticsQuery { VetId = id });
+
             return Page();
         }
     }

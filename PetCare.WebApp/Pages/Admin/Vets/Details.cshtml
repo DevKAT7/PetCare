@@ -156,9 +156,64 @@
                 </div>
             </div>
 
-            <div class="card shadow-sm border-0 opacity-75">
-                <div class="card-body text-center py-4">
-                    <small class="text-muted">More statistics regarding visits and patients will appear here.</small>
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white py-3 border-bottom">
+                    <h5 class="mb-0 text-primary"><i class="bi bi-graph-up-arrow me-2"></i>Performance Statistics</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-sm-6">
+                            <div class="p-3 border rounded bg-light d-flex align-items-center">
+                                <div class="bg-white rounded-circle shadow-sm me-3 text-primary d-flex align-items-center justify-content-center"
+                                     style="width: 60px; height: 60px; flex-shrink: 0;">
+                                    <i class="bi bi-calendar-check fs-3"></i>
+                                </div>
+                                <div>
+                                    <small class="text-muted text-uppercase fw-bold" style="font-size: 0.7rem;">Total Appointments</small>
+                                    <div class="fs-4 fw-bold text-dark">@Model.Stats.TotalAppointments</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-6">
+                            <div class="p-3 border rounded bg-light d-flex align-items-center">
+                                <div class="bg-white rounded-circle shadow-sm me-3 text-info d-flex align-items-center justify-content-center"
+                                     style="width: 60px; height: 60px; flex-shrink: 0;">
+                                    <i class="bi bi-calendar-month fs-3"></i>
+                                </div>
+                                <div>
+                                    <small class="text-muted text-uppercase fw-bold" style="font-size: 0.7rem;">This Month</small>
+                                    <div class="fs-4 fw-bold text-dark">@Model.Stats.AppointmentsThisMonth</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-6">
+                            <div class="p-3 border rounded bg-light d-flex align-items-center">
+                                <div class="bg-white rounded-circle shadow-sm me-3 text-success d-flex align-items-center justify-content-center"
+                                     style="width: 60px; height: 60px; flex-shrink: 0;">
+                                    <i class="fa-solid fa-cat fs-3"></i>
+                                </div>
+                                <div>
+                                    <small class="text-muted text-uppercase fw-bold" style="font-size: 0.7rem;">Unique Patients</small>
+                                    <div class="fs-4 fw-bold text-dark">@Model.Stats.UniquePatients</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-6">
+                            <div class="p-3 border rounded bg-light d-flex align-items-center">
+                                <div class="bg-white rounded-circle shadow-sm me-3 text-warning d-flex align-items-center justify-content-center"
+                                     style="width: 60px; height: 60px; flex-shrink: 0;">
+                                    <i class="bi bi-cash-coin fs-3"></i>
+                                </div>
+                                <div>
+                                    <small class="text-muted text-uppercase fw-bold" style="font-size: 0.7rem;">Total Revenue</small>
+                                    <div class="fs-4 fw-bold text-dark">@Model.Stats.TotalRevenue.ToString("C0")</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
