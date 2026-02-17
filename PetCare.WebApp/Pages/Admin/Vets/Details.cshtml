@@ -148,7 +148,20 @@
                         <div class="col-sm-4">
                             <div class="p-3 border rounded h-100 text-center">
                                 <div class="text-muted small mb-1">Experience</div>
-                                <div class="fw-bold text-success">@Model.Vet.YearsOfExperience Years</div>
+                                <div class="fw-bold text-success">
+                                    @if (Model.Vet.YearsOfExperience < 1)
+                                    {
+                                        <span>&lt; 1 Year</span>
+                                    }
+                                    else if (Model.Vet.YearsOfExperience == 1)
+                                    {
+                                        <span>1 Year</span>
+                                    }
+                                    else
+                                    {
+                                        <span>@Model.Vet.YearsOfExperience Years</span>
+                                    }
+                                </div>
                             </div>
                         </div>
                     </div>
