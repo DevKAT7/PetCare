@@ -11,6 +11,6 @@
         public string? ImageUrl { get; set; }
         public int PetOwnerId { get; set; }
         public string PetOwnerName { get; set; } = string.Empty;
-        public int Age => DateTime.Now.Year - DateOfBirth.Year;
+        public string AgeDescription { get; set; } = string.Empty;
     }
 }

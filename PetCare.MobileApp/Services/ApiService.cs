@@ -52,6 +52,14 @@ namespace PetCare.MobileApp.Services
 
                 var response = await _httpClient.GetAsync(endpoint);
 
+                if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized ||
+                    response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                {
+                    SecureStorage.Remove("auth_token");
+
+                    _logger.LogWarning("Token invalid or user not found. Cleared SecureStorage.");
+                }
+
                 if (response.StatusCode == System.Net.HttpStatusCode.NoContent)
                 {
                     return default;

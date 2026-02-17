@@ -160,11 +160,7 @@
                                 <td>
                                     <div>@pet.DateOfBirth.ToShortDateString()</div>
                                     <small class="text-muted">
-                                        @{
-                                            var age = DateTime.Today.Year - pet.DateOfBirth.Year;
-                                            if (pet.DateOfBirth > DateTime.Today.AddYears(-age)) age--;
-                                        }
-                                        (@age years)
+                                        (@pet.AgeDescription)
                                     </small>
                                 </td>
 

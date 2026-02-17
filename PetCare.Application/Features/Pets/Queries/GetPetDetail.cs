@@ -43,6 +43,7 @@ namespace PetCare.Application.Features.Pets.Queries
                 OwnerFullName = $"{pet.PetOwner.FirstName} {pet.PetOwner.LastName}",
                 OwnerPhoneNumber = pet.PetOwner.PhoneNumber,
                 OwnerEmail = pet.PetOwner.User?.Email ?? "No email",
+                AgeDescription = pet.AgeDescription ?? "Unknown",
 
                 Appointments = pet.Appointments.OrderByDescending(a => a.AppointmentDateTime).Select(a => new PetAppointmentDto
                 {

@@ -43,7 +43,8 @@ namespace PetCare.Application.Features.Pets.Queries
                 ImageUrl = p.ImageUrl,
                 PetOwnerId = p.PetOwnerId,
                 CreatedDate = p.CreatedDate,
-                PetOwnerName = p.PetOwner.FirstName + " " + p.PetOwner.LastName
+                PetOwnerName = p.PetOwner.FirstName + " " + p.PetOwner.LastName,
+                AgeDescription = p.AgeDescription ?? "Uknown"
             }).ToListAsync(cancellationToken);
 
             return list;

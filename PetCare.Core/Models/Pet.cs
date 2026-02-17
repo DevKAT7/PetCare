@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PetCare.Core.Models
 {
@@ -18,6 +19,8 @@ namespace PetCare.Core.Models
         [Url]
         public string? ImageUrl { get; set; }
         public DateTime CreatedDate { get; set; }
+        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+        public string? AgeDescription { get; private set; }
         public int PetOwnerId { get; set; }
         public PetOwner PetOwner { get; set; } = null!;
         public ICollection<Vaccination> Vaccinations { get; set; }

@@ -1,4 +1,6 @@
-﻿namespace PetCare.Application.Features.Pets.Dtos
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace PetCare.Application.Features.Pets.Dtos
 {
     public class PetDetailDto
     {
@@ -9,6 +11,7 @@
         public DateTime DateOfBirth { get; set; }
         public bool IsMale { get; set; }
         public string? ImageUrl { get; set; }
+        public string AgeDescription { get; set; } = string.Empty;
 
         //owner details
         public int PetOwnerId { get; set; }
@@ -20,16 +23,7 @@
         public List<PetAppointmentDto> Appointments { get; set; } = new();
         public List<PetPrescriptionDto> Prescriptions { get; set; } = new();
         public List<PetTestDto> MedicalTests { get; set; } = new();
-        public List<PetVaccinationDto> Vaccinations { get; set; } = new();
-
-        public int Age => CalculateAge(DateOfBirth);
-        private static int CalculateAge(DateTime dob)
-        {
-            var today = DateTime.Today;
-            var age = today.Year - dob.Year;
-            if (dob.Date > today.AddYears(-age)) age--;
-            return age;
-        }
+        public List<PetVaccinationDto> Vaccinations { get; set; } = new();      
     }
 
     public class PetAppointmentDto

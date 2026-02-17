@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using PetCare.Application.Features.Vets.Dtos;
 using PetCare.Application.Interfaces;
 using PetCare.Core.Models;
 
@@ -33,6 +34,7 @@ namespace PetCare.Infrastructure.Data
         public DbSet<StockTransaction> StockTransactions { get; set; }
         public DbSet<PageText> PageTexts { get; set; }
         public DbSet<AppointmentSummaryView> AppointmentSummaryViews { get; set; }
+        public DbSet<VetStatisticsDto> VetStatistics { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -223,6 +225,9 @@ namespace PetCare.Infrastructure.Data
                 e.HasNoKey();
                 e.ToView("View_AppointmentDetails");
             });
+
+            //procedura skladowana
+            builder.Entity<VetStatisticsDto>().HasNoKey();
         }
     }
 }

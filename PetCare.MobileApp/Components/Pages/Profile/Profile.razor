@@ -88,6 +88,11 @@
         {
             userProfile = await ApiService.GetProfileAsync();
         }
+        catch (HttpRequestException)
+        {
+            await SecureStorage.SetAsync("auth_token", "");
+            Navigation.NavigateTo("/login");
+        }
         finally
         {
             isLoading = false;

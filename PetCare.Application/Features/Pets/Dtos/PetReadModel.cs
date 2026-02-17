@@ -12,5 +12,6 @@ namespace PetCare.Application.Features.Pets.Dtos
         public DateTime CreatedDate { get; set; }
         public int PetOwnerId { get; set; }
         public string PetOwnerName { get; set; } = string.Empty;
+        public string AgeDescription { get; set; } = string.Empty;
     }
 }
