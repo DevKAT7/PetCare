@@ -1,13 +1,13 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using PetCare.Application.Features.Appointments.Dtos;
 using PetCare.Application.Features.Appointments.Queries;
 using PetCare.Application.Features.Vets.Queries;
 using PetCare.Core.Enums;
 using PetCare.WebApp.Pages.Shared;
+using System.ComponentModel.DataAnnotations;
 
 namespace PetCare.WebApp.Pages.Appointments
 {
@@ -31,6 +31,14 @@ namespace PetCare.WebApp.Pages.Appointments
 
         [BindProperty(SupportsGet = true)]
         public AppointmentStatus? SearchStatus { get; set; }
+
+        [BindProperty(SupportsGet = true)]
+        [DataType(DataType.Date)]
+        public DateTime? SearchFromDate { get; set; }
+
+        [BindProperty(SupportsGet = true)]
+        [DataType(DataType.Date)]
+        public DateTime? SearchToDate { get; set; }
 
         [BindProperty(SupportsGet = true)]
         public string SortColumn { get; set; } = "Date";
@@ -67,6 +75,8 @@ namespace PetCare.WebApp.Pages.Appointments
                 ownerName: SearchOwner,
                 vetId: SearchVetId,
                 status: SearchStatus,
+                from: SearchFromDate,
+                to: SearchToDate,
                 sortColumn: SortColumn,
                 sortDirection: SortDirection,
                 pageIndex: PageIndex,

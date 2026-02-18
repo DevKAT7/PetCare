@@ -31,7 +31,7 @@
 
 <div class="card shadow-sm mb-4">
     <div class="card-body bg-light">
-        <form method="get" class="row g-3">
+        <form method="get" class="row g-2">
             <input type="hidden" asp-for="SortColumn" />
             <input type="hidden" asp-for="SortDirection" />
 
@@ -64,6 +64,19 @@
                     @Html.T("Clear_Button")
                 </a>
             </div>
+            <div class="col-md-12 d-flex align-items-center gap-2 mt-2">
+                <span class="text-muted small text-nowrap"><i class="bi bi-calendar3"></i> Date Range:</span>
+
+                <div class="input-group input-group-sm" style="max-width: 200px;">
+                    <span class="input-group-text">From</span>
+                    <input type="date" asp-for="SearchFromDate" class="form-control">
+                </div>
+
+                <div class="input-group input-group-sm" style="max-width: 200px;">
+                    <span class="input-group-text">To</span>
+                    <input type="date" asp-for="SearchToDate" class="form-control">
+                </div>
+            </div>
         </form>
     </div>
 </div>
@@ -82,6 +95,8 @@
                                asp-route-searchOwner="@Model.SearchOwner"
                                asp-route-searchVetId="@Model.SearchVetId"
                                asp-route-searchStatus="@Model.SearchStatus"
+                               asp-route-searchFromDate="@Model.SearchFromDate?.ToString("yyyy-MM-dd")"
+                               asp-route-searchToDate="@Model.SearchToDate?.ToString("yyyy-MM-dd")"
                                class="text-decoration-none text-dark">
                                 Date & Time <i class="bi @GetSortIcon("Date")"></i>
                             </a>
@@ -94,6 +109,8 @@
                                asp-route-searchOwner="@Model.SearchOwner"
                                asp-route-searchVetId="@Model.SearchVetId"
                                asp-route-searchStatus="@Model.SearchStatus"
+                               asp-route-searchFromDate="@Model.SearchFromDate?.ToString("yyyy-MM-dd")"
+                               asp-route-searchToDate="@Model.SearchToDate?.ToString("yyyy-MM-dd")"
                                class="text-decoration-none text-dark">
                                 Patient <i class="bi @GetSortIcon("Patient")"></i>
                             </a>
@@ -106,6 +123,8 @@
                                asp-route-searchOwner="@Model.SearchOwner"
                                asp-route-searchVetId="@Model.SearchVetId"
                                asp-route-searchStatus="@Model.SearchStatus"
+                               asp-route-searchFromDate="@Model.SearchFromDate?.ToString("yyyy-MM-dd")"
+                               asp-route-searchToDate="@Model.SearchToDate?.ToString("yyyy-MM-dd")"
                                class="text-decoration-none text-dark">
                                 Owner <i class="bi @GetSortIcon("Owner")"></i>
                             </a>
@@ -118,6 +137,8 @@
                                asp-route-searchOwner="@Model.SearchOwner"
                                asp-route-searchVetId="@Model.SearchVetId"
                                asp-route-searchStatus="@Model.SearchStatus"
+                               asp-route-searchFromDate="@Model.SearchFromDate?.ToString("yyyy-MM-dd")"
+                               asp-route-searchToDate="@Model.SearchToDate?.ToString("yyyy-MM-dd")"
                                class="text-decoration-none text-dark">
                                 Veterinarian <i class="bi @GetSortIcon("Vet")"></i>
                             </a>
@@ -131,6 +152,8 @@
                                asp-route-searchOwner="@Model.SearchOwner"
                                asp-route-searchVetId="@Model.SearchVetId"
                                asp-route-searchStatus="@Model.SearchStatus"
+                               asp-route-searchFromDate="@Model.SearchFromDate?.ToString("yyyy-MM-dd")"
+                               asp-route-searchToDate="@Model.SearchToDate?.ToString("yyyy-MM-dd")"
                                class="text-decoration-none text-dark">
                                 Status <i class="bi @GetSortIcon("Status")"></i>
                             </a>
@@ -185,12 +208,12 @@
                                 </td>
                                 <td class="text-end pe-4">
                                     <div class="d-flex gap-1 justify-content-end">
-                                        @if(item.Status != AppointmentStatus.Cancelled)
+                                        @if (item.Status != AppointmentStatus.Cancelled)
                                         {
                                             <a asp-page="Details" asp-route-id="@item.AppointmentId" class="btn btn-sm btn-outline-secondary"><i class="bi bi-eye"></i></a>
-                                        }                                   
-                                        <a asp-page="EditAppointment" asp-route-id="@item.AppointmentId" asp-route-source="index" 
-                                        class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil"></i></a>
+                                        }
+                                        <a asp-page="EditAppointment" asp-route-id="@item.AppointmentId" asp-route-source="index"
+                                           class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil"></i></a>
                                     </div>
                                 </td>
                             </tr>
@@ -216,7 +239,9 @@
                    asp-route-searchPet="@Model.SearchPet"
                    asp-route-searchOwner="@Model.SearchOwner"
                    asp-route-searchVetId="@Model.SearchVetId"
-                   asp-route-searchStatus="@Model.SearchStatus">
+                   asp-route-searchStatus="@Model.SearchStatus"
+                   asp-route-searchFromDate="@Model.SearchFromDate?.ToString("yyyy-MM-dd")"
+                   asp-route-searchToDate="@Model.SearchToDate?.ToString("yyyy-MM-dd")">
                     <i class="bi bi-chevron-left"></i> Previous
                 </a>
             </li>
@@ -232,7 +257,9 @@
                        asp-route-searchPet="@Model.SearchPet"
                        asp-route-searchOwner="@Model.SearchOwner"
                        asp-route-searchVetId="@Model.SearchVetId"
-                       asp-route-searchStatus="@Model.SearchStatus">
+                       asp-route-searchStatus="@Model.SearchStatus"
+                       asp-route-searchFromDate="@Model.SearchFromDate?.ToString("yyyy-MM-dd")"
+                       asp-route-searchToDate="@Model.SearchToDate?.ToString("yyyy-MM-dd")">
                         @i
                     </a>
                 </li>
@@ -247,7 +274,9 @@
                    asp-route-searchPet="@Model.SearchPet"
                    asp-route-searchOwner="@Model.SearchOwner"
                    asp-route-searchVetId="@Model.SearchVetId"
-                   asp-route-searchStatus="@Model.SearchStatus">
+                   asp-route-searchStatus="@Model.SearchStatus"
+                   asp-route-searchFromDate="@Model.SearchFromDate?.ToString("yyyy-MM-dd")"
+                   asp-route-searchToDate="@Model.SearchToDate?.ToString("yyyy-MM-dd")">
                     Next <i class="bi bi-chevron-right"></i>
                 </a>
             </li>
