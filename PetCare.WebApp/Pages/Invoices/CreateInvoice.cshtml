@@ -135,7 +135,7 @@
             tbody.insertAdjacentHTML('beforeend', newRow);
             itemIndex++; //zwiększam indeks dla następnego elementu
             
-            // Przeładuj walidację dla nowego wiersza
+            //przeładuj walidację dla nowego wiersza
             if (typeof $ !== 'undefined' && $.validator) {
                 $.validator.unobtrusive.parse(document.body);
             }
@@ -160,7 +160,7 @@
 
             row.style.display = 'none';
             
-            // Wyczyść błędy walidacji dla tego wiersza
+            //wyczyść błędy walidacji dla tego wiersza
             const inputs = row.querySelectorAll('input');
             inputs.forEach(input => {
                 const fieldName = input.getAttribute('name');

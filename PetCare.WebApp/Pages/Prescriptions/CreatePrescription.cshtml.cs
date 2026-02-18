@@ -83,7 +83,10 @@ namespace PetCare.WebApp.Pages.Prescriptions
 
         private async Task LoadOptions()
         {
-            var medicationsList = await _mediator.Send(new GetMedicationsQuery());
+            var medicationsList = await _mediator.Send(new GetMedicationsQuery
+            {
+                IsActive = true
+            });
 
             var medItems = medicationsList.Select(m => new
             {
