@@ -51,36 +51,34 @@ namespace PetCare.Application.Features.Appointments.Queries
             var availableSlots = new List<TimeSpan>();
             var slotTime = workStartTime;
 
-            //Pętla po godzinach pracy (np. od 10:00 do 15:00)
+            //pętla po godzinach pracy (09:00-16:30)
             while (slotTime.Add(TimeSpan.FromMinutes(request.AppointmentDurationMinutes)) <= workEndTime)
             {
-                //Definiujemy ramy czasowe tego konkretnego slotu (np. 10:00 - 10:30)
+                //definiujemy ramy czasowe tego konkretnego slotu (np. 10:00 - 10:30)
                 var slotStart = slotTime;
                 var slotEnd = slotTime.Add(TimeSpan.FromMinutes(request.AppointmentDurationMinutes));
 
-                //Sprawdź kolizję z wizytami
+                //sprawdź kolizję z wizytami
                 bool isTakenByAppointment = appointments.Any(a => a.AppointmentDateTime.TimeOfDay == slotStart);
 
-                //Sprawdź kolizję z wyjątkiem
+                //sprawdź kolizję z wyjątkiem
                 bool isBlockedByException = false;
                 if (exception != null && exception.StartTime.HasValue && exception.EndTime.HasValue)
                 {
                     var exceptionStart = exception.StartTime.Value.ToTimeSpan();
                     var exceptionEnd = exception.EndTime.Value.ToTimeSpan();
 
-                    // Sprawdzamy czy slot nakłada się na przerwę
-                    // Slot nakłada się na przerwę, jeśli:
-                    // (StartSlotu < KoniecPrzerwy) ORAZ (KoniecSlotu > StartPrzerwy)
+                    //sprawdz czy slot nakłada się na przerwę
                     if (slotStart < exceptionEnd && slotEnd > exceptionStart)
                     {
                         isBlockedByException = true;
                     }
                 }
 
-                // Dodajemy slot tylko jeśli jest wolny od wizyt I wolny od wyjątków
+                //dodajemy slot tylko jeśli jest wolny od wizyt i wolny od wyjątków
                 if (!isTakenByAppointment && !isBlockedByException)
                 {
-                    // Sprawdzenie czy slot nie jest w przeszłości (jeśli "dzisiaj")
+                    //sprawdz czy slot nie jest w przeszłości
                     if (request.Date.Date > DateTime.Today || (request.Date.Date == DateTime.Today && slotStart > DateTime.Now.TimeOfDay))
                     {
                         availableSlots.Add(slotStart);

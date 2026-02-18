@@ -88,7 +88,9 @@ public class GetAllAppointmentsHandler : IRequestHandler<GetAllAppointmentsQuery
 
         if (request.To.HasValue)
         {
-            query = query.Where(a => a.AppointmentDateTime <= request.To.Value);
+            var endOfDay = request.To.Value.Date.AddDays(1).AddTicks(-1);
+
+            query = query.Where(a => a.AppointmentDateTime <= endOfDay);
         }
 
         if (request.Status.HasValue)

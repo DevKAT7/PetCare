@@ -49,7 +49,6 @@ namespace PetCare.MobileApp
 
 #if DEBUG
             builder.Services.AddBlazorWebViewDeveloperTools();
-    		builder.Logging.AddDebug();
 #endif
             var culture = new CultureInfo("en-US");
             CultureInfo.DefaultThreadCurrentCulture = culture;

@@ -228,6 +228,7 @@ namespace PetCare.Infrastructure.Data
 
             //procedura skladowana
             builder.Entity<VetStatisticsDto>().HasNoKey();
+            builder.Entity<Pet>().ToTable(tb => tb.HasTrigger("Trigger_Hack_Fix"));
         }
     }
 }
